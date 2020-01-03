@@ -1,0 +1,79 @@
+version: '2'
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:5.3.1
+    hostname: zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  broker:
+    image: confluentinc/cp-enterprise-kafka:5.3.1
+    hostname: broker
+    container_name: broker
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: broker:29092
+      CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: zookeeper:2181
+      CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
+      CONFLUENT_METRICS_ENABLE: 'true'
+      CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
+
+  rabbitmq:
+      image: 'rabbitmq:3-management-alpine'
+      hostname: rabbitmq
+      environment:
+          - RABBITMQ_DEFAULT_USER=user
+          - RABBITMQ_DEFAULT_PASS=password
+      ports:
+          - '15672:15672'
+          - '5672:5672'
+
+  kafka-create-topics:
+    image: confluentinc/cp-kafka:3.3.0
+    depends_on:
+      - zookeeper
+      - broker
+    hostname: kafka-create-topics
+    command: "bash -c 'echo Waiting && \
+                           cub kafka-ready -b broker:29092 1 30 && \
+                           kafka-topics --create --topic test --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
+                           kafka-topics --list --zookeeper zookeeper:2181 && \
+                           echo KAFKA-DONE!'"
+    environment:
+      KAFKA_BROKER_ID: ignored
+      KAFKA_ZOOKEEPER_CONNECT: ignored
+    extra_hosts:
+      - "moby:127.0.0.1"
+
+  rabbitmq-create-queues:
+      image: activatedgeek/rabbitmqadmin:latest
+      depends_on:
+          - rabbitmq
+      hostname: rabbitmq-create-queues
+      entrypoint: /bin/sh -c
+      command: >
+          "
+              while ! nc -z rabbitmq 5672; do echo waiting; sleep 3; done;
+              rabbitmqadmin --host rabbitmq -uuser -ppassword declare exchange name=test type=fanout
+              rabbitmqadmin --host rabbitmq -uuser -ppassword declare queue name=test durable=false
+              rabbitmqadmin --host rabbitmq -uuser -ppassword declare binding source="test" destination="test" destination_type="queue"
+              rabbitmqadmin --host rabbitmq -uuser -ppassword list queues
+              echo 'RABBIT-DONE!' 
+          "
+      extra_hosts:
+          - "moby:127.0.0.1"

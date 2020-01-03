@@ -1,0 +1,26 @@
+name: Herald.MessageQueue
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.100'
+
+    - name: Build
+      run: dotnet build -c Release     
+
+    - name: Test
+      run: |
+          docker-compose -f .docker/test-enviroment.yml up -d
+          echo "sleep 15"
+          sleep 15
+          dotnet test "--logger:junit;LogFilePath=./test-reports/results.xml" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput="coverage.xml"
+      env:
+        SKIP: true
