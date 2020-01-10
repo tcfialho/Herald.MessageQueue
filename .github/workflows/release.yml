@@ -1,0 +1,42 @@
+name: Herald.MessageQueue
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.100'
+
+    - name: Get the version
+      id: get_version
+      run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\/v/}
+            
+    - run: echo ${{ steps.get_version.outputs.VERSION }}
+           
+    - name: Build
+      run: dotnet build -c Release     
+
+    - name: Release
+      run: |
+        dotnet pack -c release /p:Version=${{ steps.get_version.outputs.VERSION }}
+    - uses: marvinpinto/action-automatic-releases@v0.2.2
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        prerelease: false
+        files: |
+          **/*.nupkg
+
+    - name: Publish
+      env:
+        HERALD_NUGGET_KEY: ${{ secrets.HERALD_NUGGET_KEY }}
+      run: |
+        dotnet nuget push **/*.nupkg --source https://api.nuget.org/v3/index.json --no-symbols --skip-duplicate --no-service-endpoint --api-key $HERALD_NUGGET_KEY
