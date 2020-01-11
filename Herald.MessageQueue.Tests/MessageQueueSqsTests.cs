@@ -11,7 +11,7 @@ namespace Herald.MessageQueue.Tests
 
         public MessageQueueSqsTests()
         {
-            _queue = RabbitMqThreadSafeBuilder.Build();
+            _queue = SqsThreadSafeBuilder.Build();
         }
 
         [Fact]
