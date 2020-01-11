@@ -16,13 +16,11 @@ jobs:
       with:
         dotnet-version: '3.1.100'
 
-    - name: Build
-      run: dotnet build -c Release     
-
-    - name: Test
+    - name: Build / Test
       env:
-        SKIP: true
-      run: |
+        SKIP: true      
+      run: | 
+          dotnet build -c Release
           docker-compose -f .docker/test-enviroment.yml up -d
           echo "sleep 15"
           sleep 15
