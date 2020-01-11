@@ -31,6 +31,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Herald.MessageQueue.Kafka\Herald.MessageQueue.Kafka.csproj" />
     <ProjectReference Include="..\Herald.MessageQueue.RabbitMq\Herald.MessageQueue.RabbitMq.csproj" />
+    <ProjectReference Include="..\Herald.MessageQueue.Sqs\Herald.MessageQueue.Sqs.csproj" />
     <ProjectReference Include="..\Herald.MessageQueue\Herald.MessageQueue.csproj" />
   </ItemGroup>
 
