@@ -23,7 +23,7 @@ namespace Herald.MessageQueue.RabbitMq
 
             services.TryAddSingleton(messageQueueOptions);
 
-            services.TryAddScoped<IConnection>(serviceProvider =>
+            services.TryAddSingleton<IConnection>(serviceProvider =>
             {
                 var config = serviceProvider.GetRequiredService<MessageQueueOptions>();
                 var factory = new ConnectionFactory()
@@ -37,7 +37,7 @@ namespace Herald.MessageQueue.RabbitMq
                 return factory.CreateConnection();
             });
 
-            services.TryAddScoped<IModel>(serviceProvider =>
+            services.TryAddSingleton<IModel>(serviceProvider =>
             {
                 var config = serviceProvider.GetRequiredService<MessageQueueOptions>();
                 var connection = serviceProvider.GetRequiredService<IConnection>();
