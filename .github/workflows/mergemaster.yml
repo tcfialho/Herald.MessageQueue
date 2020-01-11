@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  build:
+  merge-master:
 
     runs-on: ubuntu-latest
 
@@ -22,10 +22,14 @@ jobs:
     - name: Test
       env:
         SKIP: true
+        AWS_ACCESS_KEY_ID: guest
+        AWS_SECRET_KEY: guest
+        AWS_REGION: us-east-1
+        AWS_ENDPOINT: http://localhost:4576
       run: |
           docker-compose -f .docker/test-enviroment.yml up -d
-          echo "sleep 15"
-          sleep 15
+          echo "sleep 20"
+          sleep 20
           dotnet test "--logger:junit;LogFilePath=./test-reports/results.xml" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput="coverage.xml" /p:Thereshold=80
 
     - name: Publish Coverage
