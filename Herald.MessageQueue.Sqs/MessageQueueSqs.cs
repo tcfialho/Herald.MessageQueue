@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Herald.MessageQueue.Sqs
@@ -25,18 +26,33 @@ namespace Herald.MessageQueue.Sqs
 
         private string GetQueueUrl(Type type)
         {
-            return $"{_options.Host}:{_options.Port}/queue/{type.Name.ToLower()}.fifo";
+            var queueUrl = $"{_options.Host}:{_options.Port}/queue/{type.Name.ToLower()}.fifo";
+
+            Trace.WriteLine(queueUrl);
+            Debug.WriteLine(queueUrl);
+            Console.WriteLine(queueUrl);
+
+            return queueUrl;
         }
 
         public async Task Send(MessageBase @message)
         {
-            await _amazonSqs.SendMessageAsync(new SendMessageRequest
+            try
             {
-                QueueUrl = GetQueueUrl(@message.GetType()),
-                MessageDeduplicationId = Guid.NewGuid().ToString(),
-                MessageGroupId = _options.GroupId,
-                MessageBody = JsonConvert.SerializeObject(@message),
-            });
+                await _amazonSqs.SendMessageAsync(new SendMessageRequest
+                {
+                    QueueUrl = GetQueueUrl(@message.GetType()),
+                    MessageDeduplicationId = Guid.NewGuid().ToString(),
+                    MessageGroupId = _options.GroupId,
+                    MessageBody = JsonConvert.SerializeObject(@message),
+                });
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception(GetQueueUrl(@message.GetType()), ex);
+            }
+
         }
 
         public async Task Received(MessageBase @message)
