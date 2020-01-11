@@ -50,7 +50,7 @@ namespace Herald.MessageQueue.RabbitMq
                 return channel;
             });
 
-            services.TryAddScoped<IMessageQueue, MessageQueueRabbitMq>();
+            services.TryAddSingleton<IMessageQueue, MessageQueueRabbitMq>();
 
             return new MessageQueueBuilder(services);
         }
