@@ -29,6 +29,7 @@ namespace Herald.MessageQueue.Sqs
 
             var awsSqsOptions = CreateAwsOptions(messageQueueOptions.RegionEndpoint, url);
 
+            services.AddDefaultAWSOptions(awsSqsOptions);
             services.AddAWSService<IAmazonSQS>(awsSqsOptions);
 
             return new MessageQueueBuilder(services);
@@ -38,12 +39,10 @@ namespace Herald.MessageQueue.Sqs
         {
             var awsOptions = new AWSOptions();
 
-            if (string.IsNullOrWhiteSpace(url))
-            {
-                awsOptions.DefaultClientConfig.UseHttp = true;
-                awsOptions.Region = RegionEndpoint.GetBySystemName(regionEndpoint);
-            }
-            else
+            awsOptions.Region = RegionEndpoint.GetBySystemName(regionEndpoint);
+            awsOptions.DefaultClientConfig.UseHttp = true;
+
+            if (!string.IsNullOrWhiteSpace(url))
             {
                 awsOptions.DefaultClientConfig.ServiceURL = new Uri(url).GetLeftPart(System.UriPartial.Authority);
                 awsOptions.DefaultClientConfig.DisableHostPrefixInjection = true;
