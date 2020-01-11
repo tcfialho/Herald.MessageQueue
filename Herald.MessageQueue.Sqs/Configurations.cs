@@ -39,14 +39,21 @@ namespace Herald.MessageQueue.Sqs
         {
             var awsOptions = new AWSOptions();
 
-            awsOptions.Region = RegionEndpoint.GetBySystemName(regionEndpoint);
-            awsOptions.DefaultClientConfig.UseHttp = true;
-
-            if (!string.IsNullOrWhiteSpace(url))
+            if (string.IsNullOrWhiteSpace(url))
             {
-                awsOptions.DefaultClientConfig.ServiceURL = new Uri(url).GetLeftPart(System.UriPartial.Authority);
-                awsOptions.DefaultClientConfig.DisableHostPrefixInjection = true;
+                awsOptions.Region = RegionEndpoint.GetBySystemName(regionEndpoint);
             }
+            else
+            {
+                awsOptions.Region = null;
+                awsOptions.DefaultClientConfig.AllowAutoRedirect = false;
+                awsOptions.DefaultClientConfig.EndpointDiscoveryEnabled = false;
+                awsOptions.DefaultClientConfig.UseHttp = true;
+                awsOptions.DefaultClientConfig.DisableHostPrefixInjection = true;
+                awsOptions.DefaultClientConfig.ServiceURL = new Uri(url).GetLeftPart(System.UriPartial.Authority);
+            }
+
+            awsOptions.DefaultClientConfig.Validate();
 
             return awsOptions;
         }
