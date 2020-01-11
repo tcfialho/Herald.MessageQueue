@@ -19,7 +19,7 @@ namespace Herald.MessageQueue.Tests
 
                 serviceCollection.AddMessageQueueSqs(setup =>
                 {
-                    setup.Host = "http://localhost";
+                    setup.Host = "http://127.0.0.1";
                     setup.Port = "4576";
                     setup.GroupId = "test";
                     setup.RegionEndpoint = "us-east-1";
