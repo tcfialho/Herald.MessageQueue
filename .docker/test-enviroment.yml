@@ -46,8 +46,7 @@ services:
   localstack:
     image: localstack/localstack:latest
     ports:
-      - '4563-4599:4563-4599'
-      - '8055:8080'
+      - '4576:4576'
     environment:
       - SERVICES=sqs
 
