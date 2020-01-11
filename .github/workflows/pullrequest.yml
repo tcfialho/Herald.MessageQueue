@@ -1,4 +1,4 @@
-name: Herald.MessageQueue
+name: Herald.MessageQueue.PullRequest
 
 on:
   pull_request:

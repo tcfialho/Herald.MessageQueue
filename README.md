@@ -1,4 +1,7 @@
 # Herald.MessageQueue
+
+![Status](https://github.com/tcfialho/Herald.MessageQueue/workflows/Herald.MessageQueue/badge.svg) ![Coverage](https://codecov.io/gh/tcfialho/Herald.MessageQueue/branch/master/graph/badge.svg)
+
 Herald.MessageQueue is a set of building blocks for working with different types of message brokers using a simple queue abstraction.
 
 # Installation Guide
