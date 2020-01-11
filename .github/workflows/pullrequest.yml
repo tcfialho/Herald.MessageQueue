@@ -8,13 +8,7 @@ on:
 jobs:    
   test:
     runs-on: ubuntu-latest
-    services:
-          s3:
-            image: localstack/localstack:latest
-            ports:
-              - 4576:4576
-            env:
-              SERVICES: sqs
+
     steps:
     - uses: actions/checkout@v1
     - uses: actions/setup-dotnet@v1
@@ -31,6 +25,6 @@ jobs:
       run: | 
           dotnet build -c Release
           docker-compose -f .docker/test-enviroment.yml up -d
-          echo "sleep 10"
-          sleep 10
+          echo "sleep 20"
+          sleep 20
           dotnet test "--logger:junit;LogFilePath=./test-reports/results.xml" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput="coverage.xml" /p:Thereshold=80
