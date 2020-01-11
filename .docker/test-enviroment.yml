@@ -43,13 +43,6 @@ services:
           - '15672:15672'
           - '5672:5672'
 
-  localstack:
-    image: localstack/localstack:latest
-    ports:
-      - '4576:4576'
-    environment:
-      - SERVICES=sqs
-
   kafka-create-topics:
     image: confluentinc/cp-kafka:3.3.0
     depends_on:
@@ -84,24 +77,3 @@ services:
           "
       extra_hosts:
           - "moby:127.0.0.1"
-          
-  localstack-create-queues:
-    image: mesosphere/aws-cli:latest
-    depends_on:
-      - localstack
-    hostname: localstack-create-queues
-    entrypoint: /bin/sh -c
-    command: >
-      "
-        while ! aws --endpoint-url=http://localstack:4576 sqs list-queues > /dev/null; do echo waiting; sleep 3; done;
-        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name test
-        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name test.fifo --attributes FifoQueue=true
-        aws --endpoint-url=http://localstack:4576 sqs list-queues
-        echo 'SQS-DONE!' 
-      "
-    environment:
-      - AWS_ACCESS_KEY_ID=dummy
-      - AWS_SECRET_ACCESS_KEY=dummy
-      - AWS_DEFAULT_REGION=us-east-1
-    extra_hosts:
-      - "moby:127.0.0.1"
