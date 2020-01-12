@@ -11,7 +11,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
+    - name: Check commit status
+      id: commit-status
+      run: |
+        # Check the status of the Git commit
+        CURRENT_STATUS=$(curl --url https://github.com/tcfialho/Herald.MessageQueue/workflows/Herald.MessageQueue/badge.svg | grep -o -m1 'passing\|no status\|failing');
+        echo "Current status is: $CURRENT_STATUS"
+        if [ "${CURRENT_STATUS^^}" != "PASSING" ]; 
+          then echo "Canceling execution"; 
+          exit 1; 
+        fi
+
+    - name: Checkout
+      uses: actions/checkout@v1
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.1.100'

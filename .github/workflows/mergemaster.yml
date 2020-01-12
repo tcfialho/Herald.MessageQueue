@@ -1,7 +1,8 @@
 name: Herald.MessageQueue
 
 on:
-  push:
+  pull_request:
+    types: [closed]
     branches:
       - master
 
@@ -9,9 +10,12 @@ jobs:
   merge-master:
 
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged
 
     steps:
-    - uses: actions/checkout@v1
+    - name: Checkout
+      if: github.event.pull_request.merged
+      uses: actions/checkout@v1
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.1.100'
