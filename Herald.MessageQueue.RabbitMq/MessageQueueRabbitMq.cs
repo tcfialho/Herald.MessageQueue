@@ -66,7 +66,7 @@ namespace Herald.MessageQueue.RabbitMq
 
         private string GetQueueName(Type type)
         {
-            return type.Name.ToLower();
+            return type.Name;
         }
 
         public void Dispose()

@@ -19,7 +19,7 @@ namespace Herald.MessageQueue.Tests
         public async void ShouldSend()
         {
             //Arrange
-            var msg = new Test() { Id = Guid.NewGuid().ToString() };
+            var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
             Task send() => _queue.Send(msg);
 
             //Act
@@ -33,12 +33,12 @@ namespace Herald.MessageQueue.Tests
         public async Task ShouldReceive()
         {
             //Arrange
-            var msg = new Test() { Id = Guid.NewGuid().ToString() };
+            var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
             await _queue.Send(msg);
 
             //Act
             var qtd = 0;
-            await foreach (var message in _queue.Receive<Test>())
+            await foreach (var message in _queue.Receive<TestMessage>())
                 qtd++;
 
             //Assert
@@ -49,12 +49,12 @@ namespace Herald.MessageQueue.Tests
         public async Task ShouldMarkAsReceived()
         {
             //Arrange
-            var msg = new Test() { Id = Guid.NewGuid().ToString() };
+            var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
             await _queue.Send(msg);
             Task received = null;
 
             //Act
-            await foreach (var message in _queue.Receive<Test>())
+            await foreach (var message in _queue.Receive<TestMessage>())
                 received = _queue.Received(message);
 
             await received;
@@ -67,14 +67,14 @@ namespace Herald.MessageQueue.Tests
         public async Task ShouldNotReReadReceivedMessages()
         {
             //Arrange
-            var msg = new Test() { Id = Guid.NewGuid().ToString() };
+            var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
             await _queue.Send(msg);
             var qtd = 0;
 
             //Act
-            await foreach (var message in _queue.Receive<Test>())
+            await foreach (var message in _queue.Receive<TestMessage>())
                 await _queue.Received(message);
-            await foreach (var message in _queue.Receive<Test>())
+            await foreach (var message in _queue.Receive<TestMessage>())
                 qtd++;
 
             //Assert

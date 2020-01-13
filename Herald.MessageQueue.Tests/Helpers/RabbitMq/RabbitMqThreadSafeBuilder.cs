@@ -21,7 +21,7 @@ namespace Herald.MessageQueue.Tests
                 {
                     setup.Host = "localhost";
                     setup.Port = "5672";
-                    setup.ExchangeName = "test";
+                    setup.ExchangeName = nameof(TestMessage);
                     setup.Username = "user";
                     setup.Password = "password";
                 });

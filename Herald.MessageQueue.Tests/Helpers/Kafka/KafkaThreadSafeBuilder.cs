@@ -21,7 +21,7 @@ namespace Herald.MessageQueue.Tests
                 {
                     setup.Host = "localhost";
                     setup.Port = "9092";
-                    setup.GroupId = "test";
+                    setup.GroupId = nameof(TestMessage);
                 });
 
                 var serviceProvider = serviceCollection.BuildServiceProvider();

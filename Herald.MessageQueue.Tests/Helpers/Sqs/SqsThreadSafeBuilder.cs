@@ -21,7 +21,7 @@ namespace Herald.MessageQueue.Tests
                 {
                     setup.Host = "http://127.0.0.1";
                     setup.Port = "4576";
-                    setup.GroupId = "test";
+                    setup.GroupId = nameof(TestMessage);
                     setup.RegionEndpoint = "us-east-1";
                 });
 
