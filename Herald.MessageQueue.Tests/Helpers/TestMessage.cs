@@ -1,8 +1,8 @@
 ﻿namespace Herald.MessageQueue.Tests
 {
-    public class Test : MessageBase
+    public class TestMessage : MessageBase
     {
-        public Test() : base()
+        public TestMessage() : base()
         {
         }
         public string Id { get; set; }

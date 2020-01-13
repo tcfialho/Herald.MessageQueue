@@ -25,7 +25,7 @@ namespace Herald.MessageQueue.Sqs
 
         private string GetQueueUrl(Type type)
         {
-            return $"{_options.Host}:{_options.Port}/queue/{type.Name.ToLower()}.fifo";
+            return $"{_options.Host}:{_options.Port}/queue/{type.Name}.fifo";
         }
 
         public async Task Send(MessageBase @message)
