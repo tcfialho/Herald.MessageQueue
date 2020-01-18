@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Herald.MessageQueue
@@ -10,6 +11,8 @@ namespace Herald.MessageQueue
 
         Task Received(MessageBase @event);
 
-        IAsyncEnumerable<TMessage> Receive<TMessage>() where TMessage : MessageBase;
+        IAsyncEnumerable<TMessage> Receive<TMessage>(int maxNumberOfMessages) where TMessage : MessageBase;
+
+        IAsyncEnumerable<TMessage> Receive<TMessage>(CancellationToken cancellationToken = default(CancellationToken)) where TMessage : MessageBase;
     }
 }

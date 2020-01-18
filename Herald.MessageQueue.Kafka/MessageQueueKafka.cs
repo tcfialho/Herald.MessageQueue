@@ -1,9 +1,13 @@
 ﻿using Confluent.Kafka;
 
+using Herald.MessageQueue.Extensions;
+
 using Newtonsoft.Json;
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Herald.MessageQueue.Kafka
@@ -42,14 +46,17 @@ namespace Herald.MessageQueue.Kafka
             await _producer.ProduceAsync(queueName, new Message<Null, string> { Value = messageBody });
         }
 
-        public async IAsyncEnumerable<TMessage> Receive<TMessage>() where TMessage : MessageBase
+        public async IAsyncEnumerable<TMessage> Receive<TMessage>(int maxNumberOfMessages) where TMessage : MessageBase
         {
+            if (maxNumberOfMessages < 1)
+                throw new ArgumentException("Max number of messages should be greater than zero.");
+
             var queueName = GetQueueName(typeof(TMessage));
 
             if (!_consumer.Subscription.Contains(queueName))
                 _consumer.Subscribe(queueName);
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < maxNumberOfMessages; i++)
             {
                 var consumeResult = _consumer.Consume(TimeSpan.FromSeconds(5));
 
@@ -61,6 +68,34 @@ namespace Herald.MessageQueue.Kafka
 
                     yield return await Task.FromResult(obj);
                 }
+            }
+        }
+
+        public async IAsyncEnumerable<TMessage> Receive<TMessage>([EnumeratorCancellation] CancellationToken cancellationToken) where TMessage : MessageBase
+        {
+            var queueName = GetQueueName(typeof(TMessage));
+
+            if (!_consumer.Subscription.Contains(queueName))
+                _consumer.Subscribe(queueName);
+
+
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                var result = await Task.Run(() => _consumer.Consume(cancellationToken), cancellationToken).DefaultIfCanceled();
+
+                TMessage message = null;
+
+                if (result != null)
+                {
+                    message = JsonConvert.DeserializeObject<TMessage>(result.Value);
+
+                    message.QueueData = result;
+                }
+
+                if (message == null)
+                    continue;
+
+                yield return await Task.FromResult(message);
             }
         }
 

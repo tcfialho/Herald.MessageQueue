@@ -5,7 +5,9 @@ using RabbitMQ.Client;
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Herald.MessageQueue.RabbitMq
@@ -42,26 +44,52 @@ namespace Herald.MessageQueue.RabbitMq
             return Task.CompletedTask;
         }
 
-        public async IAsyncEnumerable<TMessage> Receive<TMessage>() where TMessage : MessageBase
+        public async IAsyncEnumerable<TMessage> Receive<TMessage>(int maxNumberOfMessages) where TMessage : MessageBase
         {
+            if (maxNumberOfMessages < 1)
+                throw new ArgumentException("Max number of messages should be greater than zero.");
+
             var queueName = GetQueueName(typeof(TMessage));
 
             for (int i = 0; i < 5; i++)
             {
-                var message = _channel.BasicGet(queueName, false);
+                var message = ReceiveMessage<TMessage>(queueName);
 
                 if (message == null)
-                {
-                    await Task.Delay(1000);
                     continue;
-                }
 
-                var body = Encoding.UTF8.GetString(message.Body);
-                var obj = JsonConvert.DeserializeObject<TMessage>(body);
-                obj.QueueData = message.DeliveryTag;
-
-                yield return await Task.FromResult(obj);
+                yield return await Task.FromResult(message);
             }
+        }
+
+        public async IAsyncEnumerable<TMessage> Receive<TMessage>([EnumeratorCancellation] CancellationToken cancellationToken) where TMessage : MessageBase
+        {
+            var queueName = GetQueueName(typeof(TMessage));
+
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                var message = ReceiveMessage<TMessage>(queueName);
+
+                if (message == null)
+                    continue;
+
+                yield return await Task.FromResult(message);
+            }
+        }
+
+        private TMessage ReceiveMessage<TMessage>(string queueName) where TMessage : MessageBase
+        {
+            TMessage obj = null;
+            var message = _channel.BasicGet(queueName, false);
+
+            if (message != null)
+            {
+                var body = Encoding.UTF8.GetString(message.Body);
+                obj = JsonConvert.DeserializeObject<TMessage>(body);
+                obj.QueueData = message.DeliveryTag;
+            }
+
+            return obj;
         }
 
         private string GetQueueName(Type type)

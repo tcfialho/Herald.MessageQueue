@@ -32,6 +32,7 @@ namespace Herald.MessageQueue.RabbitMq
                     Port = int.Parse(config.Port),
                     UserName = config.Username,
                     Password = config.Password,
+                    VirtualHost = config.VirtualHost,
                     DispatchConsumersAsync = true
                 };
                 return factory.CreateConnection();

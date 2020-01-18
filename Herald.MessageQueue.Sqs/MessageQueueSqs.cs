@@ -1,12 +1,16 @@
 ﻿using Amazon.SQS;
 using Amazon.SQS.Model;
 
+using Herald.MessageQueue.Extensions;
+
 using Microsoft.Extensions.Options;
 
 using Newtonsoft.Json;
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Herald.MessageQueue.Sqs
@@ -48,14 +52,20 @@ namespace Herald.MessageQueue.Sqs
             });
         }
 
-        public async IAsyncEnumerable<TMessage> Receive<TMessage>() where TMessage : MessageBase
+        public async IAsyncEnumerable<TMessage> Receive<TMessage>(int maxNumberOfMessages) where TMessage : MessageBase
         {
+            if (maxNumberOfMessages < 1)
+                throw new ArgumentException("Max number of messages should be greater than zero.");
+
+            if (maxNumberOfMessages > 10)
+                throw new ArgumentException("Highest max number of messages avaliable in Sqs is 10.");
+
             var result = await _amazonSqs.ReceiveMessageAsync(new ReceiveMessageRequest
             {
                 QueueUrl = GetQueueUrl(typeof(TMessage)),
-                MaxNumberOfMessages = 5,
-                WaitTimeSeconds = 5,
-                VisibilityTimeout = 30
+                MaxNumberOfMessages = maxNumberOfMessages,
+                WaitTimeSeconds = _options.WaitTimeSeconds,
+                VisibilityTimeout = _options.VisibilityTimeout
             });
 
             foreach (var item in result.Messages)
@@ -65,6 +75,35 @@ namespace Herald.MessageQueue.Sqs
                 messageBody.QueueData = item.ReceiptHandle;
 
                 yield return messageBody;
+            }
+        }
+
+        public async IAsyncEnumerable<TMessage> Receive<TMessage>([EnumeratorCancellation] CancellationToken cancellationToken) where TMessage : MessageBase
+        {
+            var queueUrl = GetQueueUrl(typeof(TMessage));
+
+            var config = new ReceiveMessageRequest
+            {
+                QueueUrl = GetQueueUrl(typeof(TMessage)),
+                WaitTimeSeconds = _options.WaitTimeSeconds,
+                MaxNumberOfMessages = 10
+            };
+
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                var result = await _amazonSqs.ReceiveMessageAsync(config, cancellationToken).DefaultIfCanceled();
+
+                if (result == null)
+                    continue;
+
+                foreach (var item in result.Messages)
+                {
+                    var messageBody = JsonConvert.DeserializeObject<TMessage>(item.Body);
+
+                    messageBody.QueueData = item.ReceiptHandle;
+
+                    yield return messageBody;
+                }
             }
         }
 

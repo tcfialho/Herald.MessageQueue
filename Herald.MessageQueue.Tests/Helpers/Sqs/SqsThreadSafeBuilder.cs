@@ -23,6 +23,7 @@ namespace Herald.MessageQueue.Tests
                     setup.Port = "4576";
                     setup.GroupId = nameof(TestMessage);
                     setup.RegionEndpoint = "us-east-1";
+                    setup.VisibilityTimeout = 1;
                 });
 
                 var serviceProvider = serviceCollection.BuildServiceProvider();
