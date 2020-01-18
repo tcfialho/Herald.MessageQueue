@@ -50,7 +50,7 @@ namespace Herald.MessageQueue.Tests
         public async Task ShouldReceiveUntilCanceled()
         {
             //Arrange
-            const int delay = 8;
+            const int delay = 30;
             var cancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(delay)).Token;
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
             await _queue.Send(msg);

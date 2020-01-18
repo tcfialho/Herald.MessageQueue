@@ -60,8 +60,8 @@ namespace Herald.MessageQueue.Sqs
             var result = await _amazonSqs.ReceiveMessageAsync(new ReceiveMessageRequest
             {
                 QueueUrl = GetQueueUrl(typeof(TMessage)),
-                MaxNumberOfMessages = maxNumberOfMessages,
-                WaitTimeSeconds = 20
+                WaitTimeSeconds = _options.WaitTimeSeconds,
+                MaxNumberOfMessages = maxNumberOfMessages
             });
 
             foreach (var item in result.Messages)
@@ -78,9 +78,16 @@ namespace Herald.MessageQueue.Sqs
         {
             var queueUrl = GetQueueUrl(typeof(TMessage));
 
+            var config = new ReceiveMessageRequest
+            {
+                QueueUrl = GetQueueUrl(typeof(TMessage)),
+                WaitTimeSeconds = _options.WaitTimeSeconds,
+                MaxNumberOfMessages = 10
+            };
+
             while (!cancellationToken.IsCancellationRequested)
             {
-                var result = await _amazonSqs.ReceiveMessageAsync(queueUrl, cancellationToken).DefaultIfCanceled();
+                var result = await _amazonSqs.ReceiveMessageAsync(config, cancellationToken).DefaultIfCanceled();
 
                 if (result == null)
                     continue;

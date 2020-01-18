@@ -6,5 +6,6 @@
         public string Port { get; set; }
         public string GroupId { get; set; }
         public string RegionEndpoint { get; set; }
+        public int WaitTimeSeconds { get; set; } = 20;
     }
 }
