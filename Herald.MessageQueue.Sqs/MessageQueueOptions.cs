@@ -7,5 +7,6 @@
         public string GroupId { get; set; }
         public string RegionEndpoint { get; set; }
         public int WaitTimeSeconds { get; set; } = 20;
+        public int VisibilityTimeout { get; set; } = 30;
     }
 }

@@ -14,6 +14,7 @@ namespace Herald.MessageQueue.Tests
         {
             _queue = RabbitMqThreadSafeBuilder.Build();
         }
+
         [Fact]
         public async void ShouldSend()
         {
@@ -67,14 +68,13 @@ namespace Herald.MessageQueue.Tests
         public async Task ShouldMarkAsReceived()
         {
             //Arrange
-            const int delay = 5;
-            var cancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(delay)).Token;
+            const int maxNumberOfMessages = 5;
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
             await _queue.Send(msg);
             Task received = null;
 
             //Act
-            await foreach (var message in _queue.Receive<TestMessage>(cancellationToken))
+            await foreach (var message in _queue.Receive<TestMessage>(maxNumberOfMessages))
                 received = _queue.Received(message);
 
             await received;
