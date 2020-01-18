@@ -7,6 +7,8 @@ using Newtonsoft.Json;
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Herald.MessageQueue.Sqs
@@ -65,6 +67,25 @@ namespace Herald.MessageQueue.Sqs
                 messageBody.QueueData = item.ReceiptHandle;
 
                 yield return messageBody;
+            }
+        }
+
+        public async IAsyncEnumerable<TMessage> Receive<TMessage>([EnumeratorCancellation] CancellationToken cancellationToken) where TMessage : MessageBase
+        {
+            var queueUrl = GetQueueUrl(typeof(TMessage));
+
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                var result = await _amazonSqs.ReceiveMessageAsync(queueUrl, cancellationToken);
+
+                foreach (var item in result.Messages)
+                {
+                    var messageBody = JsonConvert.DeserializeObject<TMessage>(item.Body);
+
+                    messageBody.QueueData = item.ReceiptHandle;
+
+                    yield return messageBody;
+                }
             }
         }
 
