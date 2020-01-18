@@ -44,8 +44,11 @@ namespace Herald.MessageQueue.RabbitMq
             return Task.CompletedTask;
         }
 
-        public async IAsyncEnumerable<TMessage> Receive<TMessage>() where TMessage : MessageBase
+        public async IAsyncEnumerable<TMessage> Receive<TMessage>(int maxNumberOfMessages) where TMessage : MessageBase
         {
+            if (maxNumberOfMessages < 1)
+                throw new ArgumentException("Max number of messages should be greater than zero.");
+
             var queueName = GetQueueName(typeof(TMessage));
 
             for (int i = 0; i < 5; i++)

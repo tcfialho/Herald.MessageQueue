@@ -1,6 +1,8 @@
 ﻿using Amazon.SQS;
 using Amazon.SQS.Model;
 
+using Herald.MessageQueue.Extensions;
+
 using Microsoft.Extensions.Options;
 
 using Newtonsoft.Json;
@@ -50,14 +52,16 @@ namespace Herald.MessageQueue.Sqs
             });
         }
 
-        public async IAsyncEnumerable<TMessage> Receive<TMessage>() where TMessage : MessageBase
+        public async IAsyncEnumerable<TMessage> Receive<TMessage>(int maxNumberOfMessages) where TMessage : MessageBase
         {
+            if (maxNumberOfMessages < 1)
+                throw new ArgumentException("Max number of messages should be greater than zero.");
+
             var result = await _amazonSqs.ReceiveMessageAsync(new ReceiveMessageRequest
             {
                 QueueUrl = GetQueueUrl(typeof(TMessage)),
-                MaxNumberOfMessages = 5,
-                WaitTimeSeconds = 5,
-                VisibilityTimeout = 30
+                MaxNumberOfMessages = maxNumberOfMessages,
+                WaitTimeSeconds = 20
             });
 
             foreach (var item in result.Messages)
@@ -76,7 +80,10 @@ namespace Herald.MessageQueue.Sqs
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                var result = await _amazonSqs.ReceiveMessageAsync(queueUrl, cancellationToken);
+                var result = await _amazonSqs.ReceiveMessageAsync(queueUrl, cancellationToken).DefaultIfCanceled();
+
+                if (result == null)
+                    continue;
 
                 foreach (var item in result.Messages)
                 {

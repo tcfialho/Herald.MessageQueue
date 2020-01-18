@@ -1,5 +1,7 @@
 ﻿using Confluent.Kafka;
 
+using Herald.MessageQueue.Extensions;
+
 using Newtonsoft.Json;
 
 using System;
@@ -44,14 +46,17 @@ namespace Herald.MessageQueue.Kafka
             await _producer.ProduceAsync(queueName, new Message<Null, string> { Value = messageBody });
         }
 
-        public async IAsyncEnumerable<TMessage> Receive<TMessage>() where TMessage : MessageBase
+        public async IAsyncEnumerable<TMessage> Receive<TMessage>(int maxNumberOfMessages) where TMessage : MessageBase
         {
+            if (maxNumberOfMessages < 1)
+                throw new ArgumentException("Max number of messages should be greater than zero.");
+
             var queueName = GetQueueName(typeof(TMessage));
 
             if (!_consumer.Subscription.Contains(queueName))
                 _consumer.Subscribe(queueName);
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < maxNumberOfMessages; i++)
             {
                 var consumeResult = _consumer.Consume(TimeSpan.FromSeconds(5));
 
@@ -73,18 +78,24 @@ namespace Herald.MessageQueue.Kafka
             if (!_consumer.Subscription.Contains(queueName))
                 _consumer.Subscribe(queueName);
 
+
             while (!cancellationToken.IsCancellationRequested)
             {
-                var consumeResult = _consumer.Consume(cancellationToken);
+                var result = await Task.Run(() => _consumer.Consume(cancellationToken), cancellationToken).DefaultIfCanceled();
 
-                if (consumeResult != null)
+                TMessage message = null;
+
+                if (result != null)
                 {
-                    var obj = JsonConvert.DeserializeObject<TMessage>(consumeResult.Value);
+                    message = JsonConvert.DeserializeObject<TMessage>(result.Value);
 
-                    obj.QueueData = consumeResult;
-
-                    yield return await Task.FromResult(obj);
+                    message.QueueData = result;
                 }
+
+                if (message == null)
+                    continue;
+
+                yield return await Task.FromResult(message);
             }
         }
 
