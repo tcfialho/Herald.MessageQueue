@@ -54,7 +54,7 @@ namespace Worker
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                await foreach (var message in _queue.Receive<MyMessage>())
+                await foreach (var message in _queue.Receive<MyMessage>(stoppingToken))
                 {
                     //YourCode
                 }
