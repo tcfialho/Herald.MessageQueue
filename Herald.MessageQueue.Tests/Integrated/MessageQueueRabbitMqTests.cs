@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 using Xunit;
 
-namespace Herald.MessageQueue.Tests
+namespace Herald.MessageQueue.Tests.Integrated
 {
     public class MessageQueueRabbitMqTests : IDisposable
     {

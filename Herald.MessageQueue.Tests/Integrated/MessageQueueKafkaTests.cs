@@ -4,15 +4,16 @@ using System.Threading.Tasks;
 
 using Xunit;
 
-namespace Herald.MessageQueue.Tests
+
+namespace Herald.MessageQueue.Tests.Integrated
 {
-    public class MessageQueueSqsTests : IDisposable
+    public class MessageQueueKafkaTests : IDisposable
     {
         private readonly IMessageQueue _queue;
 
-        public MessageQueueSqsTests()
+        public MessageQueueKafkaTests()
         {
-            _queue = SqsThreadSafeBuilder.Build();
+            _queue = KafkaThreadSafeBuilder.Build();
         }
 
         [Fact]
