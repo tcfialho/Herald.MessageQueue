@@ -58,7 +58,9 @@ services:
     hostname: kafka-create-topics
     command: "bash -c 'echo Waiting && \
                            cub kafka-ready -b broker:29092 1 30 && \
-                           kafka-topics --create --topic TestMessage --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
+                           kafka-topics --create --topic TestMessageA --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
+                           kafka-topics --create --topic TestMessageB --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
+                           kafka-topics --create --topic TestMessageC --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
                            kafka-topics --list --zookeeper zookeeper:2181 && \
                            echo KAFKA-DONE!'"
     environment:
@@ -76,9 +78,18 @@ services:
       command: >
           "
               while ! nc -z rabbitmq 5672; do echo waiting; sleep 3; done;
-              rabbitmqadmin --host rabbitmq -uuser -ppassword declare exchange name=TestMessage type=fanout
-              rabbitmqadmin --host rabbitmq -uuser -ppassword declare queue name=TestMessage durable=false
-              rabbitmqadmin --host rabbitmq -uuser -ppassword declare binding source="TestMessage" destination="TestMessage" destination_type="queue"
+              rabbitmqadmin --host rabbitmq -uuser -ppassword declare exchange name=TestMessageA type=fanout
+              rabbitmqadmin --host rabbitmq -uuser -ppassword declare queue name=TestMessageA durable=false
+              rabbitmqadmin --host rabbitmq -uuser -ppassword declare binding source="TestMessageA" destination="TestMessageA" destination_type="queue"
+              
+              rabbitmqadmin --host rabbitmq -uuser -ppassword declare exchange name=TestMessageB type=fanout
+              rabbitmqadmin --host rabbitmq -uuser -ppassword declare queue name=TestMessageB durable=false
+              rabbitmqadmin --host rabbitmq -uuser -ppassword declare binding source="TestMessageB" destination="TestMessageB" destination_type="queue"
+              
+              rabbitmqadmin --host rabbitmq -uuser -ppassword declare exchange name=TestMessageC type=fanout
+              rabbitmqadmin --host rabbitmq -uuser -ppassword declare queue name=TestMessageC durable=false
+              rabbitmqadmin --host rabbitmq -uuser -ppassword declare binding source="TestMessageC" destination="TestMessageC" destination_type="queue"
+              
               rabbitmqadmin --host rabbitmq -uuser -ppassword list queues
               echo 'RABBIT-DONE!' 
           "
@@ -94,8 +105,15 @@ services:
     command: >
       "
         while ! aws --endpoint-url=http://localstack:4576 sqs list-queues > /dev/null; do echo waiting; sleep 3; done;
-        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name TestMessage
-        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name TestMessage.fifo --attributes FifoQueue=true
+        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name TestMessageA
+        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name TestMessageA.fifo --attributes FifoQueue=true
+        
+        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name TestMessageB
+        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name TestMessageB.fifo --attributes FifoQueue=true
+        
+        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name TestMessageC
+        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name TestMessageC.fifo --attributes FifoQueue=true
+        
         aws --endpoint-url=http://localstack:4576 sqs list-queues
         echo 'SQS-DONE!' 
       "
