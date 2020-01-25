@@ -51,7 +51,7 @@ namespace Herald.MessageQueue.Tests.Integrated
         public async Task ShouldReceiveUntilCanceled()
         {
             //Arrange
-            const int delay = 5;
+            const int delay = 10;
             var cancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(delay)).Token;
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
             await _queue.Send(msg);
@@ -67,25 +67,6 @@ namespace Herald.MessageQueue.Tests.Integrated
 
         [Fact]
         public async Task ShouldMarkAsReceived()
-        {
-            //Arrange
-            const int maxNumberOfMessages = 5;
-            var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
-            await _queue.Send(msg);
-            Task received = null;
-
-            //Act
-            await foreach (var message in _queue.Receive<TestMessage>(maxNumberOfMessages))
-                received = _queue.Received(message);
-
-            await received;
-
-            //Assert
-            Assert.False(received.IsFaulted);
-        }
-
-        [Fact]
-        public async Task ShouldNotReReadReceivedMessages()
         {
             //Arrange
             const int delay = 5;
