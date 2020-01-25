@@ -10,7 +10,7 @@ namespace Herald.MessageQueue.Tests
     public static class RabbitMqThreadSafeBuilder
     {
         private static readonly object syncRoot = new Object();
-        public static IMessageQueue Build()
+        public static IMessageQueue Build(string exchangeName)
         {
             IMessageQueue queue;
             lock (syncRoot)
@@ -19,9 +19,9 @@ namespace Herald.MessageQueue.Tests
 
                 serviceCollection.AddMessageQueueRabbitMq(setup =>
                 {
+                    setup.ExchangeName = exchangeName;
                     setup.Host = "localhost";
                     setup.Port = "5672";
-                    setup.ExchangeName = nameof(TestMessage);
                     setup.Username = "user";
                     setup.Password = "password";
                 });
