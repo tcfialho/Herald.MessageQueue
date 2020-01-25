@@ -40,9 +40,6 @@ namespace Herald.MessageQueue.Kafka
 
             var messageBody = JsonConvert.SerializeObject(message);
 
-            if (!_consumer.Subscription.Contains(queueName))
-                _consumer.Subscribe(queueName);
-
             await _producer.ProduceAsync(queueName, new Message<Null, string> { Value = messageBody });
         }
 
