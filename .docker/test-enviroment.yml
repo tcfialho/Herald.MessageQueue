@@ -58,9 +58,9 @@ services:
     hostname: kafka-create-topics
     command: "bash -c 'echo Waiting && \
                            cub kafka-ready -b broker:29092 1 30 && \
-                           kafka-topics --create --topic TestMessageA --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
-                           kafka-topics --create --topic TestMessageB --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
-                           kafka-topics --create --topic TestMessageC --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
+                           kafka-topics --create --topic TestMessageATopic --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
+                           kafka-topics --create --topic TestMessageBTopic --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
+                           kafka-topics --create --topic TestMessageCTopic --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
                            kafka-topics --list --zookeeper zookeeper:2181 && \
                            echo KAFKA-DONE!'"
     environment:
@@ -78,17 +78,17 @@ services:
       command: >
           "
               while ! nc -z rabbitmq 5672; do echo waiting; sleep 3; done;
-              rabbitmqadmin --host rabbitmq -uuser -ppassword declare exchange name=TestMessageA type=fanout
-              rabbitmqadmin --host rabbitmq -uuser -ppassword declare queue name=TestMessageA durable=false
-              rabbitmqadmin --host rabbitmq -uuser -ppassword declare binding source="TestMessageA" destination="TestMessageA" destination_type="queue"
+              rabbitmqadmin --host rabbitmq -uuser -ppassword declare exchange name=TestMessageAExchange type=fanout
+              rabbitmqadmin --host rabbitmq -uuser -ppassword declare queue name=TestMessageAQueue durable=false
+              rabbitmqadmin --host rabbitmq -uuser -ppassword declare binding source="TestMessageAExchange" destination="TestMessageAQueue" destination_type="queue"
               
-              rabbitmqadmin --host rabbitmq -uuser -ppassword declare exchange name=TestMessageB type=fanout
-              rabbitmqadmin --host rabbitmq -uuser -ppassword declare queue name=TestMessageB durable=false
-              rabbitmqadmin --host rabbitmq -uuser -ppassword declare binding source="TestMessageB" destination="TestMessageB" destination_type="queue"
+              rabbitmqadmin --host rabbitmq -uuser -ppassword declare exchange name=TestMessageBExchange type=fanout
+              rabbitmqadmin --host rabbitmq -uuser -ppassword declare queue name=TestMessageBQueue durable=false
+              rabbitmqadmin --host rabbitmq -uuser -ppassword declare binding source="TestMessageBExchange" destination="TestMessageBQueue" destination_type="queue"
               
-              rabbitmqadmin --host rabbitmq -uuser -ppassword declare exchange name=TestMessageC type=fanout
-              rabbitmqadmin --host rabbitmq -uuser -ppassword declare queue name=TestMessageC durable=false
-              rabbitmqadmin --host rabbitmq -uuser -ppassword declare binding source="TestMessageC" destination="TestMessageC" destination_type="queue"
+              rabbitmqadmin --host rabbitmq -uuser -ppassword declare exchange name=TestMessageCExchange type=fanout
+              rabbitmqadmin --host rabbitmq -uuser -ppassword declare queue name=TestMessageCQueue durable=false
+              rabbitmqadmin --host rabbitmq -uuser -ppassword declare binding source="TestMessageCExchange" destination="TestMessageCQueue" destination_type="queue"
               
               rabbitmqadmin --host rabbitmq -uuser -ppassword list queues
               echo 'RABBIT-DONE!' 

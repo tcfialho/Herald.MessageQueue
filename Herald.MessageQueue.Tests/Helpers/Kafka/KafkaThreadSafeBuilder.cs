@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using System;
 
-namespace Herald.MessageQueue.Tests
+namespace Herald.MessageQueue.Tests.Helpers.Kafka
 {
     public static class KafkaThreadSafeBuilder
     {

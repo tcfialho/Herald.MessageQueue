@@ -21,9 +21,9 @@ namespace Herald.MessageQueue.Kafka
             var messageQueueOptions = new MessageQueueOptions();
             options?.Invoke(messageQueueOptions);
 
-            services.TryAddSingleton<IMessageQueue, MessageQueueKafka>();
-
             services.TryAddSingleton(messageQueueOptions);
+
+            services.TryAddSingleton<IMessageQueue, MessageQueueKafka>();
 
             services.TryAddSingleton(serviceProvider =>
             {

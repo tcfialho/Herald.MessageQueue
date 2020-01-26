@@ -1,5 +1,9 @@
-﻿namespace Herald.MessageQueue.Tests
+﻿
+using Herald.MessageQueue.Sqs.Attributes;
+
+namespace Herald.MessageQueue.Tests.Helpers.Sqs
 {
+    [QueueName("TestMessage_Queue")]
     public class TestMessage : MessageBase
     {
         public TestMessage() : base()
