@@ -23,6 +23,8 @@ namespace Herald.MessageQueue.Sqs
             var messageQueueOptions = new MessageQueueOptions();
             options?.Invoke(messageQueueOptions);
 
+            services.TryAddSingleton(messageQueueOptions);
+
             services.TryAddSingleton<IMessageQueue, MessageQueueSqs>();
 
             var url = $"{messageQueueOptions.Host}:{messageQueueOptions.Port}/queue";

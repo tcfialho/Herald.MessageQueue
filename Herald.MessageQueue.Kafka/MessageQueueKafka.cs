@@ -1,6 +1,7 @@
 ﻿using Confluent.Kafka;
 
 using Herald.MessageQueue.Extensions;
+using Herald.MessageQueue.Kafka.Attributes;
 
 using Newtonsoft.Json;
 
@@ -16,15 +17,15 @@ namespace Herald.MessageQueue.Kafka
     {
         private readonly IConsumer<Ignore, string> _consumer;
         private readonly IProducer<Null, string> _producer;
-        private readonly MessageQueueOptions _kafkaConfig;
+        private readonly MessageQueueOptions _options;
 
         public MessageQueueKafka(IConsumer<Ignore, string> consumer,
                                  IProducer<Null, string> producer,
-                                 MessageQueueOptions rabbitMQConfig)
+                                 MessageQueueOptions options)
         {
             _consumer = consumer;
             _producer = producer;
-            _kafkaConfig = rabbitMQConfig;
+            _options = options;
         }
 
         public Task Received(MessageBase message)
@@ -98,7 +99,7 @@ namespace Herald.MessageQueue.Kafka
 
         private string GetQueueName(Type type)
         {
-            return type.Name;
+            return type.GetAttribute<TopicNameAttribute>()?.TopicName ?? string.Concat(type.Name, _options.TopicNameSufix);
         }
 
         public void Dispose()

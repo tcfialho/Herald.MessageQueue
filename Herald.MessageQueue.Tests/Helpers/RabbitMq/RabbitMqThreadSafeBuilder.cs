@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using System;
 
-namespace Herald.MessageQueue.Tests
+namespace Herald.MessageQueue.Tests.Helpers.RabbitMq
 {
     public static class RabbitMqThreadSafeBuilder
     {
@@ -19,7 +19,6 @@ namespace Herald.MessageQueue.Tests
 
                 serviceCollection.AddMessageQueueRabbitMq(setup =>
                 {
-                    setup.ExchangeName = exchangeName;
                     setup.Host = "localhost";
                     setup.Port = "5672";
                     setup.Username = "user";

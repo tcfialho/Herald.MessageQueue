@@ -1,4 +1,6 @@
-﻿
+﻿using Herald.MessageQueue.Extensions;
+using Herald.MessageQueue.RabbitMq.Attributes;
+
 using Newtonsoft.Json;
 
 using RabbitMQ.Client;
@@ -16,15 +18,15 @@ namespace Herald.MessageQueue.RabbitMq
     {
         private readonly IModel _channel;
         private readonly IConnection _connection;
-        private readonly MessageQueueOptions _rabbitMQConfig;
+        private readonly MessageQueueOptions _options;
 
         public MessageQueueRabbitMq(IModel channel,
                                     IConnection connection,
-                                    MessageQueueOptions rabbitMQConfig)
+                                    MessageQueueOptions options)
         {
             _channel = channel;
             _connection = connection;
-            _rabbitMQConfig = rabbitMQConfig;
+            _options = options;
         }
 
         public Task Received(MessageBase message)
@@ -39,7 +41,10 @@ namespace Herald.MessageQueue.RabbitMq
             var messageBody = JsonConvert.SerializeObject(message);
             var body = Encoding.UTF8.GetBytes(messageBody);
 
-            _channel.BasicPublish(_rabbitMQConfig.ExchangeName, "", null, body);
+            var exchangeName = GetExchangeName(message);
+            var routingKey = GetRoutingKeyName(message);
+
+            _channel.BasicPublish(exchangeName, routingKey, null, body);
 
             return Task.CompletedTask;
         }
@@ -94,7 +99,17 @@ namespace Herald.MessageQueue.RabbitMq
 
         private string GetQueueName(Type type)
         {
-            return type.Name;
+            return type.GetAttribute<QueueNameAttribute>()?.QueueName ?? string.Concat(type.Name, _options.QueueNameSufix);
+        }
+
+        private string GetExchangeName(MessageBase message)
+        {
+            return message.GetAttribute<ExchangeNameAttribute>()?.ExchangeName ?? string.Concat(message.GetType().Name, _options.ExchangeNameSufix);
+        }
+
+        private string GetRoutingKeyName(MessageBase message)
+        {
+            return message.GetAttribute<RoutingKeyAttribute>()?.RoutingKey ?? string.Empty;
         }
 
         public void Dispose()

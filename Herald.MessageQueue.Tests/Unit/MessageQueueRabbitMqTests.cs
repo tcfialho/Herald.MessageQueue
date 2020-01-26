@@ -1,4 +1,5 @@
 ﻿using Herald.MessageQueue.RabbitMq;
+using Herald.MessageQueue.Tests.Helpers.RabbitMq;
 
 using Moq;
 

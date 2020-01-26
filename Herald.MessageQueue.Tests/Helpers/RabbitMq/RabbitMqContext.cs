@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-namespace Herald.MessageQueue.Tests
+namespace Herald.MessageQueue.Tests.Helpers.RabbitMq
 {
     public class RabbitMqContext : IDisposable
     {

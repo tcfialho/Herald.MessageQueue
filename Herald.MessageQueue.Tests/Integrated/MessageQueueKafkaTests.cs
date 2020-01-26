@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Herald.MessageQueue.Tests.Helpers.Kafka;
+
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
