@@ -29,35 +29,28 @@ namespace Herald.MessageQueue.Sqs
 
             var url = $"{messageQueueOptions.Host}:{messageQueueOptions.Port}/queue";
 
-            var awsSqsOptions = CreateAwsOptions(messageQueueOptions.RegionEndpoint, url);
+            var awsSqsOptions = new AWSOptions();
+
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                awsSqsOptions.Region = RegionEndpoint.GetBySystemName(messageQueueOptions.RegionEndpoint);
+            }
+            else
+            {
+                awsSqsOptions.Region = null;
+                awsSqsOptions.DefaultClientConfig.AllowAutoRedirect = false;
+                awsSqsOptions.DefaultClientConfig.EndpointDiscoveryEnabled = false;
+                awsSqsOptions.DefaultClientConfig.UseHttp = true;
+                awsSqsOptions.DefaultClientConfig.DisableHostPrefixInjection = true;
+                awsSqsOptions.DefaultClientConfig.ServiceURL = new Uri(url).GetLeftPart(System.UriPartial.Authority);
+            }
+
+            awsSqsOptions.DefaultClientConfig.Validate();
 
             services.AddDefaultAWSOptions(awsSqsOptions);
             services.AddAWSService<IAmazonSQS>(awsSqsOptions);
 
             return new MessageQueueBuilder(services);
-        }
-
-        private static AWSOptions CreateAwsOptions(string regionEndpoint, string url)
-        {
-            var awsOptions = new AWSOptions();
-
-            if (string.IsNullOrWhiteSpace(url))
-            {
-                awsOptions.Region = RegionEndpoint.GetBySystemName(regionEndpoint);
-            }
-            else
-            {
-                awsOptions.Region = null;
-                awsOptions.DefaultClientConfig.AllowAutoRedirect = false;
-                awsOptions.DefaultClientConfig.EndpointDiscoveryEnabled = false;
-                awsOptions.DefaultClientConfig.UseHttp = true;
-                awsOptions.DefaultClientConfig.DisableHostPrefixInjection = true;
-                awsOptions.DefaultClientConfig.ServiceURL = new Uri(url).GetLeftPart(System.UriPartial.Authority);
-            }
-
-            awsOptions.DefaultClientConfig.Validate();
-
-            return awsOptions;
         }
     }
 }
