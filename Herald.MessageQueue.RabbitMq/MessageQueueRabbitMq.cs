@@ -19,14 +19,17 @@ namespace Herald.MessageQueue.RabbitMq
         private readonly IModel _channel;
         private readonly IConnection _connection;
         private readonly MessageQueueOptions _options;
+        private readonly IMessageQueueInfo _queueInfo;
 
         public MessageQueueRabbitMq(IModel channel,
                                     IConnection connection,
-                                    MessageQueueOptions options)
+                                    MessageQueueOptions options,
+                                    IMessageQueueInfo queueInfo)
         {
             _channel = channel;
             _connection = connection;
             _options = options;
+            _queueInfo = queueInfo;
         }
 
         public Task Received(MessageBase message)
@@ -54,7 +57,7 @@ namespace Herald.MessageQueue.RabbitMq
             if (maxNumberOfMessages < 1)
                 throw new ArgumentException("Max number of messages should be greater than zero.");
 
-            var queueName = GetQueueName(typeof(TMessage));
+            var queueName = _queueInfo.GetQueueName(typeof(TMessage));
 
             for (int i = 0; i < 5; i++)
             {
@@ -69,7 +72,7 @@ namespace Herald.MessageQueue.RabbitMq
 
         public async IAsyncEnumerable<TMessage> Receive<TMessage>([EnumeratorCancellation] CancellationToken cancellationToken) where TMessage : MessageBase
         {
-            var queueName = GetQueueName(typeof(TMessage));
+            var queueName = _queueInfo.GetQueueName(typeof(TMessage));
 
             while (!cancellationToken.IsCancellationRequested)
             {
@@ -95,11 +98,6 @@ namespace Herald.MessageQueue.RabbitMq
             }
 
             return obj;
-        }
-
-        private string GetQueueName(Type type)
-        {
-            return type.GetAttribute<QueueNameAttribute>()?.QueueName ?? string.Concat(type.Name, _options.QueueNameSufix);
         }
 
         private string GetExchangeName(MessageBase message)

@@ -29,7 +29,7 @@ namespace Herald.MessageQueue.Tests.Unit
             amazonSqsMock.Setup(x => x.SendMessageAsync(It.IsAny<SendMessageRequest>(), CancellationToken.None))
                          .ReturnsAsync(new SendMessageResponse())
                          .Verifiable();
-            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions);
+            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions));
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
 
             //Act
@@ -59,7 +59,7 @@ namespace Herald.MessageQueue.Tests.Unit
                              }
                          })
                          .Verifiable();
-            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions);
+            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions));
 
 
             //Act
@@ -94,7 +94,7 @@ namespace Herald.MessageQueue.Tests.Unit
                              }
                          })
                          .Verifiable();
-            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions);
+            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions));
 
             //Act
             Func<Task> act = async () => await queue.Receive<TestMessage>(maxNumberOfMessages)
@@ -127,7 +127,7 @@ namespace Herald.MessageQueue.Tests.Unit
                              }
                          })
                          .Verifiable();
-            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions);
+            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions));
 
             //Act
             var qtd = 0;
@@ -152,7 +152,7 @@ namespace Herald.MessageQueue.Tests.Unit
                              HttpStatusCode = HttpStatusCode.OK
                          })
                          .Verifiable();
-            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions);
+            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions));
 
             //Act
             await queue.Received(msg);

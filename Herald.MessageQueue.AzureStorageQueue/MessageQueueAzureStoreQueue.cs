@@ -1,5 +1,4 @@
-﻿using Herald.MessageQueue.AzureStorageQueue.Attributes;
-using Herald.MessageQueue.Extensions;
+﻿using Herald.MessageQueue.Extensions;
 
 using Microsoft.Azure.Storage.Queue;
 
@@ -18,13 +17,17 @@ namespace Herald.MessageQueue.AzureStorageQueue
     {
         private readonly CloudQueueClient _queueClient;
         private readonly MessageQueueOptions _options;
+        private readonly IMessageQueueInfo _queueInfo;
+
         private CloudQueue _queue;
 
         public MessageQueueAzureStorageQueue(CloudQueueClient queueClient,
-                                             MessageQueueOptions options)
+                                             MessageQueueOptions options,
+                                             IMessageQueueInfo queueInfo)
         {
             _queueClient = queueClient;
             _options = options;
+            _queueInfo = queueInfo;
         }
 
         public void Dispose()
@@ -95,15 +98,9 @@ namespace Herald.MessageQueue.AzureStorageQueue
             await _queue.AddMessageAsync(new CloudQueueMessage(body));
         }
 
-        private string GetQueueName(Type type)
-        {
-            var queueName = type.GetAttribute<QueueNameAttribute>()?.QueueName ?? string.Concat(type.Name, _options.QueueNameSufix);
-            return queueName.ToLower();
-        }
-
         private CloudQueue GetQueueReference(Type type)
         {
-            var queueName = GetQueueName(type);
+            var queueName = _queueInfo.GetQueueName(type);
 
             if (_queue == null || _queue.Name != queueName)
                 _queue = _queueClient.GetQueueReference(queueName);

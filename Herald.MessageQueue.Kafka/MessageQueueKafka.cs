@@ -1,7 +1,6 @@
 ﻿using Confluent.Kafka;
 
 using Herald.MessageQueue.Extensions;
-using Herald.MessageQueue.Kafka.Attributes;
 
 using Newtonsoft.Json;
 
@@ -18,14 +17,17 @@ namespace Herald.MessageQueue.Kafka
         private readonly IConsumer<Ignore, string> _consumer;
         private readonly IProducer<Null, string> _producer;
         private readonly MessageQueueOptions _options;
+        private readonly IMessageQueueInfo _queueInfo;
 
         public MessageQueueKafka(IConsumer<Ignore, string> consumer,
                                  IProducer<Null, string> producer,
-                                 MessageQueueOptions options)
+                                 MessageQueueOptions options,
+                                 IMessageQueueInfo queueInfo)
         {
             _consumer = consumer;
             _producer = producer;
             _options = options;
+            _queueInfo = queueInfo;
         }
 
         public Task Received(MessageBase message)
@@ -37,7 +39,7 @@ namespace Herald.MessageQueue.Kafka
 
         public async Task Send(MessageBase message)
         {
-            var queueName = GetQueueName(message.GetType());
+            var queueName = _queueInfo.GetQueueName(message.GetType());
 
             var messageBody = JsonConvert.SerializeObject(message);
 
@@ -49,7 +51,7 @@ namespace Herald.MessageQueue.Kafka
             if (maxNumberOfMessages < 1)
                 throw new ArgumentException("Max number of messages should be greater than zero.");
 
-            var queueName = GetQueueName(typeof(TMessage));
+            var queueName = _queueInfo.GetQueueName(typeof(TMessage));
 
             if (!_consumer.Subscription.Contains(queueName))
                 _consumer.Subscribe(queueName);
@@ -71,7 +73,7 @@ namespace Herald.MessageQueue.Kafka
 
         public async IAsyncEnumerable<TMessage> Receive<TMessage>([EnumeratorCancellation] CancellationToken cancellationToken) where TMessage : MessageBase
         {
-            var queueName = GetQueueName(typeof(TMessage));
+            var queueName = _queueInfo.GetQueueName(typeof(TMessage));
 
             if (!_consumer.Subscription.Contains(queueName))
                 _consumer.Subscribe(queueName);
@@ -95,11 +97,6 @@ namespace Herald.MessageQueue.Kafka
 
                 yield return await Task.FromResult(message);
             }
-        }
-
-        private string GetQueueName(Type type)
-        {
-            return type.GetAttribute<TopicNameAttribute>()?.TopicName ?? string.Concat(type.Name, _options.TopicNameSufix);
         }
 
         public void Dispose()

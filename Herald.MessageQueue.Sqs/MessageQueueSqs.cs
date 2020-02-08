@@ -2,7 +2,6 @@
 using Amazon.SQS.Model;
 
 using Herald.MessageQueue.Extensions;
-using Herald.MessageQueue.Sqs.Attributes;
 
 using Newtonsoft.Json;
 
@@ -17,24 +16,21 @@ namespace Herald.MessageQueue.Sqs
     public class MessageQueueSqs : IMessageQueue, IDisposable
     {
         private readonly IAmazonSQS _amazonSqs;
+        private readonly IMessageQueueInfo _queueInfo;
         private readonly MessageQueueOptions _options;
 
         public MessageQueueSqs(IAmazonSQS amazonSQS,
-                               MessageQueueOptions options)
+                               MessageQueueOptions options,
+                               IMessageQueueInfo queueInfo)
         {
-            _options = options;
             _amazonSqs = amazonSQS;
+            _options = options;
+            _queueInfo = queueInfo;
         }
 
         private string GetQueueUrl(Type type)
         {
-            return $"{_options.Host}:{_options.Port}/queue/{GetQueueName(type)}.fifo";
-        }
-
-
-        private string GetQueueName(Type type)
-        {
-            return type.GetAttribute<QueueNameAttribute>()?.QueueName ?? type.Name;
+            return $"{_options.Host}:{_options.Port}/queue/{_queueInfo.GetQueueName(type)}.fifo";
         }
 
         public async Task Send(MessageBase @message)
