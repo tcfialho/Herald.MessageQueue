@@ -25,6 +25,8 @@ namespace Herald.MessageQueue.Kafka
 
             services.TryAddSingleton<IMessageQueue, MessageQueueKafka>();
 
+            services.TryAddSingleton<IMessageQueueInfo, MessageQueueInfo>();
+
             services.TryAddSingleton(serviceProvider =>
             {
                 var config = serviceProvider.GetRequiredService<MessageQueueOptions>();
