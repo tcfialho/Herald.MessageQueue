@@ -30,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Herald.MessageQueue.AzureStorageQueue\Herald.MessageQueue.AzureStorageQueue.csproj" />
     <ProjectReference Include="..\Herald.MessageQueue.Kafka\Herald.MessageQueue.Kafka.csproj" />
     <ProjectReference Include="..\Herald.MessageQueue.RabbitMq\Herald.MessageQueue.RabbitMq.csproj" />
     <ProjectReference Include="..\Herald.MessageQueue.Sqs\Herald.MessageQueue.Sqs.csproj" />

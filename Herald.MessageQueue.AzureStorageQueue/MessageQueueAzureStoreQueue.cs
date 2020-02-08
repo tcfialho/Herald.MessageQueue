@@ -97,7 +97,8 @@ namespace Herald.MessageQueue.AzureStorageQueue
 
         private string GetQueueName(Type type)
         {
-            return type.GetAttribute<QueueNameAttribute>()?.QueueName ?? string.Concat(type.Name, _options.QueueNameSufix);
+            var queueName = type.GetAttribute<QueueNameAttribute>()?.QueueName ?? string.Concat(type.Name, _options.QueueNameSufix);
+            return queueName.ToLower();
         }
 
         private CloudQueue GetQueueReference(Type type)
