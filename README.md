@@ -8,6 +8,7 @@ Herald.MessageQueue is a set of building blocks for working with different types
 - Install-Package Herald.MessageQueue.Kafka
 - Install-Package Herald.MessageQueue.RabbitMq
 - Install-Package Herald.MessageQueue.Sqs
+- Install-Package Herald.MessageQueue.AzureServiceBus
 
 # Samples
 - [Herald.MessageQueue.Samples](https://github.com/tcfialho/Herald.MessageQueue.Samples)
