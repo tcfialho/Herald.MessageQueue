@@ -24,6 +24,7 @@ namespace Herald.MessageQueue.Tests.Helpers.Sqs
                     setup.GroupId = nameof(TestMessage);
                     setup.RegionEndpoint = "us-east-1";
                     setup.VisibilityTimeout = 1;
+                    setup.EnableFifo = true;
                 });
 
                 var serviceProvider = serviceCollection.BuildServiceProvider();

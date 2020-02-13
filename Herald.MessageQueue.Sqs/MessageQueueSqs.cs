@@ -30,7 +30,10 @@ namespace Herald.MessageQueue.Sqs
 
         private string GetQueueUrl(Type type)
         {
-            return $"{_options.Host}:{_options.Port}/queue/{_queueInfo.GetQueueName(type)}.fifo";
+            if (_options.EnableFifo)
+                return $"{_options.Host}:{_options.Port}/queue/{_queueInfo.GetQueueName(type)}.fifo";
+            else
+                return $"{_options.Host}:{_options.Port}/queue/{_queueInfo.GetQueueName(type)}";
         }
 
         public async Task Send(MessageBase @message)
@@ -38,7 +41,7 @@ namespace Herald.MessageQueue.Sqs
             await _amazonSqs.SendMessageAsync(new SendMessageRequest
             {
                 QueueUrl = GetQueueUrl(@message.GetType()),
-                MessageDeduplicationId = Guid.NewGuid().ToString(),
+                MessageDeduplicationId = _options.EnableFifo ? Guid.NewGuid().ToString() : null,
                 MessageGroupId = _options.GroupId,
                 MessageBody = JsonConvert.SerializeObject(@message),
             });
