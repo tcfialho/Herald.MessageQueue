@@ -35,8 +35,9 @@ namespace Herald.MessageQueue.Kafka
                 {
                     GroupId = config.GroupId,
                     BootstrapServers = $"{config.Host}:{config.Port}",
+                    MaxPollIntervalMs = config.MaxPollIntervalMs,
+                    AutoCommitIntervalMs = config.AutoCommitIntervalMs,
                     AutoOffsetReset = AutoOffsetReset.Earliest,
-                    MaxPollIntervalMs = 10 * 1000,
                     EnableAutoCommit = true,
                     EnableAutoOffsetStore = false
                 });
