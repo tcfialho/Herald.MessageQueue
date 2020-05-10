@@ -26,8 +26,10 @@ namespace Herald.MessageQueue.Tests.Unit
             var consumerMock = new Mock<IConsumer<Ignore, string>>();
             var producerMock = new Mock<IProducer<Null, string>>();
             var messageQueueOptions = new MessageQueueOptions();
-            producerMock.Setup(x => x.ProduceAsync(It.IsAny<string>(), It.IsAny<Message<Null, string>>()))
+
+            producerMock.Setup(x => x.ProduceAsync(It.IsAny<string>(), It.IsAny<Message<Null, string>>(), default(CancellationToken)))
                         .Verifiable();
+
             var queue = new MessageQueueKafka(consumerMock.Object, producerMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions));
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
 

@@ -58,13 +58,13 @@ namespace Herald.MessageQueue.Kafka
 
             for (int i = 0; i < maxNumberOfMessages; i++)
             {
-                var consumeResult = _consumer.Consume(TimeSpan.FromSeconds(5));
+                var result = _consumer.Consume(TimeSpan.FromSeconds(5));
 
-                if (consumeResult != null)
+                if (result != null)
                 {
-                    var obj = JsonConvert.DeserializeObject<TMessage>(consumeResult.Value);
+                    var obj = JsonConvert.DeserializeObject<TMessage>(result.Message.Value);
 
-                    obj.QueueData = consumeResult;
+                    obj.QueueData = result;
 
                     yield return await Task.FromResult(obj);
                 }
@@ -87,7 +87,7 @@ namespace Herald.MessageQueue.Kafka
 
                 if (result != null)
                 {
-                    message = JsonConvert.DeserializeObject<TMessage>(result.Value);
+                    message = JsonConvert.DeserializeObject<TMessage>(result.Message.Value);
 
                     message.QueueData = result;
                 }
@@ -101,9 +101,18 @@ namespace Herald.MessageQueue.Kafka
 
         public void Dispose()
         {
-            _consumer?.Close();
-            _consumer?.Dispose();
-            _producer?.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _consumer?.Close();
+                _consumer?.Dispose();
+                _producer?.Dispose();
+            }
         }
     }
 }

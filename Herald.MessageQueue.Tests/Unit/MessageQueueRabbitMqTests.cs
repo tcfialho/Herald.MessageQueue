@@ -25,7 +25,7 @@ namespace Herald.MessageQueue.Tests.Unit
             var modelMock = new Mock<IModel>();
             var channelMock = new Mock<IConnection>();
             var messageQueueOptions = new MessageQueueOptions();
-            modelMock.Setup(x => x.BasicPublish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<IBasicProperties>(), It.IsAny<Byte[]>()))
+            modelMock.Setup(x => x.BasicPublish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<IBasicProperties>(), It.IsAny<ReadOnlyMemory<byte>>()))
                          .Verifiable();
             var queue = new MessageQueueRabbitMq(modelMock.Object, channelMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions));
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };

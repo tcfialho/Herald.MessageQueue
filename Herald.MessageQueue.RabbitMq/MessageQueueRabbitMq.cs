@@ -92,7 +92,7 @@ namespace Herald.MessageQueue.RabbitMq
 
             if (message != null)
             {
-                var body = Encoding.UTF8.GetString(message.Body);
+                var body = Encoding.UTF8.GetString(message.Body.Span);
                 obj = JsonConvert.DeserializeObject<TMessage>(body);
                 obj.QueueData = message.DeliveryTag;
             }
@@ -112,14 +112,23 @@ namespace Herald.MessageQueue.RabbitMq
 
         public void Dispose()
         {
-            if (_channel.IsOpen)
-                _channel.Close();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-            if (_connection.IsOpen)
-                _connection.Close();
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (_channel.IsOpen)
+                    _channel.Close();
 
-            _channel?.Dispose();
-            _connection?.Dispose();
+                if (_connection.IsOpen)
+                    _connection.Close();
+
+                _channel?.Dispose();
+                _connection?.Dispose();
+            }
         }
     }
 }
