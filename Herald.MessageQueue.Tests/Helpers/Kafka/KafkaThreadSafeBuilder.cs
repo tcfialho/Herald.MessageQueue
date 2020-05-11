@@ -19,8 +19,7 @@ namespace Herald.MessageQueue.Tests.Helpers.Kafka
 
                 serviceCollection.AddMessageQueueKafka(setup =>
                 {
-                    setup.Host = "localhost";
-                    setup.Port = "9092";
+                    setup.Host = "localhost:9092";
                     setup.GroupId = nameof(TestMessage);
                 });
 
