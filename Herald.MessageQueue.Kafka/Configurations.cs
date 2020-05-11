@@ -31,16 +31,25 @@ namespace Herald.MessageQueue.Kafka
             {
                 var config = serviceProvider.GetRequiredService<MessageQueueOptions>();
 
-                var factory = new ConsumerBuilder<Ignore, string>(new ConsumerConfig
-                {
-                    GroupId = config.GroupId,
-                    BootstrapServers = $"{config.Host}:{config.Port}",
-                    MaxPollIntervalMs = config.MaxPollIntervalMs,
-                    AutoCommitIntervalMs = config.AutoCommitIntervalMs,
-                    AutoOffsetReset = AutoOffsetReset.Earliest,
-                    EnableAutoCommit = true,
-                    EnableAutoOffsetStore = false
-                });
+                var consumerConfig = new ConsumerConfig();
+                consumerConfig.BootstrapServers = config.Host;
+                consumerConfig.GroupId = config.GroupId;
+
+                consumerConfig.MaxPollIntervalMs = config.MaxPollIntervalMs;
+                consumerConfig.AutoCommitIntervalMs = config.AutoCommitIntervalMs;
+                consumerConfig.Acks = config.Acks;
+
+                consumerConfig.AutoOffsetReset = AutoOffsetReset.Earliest;
+                consumerConfig.EnableAutoCommit = true;
+                consumerConfig.EnableAutoOffsetStore = false;
+
+                consumerConfig.SecurityProtocol = config.SecurityProtocol;
+                consumerConfig.SslEndpointIdentificationAlgorithm = config.SslEndpointIdentificationAlgorithm;
+                consumerConfig.SaslMechanism = config.SaslMechanism;
+                consumerConfig.SaslUsername = config.SaslUsername;
+                consumerConfig.SaslPassword = config.SaslPassword;
+
+                var factory = new ConsumerBuilder<Ignore, string>(consumerConfig);
 
                 return factory.Build();
             });
@@ -49,11 +58,16 @@ namespace Herald.MessageQueue.Kafka
             {
                 var config = serviceProvider.GetRequiredService<MessageQueueOptions>();
 
-                var factory = new ProducerBuilder<Null, string>(new ProducerConfig
-                {
-                    BootstrapServers = $"{config.Host}:{config.Port}"
-                });
+                var producerConfig = new ProducerConfig();
+                producerConfig.BootstrapServers = config.Host;
 
+                producerConfig.SecurityProtocol = config.SecurityProtocol;
+                producerConfig.SslEndpointIdentificationAlgorithm = config.SslEndpointIdentificationAlgorithm;
+                producerConfig.SaslMechanism = config.SaslMechanism;
+                producerConfig.SaslUsername = config.SaslUsername;
+                producerConfig.SaslPassword = config.SaslPassword;
+
+                var factory = new ProducerBuilder<Null, string>(producerConfig);
                 return factory.Build();
             });
 
