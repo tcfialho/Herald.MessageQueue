@@ -12,7 +12,9 @@ namespace Herald.MessageQueue.Extensions
                   t =>
                   {
                       if (t.IsCanceled || t.Exception is System.AggregateException)
+                      {
                           return defaultValue;
+                      }
 
                       return t.Result;
                   }

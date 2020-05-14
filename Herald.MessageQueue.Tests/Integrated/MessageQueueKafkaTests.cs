@@ -1,8 +1,8 @@
-﻿using Herald.MessageQueue.Tests.Helpers.Kafka;
-
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Herald.MessageQueue.Tests.Helpers.Kafka;
 
 using Xunit;
 
@@ -38,7 +38,9 @@ namespace Herald.MessageQueue.Tests.Integrated
             //Act
             var qtd = 0;
             await foreach (var message in queue.Receive<TestMessageB>(maxNumberOfMessages))
+            {
                 qtd++;
+            }
 
             //Assert
             Assert.True(qtd > 0);
@@ -57,9 +59,14 @@ namespace Herald.MessageQueue.Tests.Integrated
 
             //Act
             await foreach (var message in queue.Receive<TestMessageC>(cancellationToken))
+            {
                 await queue.Received(message);
+            }
+
             await foreach (var message in queue.Receive<TestMessageC>(cancellationToken))
+            {
                 qtd++;
+            }
 
             //Assert
             Assert.True(qtd == 0);

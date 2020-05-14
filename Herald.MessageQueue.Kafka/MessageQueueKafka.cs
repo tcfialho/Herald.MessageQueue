@@ -1,14 +1,14 @@
-﻿using Confluent.Kafka;
-
-using Herald.MessageQueue.Extensions;
-
-using Newtonsoft.Json;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Confluent.Kafka;
+
+using Herald.MessageQueue.Extensions;
+
+using Newtonsoft.Json;
 
 namespace Herald.MessageQueue.Kafka
 {
@@ -49,14 +49,18 @@ namespace Herald.MessageQueue.Kafka
         public async IAsyncEnumerable<TMessage> Receive<TMessage>(int maxNumberOfMessages) where TMessage : MessageBase
         {
             if (maxNumberOfMessages < 1)
+            {
                 throw new ArgumentException("Max number of messages should be greater than zero.");
+            }
 
             var queueName = _queueInfo.GetQueueName(typeof(TMessage));
 
             if (!_consumer.Subscription.Contains(queueName))
+            {
                 _consumer.Subscribe(queueName);
+            }
 
-            for (int i = 0; i < maxNumberOfMessages; i++)
+            for (var i = 0; i < maxNumberOfMessages; i++)
             {
                 var result = _consumer.Consume(TimeSpan.FromSeconds(5));
 
@@ -76,8 +80,9 @@ namespace Herald.MessageQueue.Kafka
             var queueName = _queueInfo.GetQueueName(typeof(TMessage));
 
             if (!_consumer.Subscription.Contains(queueName))
+            {
                 _consumer.Subscribe(queueName);
-
+            }
 
             while (!cancellationToken.IsCancellationRequested)
             {
@@ -93,7 +98,9 @@ namespace Herald.MessageQueue.Kafka
                 }
 
                 if (message == null)
+                {
                     continue;
+                }
 
                 yield return await Task.FromResult(message);
             }

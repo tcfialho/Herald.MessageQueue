@@ -53,10 +53,14 @@ namespace Herald.MessageQueue.Tests
                     var line = process.StandardOutput.ReadLine();
 
                     if (waitForStrings.Any(stringToWait => line.Contains(stringToWait)))
+                    {
                         found++;
+                    }
 
                     if (waitForStrings.Length == found)
+                    {
                         break;
+                    }
                 }
             }
             else

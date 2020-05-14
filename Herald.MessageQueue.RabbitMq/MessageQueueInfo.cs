@@ -1,7 +1,7 @@
-﻿using Herald.MessageQueue.Extensions;
-using Herald.MessageQueue.RabbitMq.Attributes;
+﻿using System;
 
-using System;
+using Herald.MessageQueue.Extensions;
+using Herald.MessageQueue.RabbitMq.Attributes;
 
 namespace Herald.MessageQueue.RabbitMq
 {

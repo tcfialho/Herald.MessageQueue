@@ -3,13 +3,11 @@ using Herald.MessageQueue.RabbitMq;
 
 using Microsoft.Extensions.DependencyInjection;
 
-using System;
-
 namespace Herald.MessageQueue.Tests.Helpers.RabbitMq
 {
     public static class RabbitMqThreadSafeBuilder
     {
-        private static readonly object syncRoot = new Object();
+        private static readonly object syncRoot = new object();
         public static IMessageQueue Build(string exchangeName)
         {
             IMessageQueue queue;

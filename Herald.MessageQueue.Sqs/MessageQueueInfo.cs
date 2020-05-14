@@ -1,7 +1,7 @@
-﻿using Herald.MessageQueue.Extensions;
-using Herald.MessageQueue.Sqs.Attributes;
+﻿using System;
 
-using System;
+using Herald.MessageQueue.Extensions;
+using Herald.MessageQueue.Sqs.Attributes;
 
 namespace Herald.MessageQueue.Sqs
 {

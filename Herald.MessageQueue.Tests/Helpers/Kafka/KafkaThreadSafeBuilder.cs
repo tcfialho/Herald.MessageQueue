@@ -3,13 +3,11 @@ using Herald.MessageQueue.Kafka;
 
 using Microsoft.Extensions.DependencyInjection;
 
-using System;
-
 namespace Herald.MessageQueue.Tests.Helpers.Kafka
 {
     public static class KafkaThreadSafeBuilder
     {
-        private static readonly object syncRoot = new Object();
+        private static readonly object syncRoot = new object();
         public static IMessageQueue Build()
         {
             IMessageQueue queue;

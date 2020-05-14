@@ -10,7 +10,10 @@ namespace Herald.MessageQueue.Tests.Helpers.Sqs
 
         public DockerCompose DockerCompose
         {
-            get => _dockerCompose;
+            get
+            {
+                return _dockerCompose;
+            }
         }
 
         public SqsContext()
@@ -18,10 +21,14 @@ namespace Herald.MessageQueue.Tests.Helpers.Sqs
             const string pathToYml = @"..\..\..\..\.docker\test-enviroment.yml";
 
             if (!File.Exists(pathToYml))
+            {
                 throw new FileNotFoundException();
+            }
 
             if (_dockerCompose == null)
+            {
                 _dockerCompose = new DockerCompose(pathToYml, "SQS-DONE!");
+            }
         }
 
         public void Dispose()

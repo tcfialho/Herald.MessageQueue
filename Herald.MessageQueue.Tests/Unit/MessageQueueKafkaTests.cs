@@ -1,4 +1,9 @@
-﻿using Confluent.Kafka;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+
+using Confluent.Kafka;
 
 using Herald.MessageQueue.Kafka;
 using Herald.MessageQueue.Tests.Helpers.Kafka;
@@ -6,11 +11,6 @@ using Herald.MessageQueue.Tests.Helpers.Kafka;
 using Moq;
 
 using Newtonsoft.Json;
-
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 using Xunit;
 
@@ -65,7 +65,9 @@ namespace Herald.MessageQueue.Tests.Unit
             //Act
             var qtd = 0;
             await foreach (var message in queue.Receive<TestMessage>(1))
+            {
                 qtd++;
+            }
 
             //Assert
             consumerMock.VerifyAll();
@@ -130,7 +132,9 @@ namespace Herald.MessageQueue.Tests.Unit
             //Act
             var qtd = 0;
             await foreach (var message in queue.Receive<TestMessage>(cancellationToken))
+            {
                 qtd++;
+            }
 
             //Assert
             consumerMock.VerifyAll();

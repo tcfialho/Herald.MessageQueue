@@ -1,4 +1,9 @@
-﻿using Herald.MessageQueue.RabbitMq;
+﻿using System;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+using Herald.MessageQueue.RabbitMq;
 using Herald.MessageQueue.Tests.Helpers.RabbitMq;
 
 using Moq;
@@ -6,11 +11,6 @@ using Moq;
 using Newtonsoft.Json;
 
 using RabbitMQ.Client;
-
-using System;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 using Xunit;
 
@@ -53,7 +53,9 @@ namespace Herald.MessageQueue.Tests.Unit
             //Act
             var qtd = 0;
             await foreach (var message in queue.Receive<TestMessage>(1))
+            {
                 qtd++;
+            }
 
             //Assert
             modelMock.VerifyAll();
@@ -100,7 +102,9 @@ namespace Herald.MessageQueue.Tests.Unit
             //Act
             var qtd = 0;
             await foreach (var message in queue.Receive<TestMessage>(cancellationToken))
+            {
                 qtd++;
+            }
 
             //Assert
             channelMock.VerifyAll();

@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 using RabbitMQ.Client;
-
-using System;
 
 namespace Herald.MessageQueue.RabbitMq
 {
@@ -12,10 +12,14 @@ namespace Herald.MessageQueue.RabbitMq
         public static IMessageQueueBuilder AddMessageQueueRabbitMq(this IServiceCollection services, Action<MessageQueueOptions> options)
         {
             if (services == null)
+            {
                 throw new ArgumentNullException(nameof(services));
+            }
 
             if (options == null)
+            {
                 throw new ArgumentNullException(nameof(options));
+            }
 
             services.Configure(options);
             var messageQueueOptions = new MessageQueueOptions();

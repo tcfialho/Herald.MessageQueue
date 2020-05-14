@@ -10,7 +10,10 @@ namespace Herald.MessageQueue.Tests.Helpers.AzureStorageQueue
 
         public DockerCompose DockerCompose
         {
-            get => _dockerCompose;
+            get
+            {
+                return _dockerCompose;
+            }
         }
 
         public AzureStorageQueueContext()
@@ -18,10 +21,14 @@ namespace Herald.MessageQueue.Tests.Helpers.AzureStorageQueue
             const string pathToYml = @"..\..\..\..\.docker\test-enviroment.yml";
 
             if (!File.Exists(pathToYml))
+            {
                 throw new FileNotFoundException();
+            }
 
             if (_dockerCompose == null)
+            {
                 _dockerCompose = new DockerCompose(pathToYml, "AZURITE-DONE!");
+            }
         }
 
         public void Dispose()
