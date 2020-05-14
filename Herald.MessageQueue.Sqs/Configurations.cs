@@ -1,11 +1,11 @@
-﻿using Amazon;
+﻿using System;
+
+using Amazon;
 using Amazon.Extensions.NETCore.Setup;
 using Amazon.SQS;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-
-using System;
 
 namespace Herald.MessageQueue.Sqs
 {
@@ -14,10 +14,14 @@ namespace Herald.MessageQueue.Sqs
         public static IMessageQueueBuilder AddMessageQueueSqs(this IServiceCollection services, Action<MessageQueueOptions> options)
         {
             if (services == null)
+            {
                 throw new ArgumentNullException(nameof(services));
+            }
 
             if (options == null)
+            {
                 throw new ArgumentNullException(nameof(options));
+            }
 
             services.Configure(options);
             var messageQueueOptions = new MessageQueueOptions();

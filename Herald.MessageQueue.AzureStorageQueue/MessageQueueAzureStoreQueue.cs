@@ -1,15 +1,15 @@
-﻿using Herald.MessageQueue.Extensions;
-
-using Microsoft.Azure.Storage.Queue;
-
-using Newtonsoft.Json;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Herald.MessageQueue.Extensions;
+
+using Microsoft.Azure.Storage.Queue;
+
+using Newtonsoft.Json;
 
 namespace Herald.MessageQueue.AzureStorageQueue
 {
@@ -38,11 +38,13 @@ namespace Herald.MessageQueue.AzureStorageQueue
         public async IAsyncEnumerable<TMessage> Receive<TMessage>(int maxNumberOfMessages) where TMessage : MessageBase
         {
             if (maxNumberOfMessages < 1)
+            {
                 throw new ArgumentException("Max number of messages should be greater than zero.");
+            }
 
             _queue = GetQueueReference(typeof(TMessage));
 
-            for (int i = 0; i < maxNumberOfMessages; i++)
+            for (var i = 0; i < maxNumberOfMessages; i++)
             {
                 var result = await _queue.GetMessageAsync();
 
@@ -75,7 +77,9 @@ namespace Herald.MessageQueue.AzureStorageQueue
                 }
 
                 if (message == null)
+                {
                     continue;
+                }
 
                 yield return await Task.FromResult(message);
             }
@@ -103,7 +107,9 @@ namespace Herald.MessageQueue.AzureStorageQueue
             var queueName = _queueInfo.GetQueueName(type);
 
             if (_queue == null || _queue.Name != queueName)
+            {
                 _queue = _queueClient.GetQueueReference(queueName);
+            }
 
             return _queue;
         }

@@ -1,9 +1,9 @@
-﻿using Microsoft.Azure.Storage;
+﻿using System;
+
+using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Queue;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-
-using System;
 
 namespace Herald.MessageQueue.AzureStorageQueue
 {
@@ -12,10 +12,14 @@ namespace Herald.MessageQueue.AzureStorageQueue
         public static IMessageQueueBuilder AddMessageQueueAzureStorageQueue(this IServiceCollection services, Action<MessageQueueOptions> options)
         {
             if (services == null)
+            {
                 throw new ArgumentNullException(nameof(services));
+            }
 
             if (options == null)
+            {
                 throw new ArgumentNullException(nameof(options));
+            }
 
             services.Configure(options);
             var messageQueueOptions = new MessageQueueOptions();

@@ -1,5 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
+
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Herald.MessageQueue
 {
@@ -10,7 +11,9 @@ namespace Herald.MessageQueue
         public MessageQueueBuilder(IServiceCollection services)
         {
             if (services == null)
+            {
                 throw new ArgumentNullException("services");
+            }
 
             Services = services;
         }

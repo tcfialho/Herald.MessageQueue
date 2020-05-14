@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System;
 
-using System;
+using Newtonsoft.Json;
 
 namespace Herald.MessageQueue
 {

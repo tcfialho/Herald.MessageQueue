@@ -1,16 +1,16 @@
-﻿using Herald.MessageQueue.Extensions;
-using Herald.MessageQueue.RabbitMq.Attributes;
-
-using Newtonsoft.Json;
-
-using RabbitMQ.Client;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Herald.MessageQueue.Extensions;
+using Herald.MessageQueue.RabbitMq.Attributes;
+
+using Newtonsoft.Json;
+
+using RabbitMQ.Client;
 
 namespace Herald.MessageQueue.RabbitMq
 {
@@ -55,16 +55,20 @@ namespace Herald.MessageQueue.RabbitMq
         public async IAsyncEnumerable<TMessage> Receive<TMessage>(int maxNumberOfMessages) where TMessage : MessageBase
         {
             if (maxNumberOfMessages < 1)
+            {
                 throw new ArgumentException("Max number of messages should be greater than zero.");
+            }
 
             var queueName = _queueInfo.GetQueueName(typeof(TMessage));
 
-            for (int i = 0; i < 5; i++)
+            for (var i = 0; i < 5; i++)
             {
                 var message = ReceiveMessage<TMessage>(queueName);
 
                 if (message == null)
+                {
                     continue;
+                }
 
                 yield return await Task.FromResult(message);
             }
@@ -79,7 +83,9 @@ namespace Herald.MessageQueue.RabbitMq
                 var message = ReceiveMessage<TMessage>(queueName);
 
                 if (message == null)
+                {
                     continue;
+                }
 
                 yield return await Task.FromResult(message);
             }
@@ -121,10 +127,14 @@ namespace Herald.MessageQueue.RabbitMq
             if (disposing)
             {
                 if (_channel.IsOpen)
+                {
                     _channel.Close();
+                }
 
                 if (_connection.IsOpen)
+                {
                     _connection.Close();
+                }
 
                 _channel?.Dispose();
                 _connection?.Dispose();

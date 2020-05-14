@@ -1,15 +1,15 @@
-﻿using Amazon.SQS;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
+
+using Amazon.SQS;
 using Amazon.SQS.Model;
 
 using Herald.MessageQueue.Extensions;
 
 using Newtonsoft.Json;
-
-using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Herald.MessageQueue.Sqs
 {
@@ -31,9 +31,13 @@ namespace Herald.MessageQueue.Sqs
         private string GetQueueUrl(Type type)
         {
             if (_options.EnableFifo)
+            {
                 return $"{_options.Host}:{_options.Port}/queue/{_queueInfo.GetQueueName(type)}.fifo";
+            }
             else
+            {
                 return $"{_options.Host}:{_options.Port}/queue/{_queueInfo.GetQueueName(type)}";
+            }
         }
 
         public async Task Send(MessageBase @message)
@@ -59,10 +63,14 @@ namespace Herald.MessageQueue.Sqs
         public async IAsyncEnumerable<TMessage> Receive<TMessage>(int maxNumberOfMessages) where TMessage : MessageBase
         {
             if (maxNumberOfMessages < 1)
+            {
                 throw new ArgumentException("Max number of messages should be greater than zero.");
+            }
 
             if (maxNumberOfMessages > 10)
+            {
                 throw new ArgumentException("Highest max number of messages avaliable in Sqs is 10.");
+            }
 
             var result = await _amazonSqs.ReceiveMessageAsync(new ReceiveMessageRequest
             {
@@ -98,7 +106,9 @@ namespace Herald.MessageQueue.Sqs
                 var result = await _amazonSqs.ReceiveMessageAsync(config, cancellationToken).DefaultIfCanceled();
 
                 if (result == null)
+                {
                     continue;
+                }
 
                 foreach (var item in result.Messages)
                 {

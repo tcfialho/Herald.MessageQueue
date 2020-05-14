@@ -2,13 +2,11 @@
 
 using Microsoft.Extensions.DependencyInjection;
 
-using System;
-
 namespace Herald.MessageQueue.Tests.Helpers.RabbitMq
 {
     public static class AzureStorageQueueThreadSafeBuilder
     {
-        private static readonly object syncRoot = new Object();
+        private static readonly object syncRoot = new object();
         public static IMessageQueue Build()
         {
             IMessageQueue queue;

@@ -1,7 +1,7 @@
-﻿using Herald.MessageQueue.AzureStorageQueue.Attributes;
-using Herald.MessageQueue.Extensions;
+﻿using System;
 
-using System;
+using Herald.MessageQueue.AzureStorageQueue.Attributes;
+using Herald.MessageQueue.Extensions;
 
 namespace Herald.MessageQueue.AzureStorageQueue
 {
