@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Herald.MessageQueue.Tests.Helpers.Sqs;
+
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-
-using Herald.MessageQueue.Tests.Helpers.Sqs;
 
 using Xunit;
 

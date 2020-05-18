@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
-
-using Amazon.SQS;
+﻿using Amazon.SQS;
 using Amazon.SQS.Model;
 
 using Herald.MessageQueue.Extensions;
 
 using Newtonsoft.Json;
+
+using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Herald.MessageQueue.Sqs
 {
@@ -30,14 +30,7 @@ namespace Herald.MessageQueue.Sqs
 
         private string GetQueueUrl(Type type)
         {
-            if (_options.EnableFifo)
-            {
-                return $"{_options.Host}:{_options.Port}/queue/{_queueInfo.GetQueueName(type)}.fifo";
-            }
-            else
-            {
-                return $"{_options.Host}:{_options.Port}/queue/{_queueInfo.GetQueueName(type)}";
-            }
+            return $"{_options.ServiceURL}/queue/{_queueInfo.GetQueueName(type)}{(_options.EnableFifo ? ".fifo" : "")}";
         }
 
         public async Task Send(MessageBase @message)

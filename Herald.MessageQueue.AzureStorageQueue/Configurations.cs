@@ -1,9 +1,9 @@
-﻿using System;
-
-using Microsoft.Azure.Storage;
+﻿using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Queue;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+
+using System;
 
 namespace Herald.MessageQueue.AzureStorageQueue
 {

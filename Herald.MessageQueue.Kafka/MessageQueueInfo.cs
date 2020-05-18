@@ -1,7 +1,7 @@
-﻿using System;
-
-using Herald.MessageQueue.Extensions;
+﻿using Herald.MessageQueue.Extensions;
 using Herald.MessageQueue.Kafka.Attributes;
+
+using System;
 
 namespace Herald.MessageQueue.Kafka
 {

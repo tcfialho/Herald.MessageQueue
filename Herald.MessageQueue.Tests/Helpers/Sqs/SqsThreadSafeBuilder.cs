@@ -7,20 +7,19 @@ namespace Herald.MessageQueue.Tests.Helpers.Sqs
 {
     public static class SqsThreadSafeBuilder
     {
-        private static readonly object syncRoot = new object();
+        private static readonly object _syncRoot = new object();
         public static IMessageQueue Build()
         {
             IMessageQueue queue;
-            lock (syncRoot)
+            lock (_syncRoot)
             {
                 var serviceCollection = new ServiceCollection();
 
                 serviceCollection.AddMessageQueueSqs(setup =>
                 {
-                    setup.Host = "http://127.0.0.1";
-                    setup.Port = "4576";
+                    setup.ServiceURL = "http://localhost:4576";
                     setup.GroupId = nameof(TestMessage);
-                    setup.RegionEndpoint = "us-east-1";
+                    setup.Region = "us-east-1";
                     setup.VisibilityTimeout = 1;
                     setup.EnableFifo = true;
                 });

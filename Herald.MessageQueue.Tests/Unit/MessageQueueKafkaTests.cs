@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
-using Confluent.Kafka;
+﻿using Confluent.Kafka;
 
 using Herald.MessageQueue.Kafka;
 using Herald.MessageQueue.Tests.Helpers.Kafka;
@@ -11,6 +6,11 @@ using Herald.MessageQueue.Tests.Helpers.Kafka;
 using Moq;
 
 using Newtonsoft.Json;
+
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 using Xunit;
 

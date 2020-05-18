@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-
-using Amazon.SQS;
+﻿using Amazon.SQS;
 using Amazon.SQS.Model;
 
 using Herald.MessageQueue.Sqs;
@@ -13,6 +7,12 @@ using Herald.MessageQueue.Tests.Helpers.Sqs;
 using Moq;
 
 using Newtonsoft.Json;
+
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
 using Xunit;
 

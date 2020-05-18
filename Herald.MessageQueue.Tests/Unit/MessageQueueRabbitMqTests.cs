@@ -1,9 +1,4 @@
-﻿using System;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-
-using Herald.MessageQueue.RabbitMq;
+﻿using Herald.MessageQueue.RabbitMq;
 using Herald.MessageQueue.Tests.Helpers.RabbitMq;
 
 using Moq;
@@ -11,6 +6,11 @@ using Moq;
 using Newtonsoft.Json;
 
 using RabbitMQ.Client;
+
+using System;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 using Xunit;
 

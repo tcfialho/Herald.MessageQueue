@@ -1,9 +1,9 @@
-﻿using System;
-
-using Confluent.Kafka;
+﻿using Confluent.Kafka;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+
+using System;
 
 namespace Herald.MessageQueue.Kafka
 {
@@ -37,7 +37,7 @@ namespace Herald.MessageQueue.Kafka
 
                 var consumerConfig = new ConsumerConfig
                 {
-                    BootstrapServers = config.Host,
+                    BootstrapServers = config.BootstrapServers,
                     GroupId = config.GroupId,
 
                     MaxPollIntervalMs = config.MaxPollIntervalMs,
@@ -66,7 +66,7 @@ namespace Herald.MessageQueue.Kafka
 
                 var producerConfig = new ProducerConfig
                 {
-                    BootstrapServers = config.Host,
+                    BootstrapServers = config.BootstrapServers,
 
                     SecurityProtocol = config.SecurityProtocol,
                     SslEndpointIdentificationAlgorithm = config.SslEndpointIdentificationAlgorithm,

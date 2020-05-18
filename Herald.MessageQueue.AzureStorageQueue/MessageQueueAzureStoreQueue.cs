@@ -1,15 +1,15 @@
-﻿using System;
+﻿using Herald.MessageQueue.Extensions;
+
+using Microsoft.Azure.Storage.Queue;
+
+using Newtonsoft.Json;
+
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
-using Herald.MessageQueue.Extensions;
-
-using Microsoft.Azure.Storage.Queue;
-
-using Newtonsoft.Json;
 
 namespace Herald.MessageQueue.AzureStorageQueue
 {

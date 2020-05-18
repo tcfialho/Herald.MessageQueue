@@ -1,9 +1,4 @@
-﻿using System;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-
-using Herald.MessageQueue.AzureStorageQueue;
+﻿using Herald.MessageQueue.AzureStorageQueue;
 using Herald.MessageQueue.Tests.Helpers.RabbitMq;
 
 using Microsoft.Azure.Storage.Queue;
@@ -11,6 +6,11 @@ using Microsoft.Azure.Storage.Queue;
 using Moq;
 
 using Newtonsoft.Json;
+
+using System;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 using Xunit;
 

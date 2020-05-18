@@ -1,9 +1,9 @@
-﻿using System;
-
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 using RabbitMQ.Client;
+
+using System;
 
 namespace Herald.MessageQueue.RabbitMq
 {
@@ -32,9 +32,9 @@ namespace Herald.MessageQueue.RabbitMq
                 var config = serviceProvider.GetRequiredService<MessageQueueOptions>();
                 var factory = new ConnectionFactory()
                 {
-                    HostName = config.Host,
+                    HostName = config.HostName,
                     Port = int.Parse(config.Port),
-                    UserName = config.Username,
+                    UserName = config.UserName,
                     Password = config.Password,
                     VirtualHost = config.VirtualHost,
                     DispatchConsumersAsync = true
