@@ -4,7 +4,7 @@ namespace Herald.MessageQueue.Kafka
 {
     public class MessageQueueOptions
     {
-        public string Host { get; set; }
+        public string BootstrapServers { get; set; }
         public string GroupId { get; set; }
 
         public int MaxPollIntervalMs { get; set; } = 10 * 1000;

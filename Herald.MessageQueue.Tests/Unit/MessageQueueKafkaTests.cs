@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
-using Confluent.Kafka;
+﻿using Confluent.Kafka;
 
 using Herald.MessageQueue.Kafka;
 using Herald.MessageQueue.Tests.Helpers.Kafka;
@@ -11,6 +6,11 @@ using Herald.MessageQueue.Tests.Helpers.Kafka;
 using Moq;
 
 using Newtonsoft.Json;
+
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 using Xunit;
 
@@ -30,7 +30,7 @@ namespace Herald.MessageQueue.Tests.Unit
             producerMock.Setup(x => x.ProduceAsync(It.IsAny<string>(), It.IsAny<Message<Null, string>>(), default(CancellationToken)))
                         .Verifiable();
 
-            var queue = new MessageQueueKafka(consumerMock.Object, producerMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions));
+            var queue = new MessageQueueKafka(consumerMock.Object, producerMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions));
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
 
             //Act
@@ -60,7 +60,7 @@ namespace Herald.MessageQueue.Tests.Unit
                             }
                         })
                         .Verifiable();
-            var queue = new MessageQueueKafka(consumerMock.Object, producerMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions));
+            var queue = new MessageQueueKafka(consumerMock.Object, producerMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions));
 
             //Act
             var qtd = 0;
@@ -94,7 +94,7 @@ namespace Herald.MessageQueue.Tests.Unit
                             }
                         })
                         .Verifiable();
-            var queue = new MessageQueueKafka(consumerMock.Object, producerMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions));
+            var queue = new MessageQueueKafka(consumerMock.Object, producerMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions));
 
             //Act
             Func<Task> act = async () => await queue.Receive<TestMessage>(maxNumberOfMessages)
@@ -127,7 +127,7 @@ namespace Herald.MessageQueue.Tests.Unit
                             }
                         })
                         .Verifiable();
-            var queue = new MessageQueueKafka(consumerMock.Object, producerMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions));
+            var queue = new MessageQueueKafka(consumerMock.Object, producerMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions));
 
             //Act
             var qtd = 0;
@@ -152,7 +152,7 @@ namespace Herald.MessageQueue.Tests.Unit
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
             consumerMock.Setup(x => x.StoreOffset(It.IsAny<ConsumeResult<Ignore, string>>()))
                         .Verifiable();
-            var queue = new MessageQueueKafka(consumerMock.Object, producerMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions));
+            var queue = new MessageQueueKafka(consumerMock.Object, producerMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions));
 
             //Act
             await queue.Received(msg);

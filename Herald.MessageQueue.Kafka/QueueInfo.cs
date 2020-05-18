@@ -1,15 +1,15 @@
-﻿using System;
-
-using Herald.MessageQueue.Extensions;
+﻿using Herald.MessageQueue.Extensions;
 using Herald.MessageQueue.Kafka.Attributes;
+
+using System;
 
 namespace Herald.MessageQueue.Kafka
 {
-    public class MessageQueueInfo : IMessageQueueInfo
+    public class QueueInfo : IQueueInfo
     {
         private readonly MessageQueueOptions _options;
 
-        public MessageQueueInfo(MessageQueueOptions options)
+        public QueueInfo(MessageQueueOptions options)
         {
             _options = options;
         }

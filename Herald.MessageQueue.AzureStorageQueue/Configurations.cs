@@ -1,9 +1,9 @@
-﻿using System;
-
-using Microsoft.Azure.Storage;
+﻿using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Queue;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+
+using System;
 
 namespace Herald.MessageQueue.AzureStorageQueue
 {
@@ -36,7 +36,7 @@ namespace Herald.MessageQueue.AzureStorageQueue
 
             services.TryAddSingleton<IMessageQueue, MessageQueueAzureStorageQueue>();
 
-            services.TryAddSingleton<IMessageQueueInfo, MessageQueueInfo>();
+            services.TryAddSingleton<IQueueInfo, QueueInfo>();
 
             return new MessageQueueBuilder(services);
         }

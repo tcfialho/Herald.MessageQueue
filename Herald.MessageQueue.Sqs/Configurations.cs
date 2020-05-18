@@ -1,11 +1,11 @@
-﻿using System;
-
-using Amazon;
+﻿using Amazon;
 using Amazon.Extensions.NETCore.Setup;
 using Amazon.SQS;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+
+using System;
 
 namespace Herald.MessageQueue.Sqs
 {
@@ -31,15 +31,13 @@ namespace Herald.MessageQueue.Sqs
 
             services.TryAddSingleton<IMessageQueue, MessageQueueSqs>();
 
-            services.TryAddSingleton<IMessageQueueInfo, MessageQueueInfo>();
-
-            var url = $"{messageQueueOptions.Host}:{messageQueueOptions.Port}/queue";
+            services.TryAddSingleton<IQueueInfo, QueueInfo>();
 
             var awsSqsOptions = new AWSOptions();
 
-            if (string.IsNullOrWhiteSpace(url))
+            if (string.IsNullOrWhiteSpace(messageQueueOptions.ServiceURL))
             {
-                awsSqsOptions.Region = RegionEndpoint.GetBySystemName(messageQueueOptions.RegionEndpoint);
+                awsSqsOptions.Region = RegionEndpoint.GetBySystemName(messageQueueOptions.Region);
             }
             else
             {
@@ -48,7 +46,7 @@ namespace Herald.MessageQueue.Sqs
                 awsSqsOptions.DefaultClientConfig.EndpointDiscoveryEnabled = false;
                 awsSqsOptions.DefaultClientConfig.UseHttp = true;
                 awsSqsOptions.DefaultClientConfig.DisableHostPrefixInjection = true;
-                awsSqsOptions.DefaultClientConfig.ServiceURL = new Uri(url).GetLeftPart(System.UriPartial.Authority);
+                awsSqsOptions.DefaultClientConfig.ServiceURL = messageQueueOptions.ServiceURL;
             }
 
             awsSqsOptions.DefaultClientConfig.Validate();

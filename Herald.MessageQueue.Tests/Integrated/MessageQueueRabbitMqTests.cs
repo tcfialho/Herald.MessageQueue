@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Herald.MessageQueue.Tests.Helpers.RabbitMq;
+
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-
-using Herald.MessageQueue.Tests.Helpers.RabbitMq;
 
 using Xunit;
 

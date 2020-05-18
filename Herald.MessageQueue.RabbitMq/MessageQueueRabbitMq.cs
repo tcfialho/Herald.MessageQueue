@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-
-using Herald.MessageQueue.Extensions;
+﻿using Herald.MessageQueue.Extensions;
 using Herald.MessageQueue.RabbitMq.Attributes;
 
 using Newtonsoft.Json;
 
 using RabbitMQ.Client;
+
+using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Herald.MessageQueue.RabbitMq
 {
@@ -19,17 +19,20 @@ namespace Herald.MessageQueue.RabbitMq
         private readonly IModel _channel;
         private readonly IConnection _connection;
         private readonly MessageQueueOptions _options;
-        private readonly IMessageQueueInfo _queueInfo;
+        private readonly IQueueInfo _queueInfo;
+        private readonly IExchangeInfo _exchangeInfo;
 
         public MessageQueueRabbitMq(IModel channel,
                                     IConnection connection,
                                     MessageQueueOptions options,
-                                    IMessageQueueInfo queueInfo)
+                                    IQueueInfo queueInfo,
+                                    IExchangeInfo exchangeInfo)
         {
             _channel = channel;
             _connection = connection;
             _options = options;
             _queueInfo = queueInfo;
+            _exchangeInfo = exchangeInfo;
         }
 
         public Task Received(MessageBase message)
@@ -41,11 +44,13 @@ namespace Herald.MessageQueue.RabbitMq
 
         public Task Send(MessageBase message)
         {
+            var messageType = message.GetType();
+
             var messageBody = JsonConvert.SerializeObject(message);
             var body = Encoding.UTF8.GetBytes(messageBody);
 
-            var exchangeName = GetExchangeName(message);
-            var routingKey = GetRoutingKeyName(message);
+            var exchangeName = _exchangeInfo.GetExchangeName(messageType);
+            var routingKey = GetRoutingKeyName(messageType);
 
             _channel.BasicPublish(exchangeName, routingKey, null, body);
 
@@ -106,14 +111,9 @@ namespace Herald.MessageQueue.RabbitMq
             return obj;
         }
 
-        private string GetExchangeName(MessageBase message)
+        private string GetRoutingKeyName(Type type)
         {
-            return message.GetAttribute<ExchangeNameAttribute>()?.ExchangeName ?? string.Concat(message.GetType().Name, _options.ExchangeNameSufix);
-        }
-
-        private string GetRoutingKeyName(MessageBase message)
-        {
-            return message.GetAttribute<RoutingKeyAttribute>()?.RoutingKey ?? string.Empty;
+            return type.GetAttribute<RoutingKeyAttribute>()?.RoutingKey ?? string.Empty;
         }
 
         public void Dispose()

@@ -17,9 +17,9 @@ namespace Herald.MessageQueue.Tests.Helpers.RabbitMq
 
                 serviceCollection.AddMessageQueueRabbitMq(setup =>
                 {
-                    setup.Host = "localhost";
+                    setup.HostName = "localhost";
                     setup.Port = "5672";
-                    setup.Username = "user";
+                    setup.UserName = "user";
                     setup.Password = "password";
                 });
 

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-
-using Amazon.SQS;
+﻿using Amazon.SQS;
 using Amazon.SQS.Model;
 
 using Herald.MessageQueue.Sqs;
@@ -13,6 +7,12 @@ using Herald.MessageQueue.Tests.Helpers.Sqs;
 using Moq;
 
 using Newtonsoft.Json;
+
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
 using Xunit;
 
@@ -29,7 +29,7 @@ namespace Herald.MessageQueue.Tests.Unit
             amazonSqsMock.Setup(x => x.SendMessageAsync(It.IsAny<SendMessageRequest>(), CancellationToken.None))
                          .ReturnsAsync(new SendMessageResponse())
                          .Verifiable();
-            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions));
+            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions));
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
 
             //Act
@@ -59,7 +59,7 @@ namespace Herald.MessageQueue.Tests.Unit
                              }
                          })
                          .Verifiable();
-            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions));
+            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions));
 
 
             //Act
@@ -96,10 +96,10 @@ namespace Herald.MessageQueue.Tests.Unit
                              }
                          })
                          .Verifiable();
-            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions));
+            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions));
 
             //Act
-            Func<Task> act = async () => await queue.Receive<TestMessage>(maxNumberOfMessages)
+            async Task act() => await queue.Receive<TestMessage>(maxNumberOfMessages)
                                                     .GetAsyncEnumerator()
                                                     .MoveNextAsync();
 
@@ -129,7 +129,7 @@ namespace Herald.MessageQueue.Tests.Unit
                              }
                          })
                          .Verifiable();
-            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions));
+            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions));
 
             //Act
             var qtd = 0;
@@ -156,7 +156,7 @@ namespace Herald.MessageQueue.Tests.Unit
                              HttpStatusCode = HttpStatusCode.OK
                          })
                          .Verifiable();
-            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions));
+            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions));
 
             //Act
             await queue.Received(msg);

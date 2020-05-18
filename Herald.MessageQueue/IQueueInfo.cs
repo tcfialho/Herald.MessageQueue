@@ -2,7 +2,7 @@
 
 namespace Herald.MessageQueue
 {
-    public interface IMessageQueueInfo
+    public interface IQueueInfo
     {
         string GetQueueName(Type type);
     }

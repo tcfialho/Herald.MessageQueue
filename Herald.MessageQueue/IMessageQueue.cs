@@ -13,6 +13,6 @@ namespace Herald.MessageQueue
 
         IAsyncEnumerable<TMessage> Receive<TMessage>(int maxNumberOfMessages) where TMessage : MessageBase;
 
-        IAsyncEnumerable<TMessage> Receive<TMessage>(CancellationToken cancellationToken = default(CancellationToken)) where TMessage : MessageBase;
+        IAsyncEnumerable<TMessage> Receive<TMessage>(CancellationToken cancellationToken = default) where TMessage : MessageBase;
     }
 }

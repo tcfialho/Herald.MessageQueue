@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
-
-using Confluent.Kafka;
+﻿using Confluent.Kafka;
 
 using Herald.MessageQueue.Extensions;
 
 using Newtonsoft.Json;
+
+using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Herald.MessageQueue.Kafka
 {
@@ -17,12 +17,12 @@ namespace Herald.MessageQueue.Kafka
         private readonly IConsumer<Ignore, string> _consumer;
         private readonly IProducer<Null, string> _producer;
         private readonly MessageQueueOptions _options;
-        private readonly IMessageQueueInfo _queueInfo;
+        private readonly IQueueInfo _queueInfo;
 
         public MessageQueueKafka(IConsumer<Ignore, string> consumer,
                                  IProducer<Null, string> producer,
                                  MessageQueueOptions options,
-                                 IMessageQueueInfo queueInfo)
+                                 IQueueInfo queueInfo)
         {
             _consumer = consumer;
             _producer = producer;

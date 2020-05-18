@@ -1,15 +1,15 @@
-﻿using System;
+﻿using Herald.MessageQueue.Extensions;
+
+using Microsoft.Azure.Storage.Queue;
+
+using Newtonsoft.Json;
+
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
-using Herald.MessageQueue.Extensions;
-
-using Microsoft.Azure.Storage.Queue;
-
-using Newtonsoft.Json;
 
 namespace Herald.MessageQueue.AzureStorageQueue
 {
@@ -17,13 +17,13 @@ namespace Herald.MessageQueue.AzureStorageQueue
     {
         private readonly CloudQueueClient _queueClient;
         private readonly MessageQueueOptions _options;
-        private readonly IMessageQueueInfo _queueInfo;
+        private readonly IQueueInfo _queueInfo;
 
         private CloudQueue _queue;
 
         public MessageQueueAzureStorageQueue(CloudQueueClient queueClient,
                                              MessageQueueOptions options,
-                                             IMessageQueueInfo queueInfo)
+                                             IQueueInfo queueInfo)
         {
             _queueClient = queueClient;
             _options = options;
