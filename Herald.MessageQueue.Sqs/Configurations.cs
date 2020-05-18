@@ -31,7 +31,7 @@ namespace Herald.MessageQueue.Sqs
 
             services.TryAddSingleton<IMessageQueue, MessageQueueSqs>();
 
-            services.TryAddSingleton<IMessageQueueInfo, MessageQueueInfo>();
+            services.TryAddSingleton<IQueueInfo, QueueInfo>();
 
             var awsSqsOptions = new AWSOptions();
 

@@ -17,12 +17,12 @@ namespace Herald.MessageQueue.Kafka
         private readonly IConsumer<Ignore, string> _consumer;
         private readonly IProducer<Null, string> _producer;
         private readonly MessageQueueOptions _options;
-        private readonly IMessageQueueInfo _queueInfo;
+        private readonly IQueueInfo _queueInfo;
 
         public MessageQueueKafka(IConsumer<Ignore, string> consumer,
                                  IProducer<Null, string> producer,
                                  MessageQueueOptions options,
-                                 IMessageQueueInfo queueInfo)
+                                 IQueueInfo queueInfo)
         {
             _consumer = consumer;
             _producer = producer;

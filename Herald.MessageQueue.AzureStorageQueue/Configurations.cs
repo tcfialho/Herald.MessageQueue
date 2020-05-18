@@ -36,7 +36,7 @@ namespace Herald.MessageQueue.AzureStorageQueue
 
             services.TryAddSingleton<IMessageQueue, MessageQueueAzureStorageQueue>();
 
-            services.TryAddSingleton<IMessageQueueInfo, MessageQueueInfo>();
+            services.TryAddSingleton<IQueueInfo, QueueInfo>();
 
             return new MessageQueueBuilder(services);
         }

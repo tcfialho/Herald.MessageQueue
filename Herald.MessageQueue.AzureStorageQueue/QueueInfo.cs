@@ -5,11 +5,11 @@ using System;
 
 namespace Herald.MessageQueue.AzureStorageQueue
 {
-    public class MessageQueueInfo : IMessageQueueInfo
+    public class QueueInfo : IQueueInfo
     {
         private readonly MessageQueueOptions _options;
 
-        public MessageQueueInfo(MessageQueueOptions options)
+        public QueueInfo(MessageQueueOptions options)
         {
             _options = options;
         }

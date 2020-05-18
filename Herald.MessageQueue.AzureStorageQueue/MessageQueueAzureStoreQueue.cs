@@ -17,13 +17,13 @@ namespace Herald.MessageQueue.AzureStorageQueue
     {
         private readonly CloudQueueClient _queueClient;
         private readonly MessageQueueOptions _options;
-        private readonly IMessageQueueInfo _queueInfo;
+        private readonly IQueueInfo _queueInfo;
 
         private CloudQueue _queue;
 
         public MessageQueueAzureStorageQueue(CloudQueueClient queueClient,
                                              MessageQueueOptions options,
-                                             IMessageQueueInfo queueInfo)
+                                             IQueueInfo queueInfo)
         {
             _queueClient = queueClient;
             _options = options;

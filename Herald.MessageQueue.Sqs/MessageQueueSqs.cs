@@ -16,12 +16,12 @@ namespace Herald.MessageQueue.Sqs
     public class MessageQueueSqs : IMessageQueue, IDisposable
     {
         private readonly IAmazonSQS _amazonSqs;
-        private readonly IMessageQueueInfo _queueInfo;
+        private readonly IQueueInfo _queueInfo;
         private readonly MessageQueueOptions _options;
 
         public MessageQueueSqs(IAmazonSQS amazonSQS,
                                MessageQueueOptions options,
-                               IMessageQueueInfo queueInfo)
+                               IQueueInfo queueInfo)
         {
             _amazonSqs = amazonSQS;
             _options = options;

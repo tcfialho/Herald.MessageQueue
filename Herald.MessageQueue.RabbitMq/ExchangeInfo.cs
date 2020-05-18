@@ -5,18 +5,18 @@ using System;
 
 namespace Herald.MessageQueue.RabbitMq
 {
-    public class MessageQueueInfo : IMessageQueueInfo
+    public class ExchangeInfo : IExchangeInfo
     {
         private readonly MessageQueueOptions _options;
 
-        public MessageQueueInfo(MessageQueueOptions options)
+        public ExchangeInfo(MessageQueueOptions options)
         {
             _options = options;
         }
 
-        public string GetQueueName(Type type)
+        public string GetExchangeName(Type type)
         {
-            return type.GetAttribute<QueueNameAttribute>()?.QueueName ?? string.Concat(type.Name, _options.QueueNameSufix);
+            return type.GetAttribute<ExchangeNameAttribute>()?.ExchangeName ?? string.Concat(type.Name, _options.ExchangeNameSufix);
         }
     }
 }

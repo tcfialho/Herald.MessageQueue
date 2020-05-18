@@ -34,7 +34,7 @@ namespace Herald.MessageQueue.Tests.Unit
                                  .Returns(clouldQueue.Object)
                                  .Verifiable();
 
-            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions));
+            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions));
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
 
             //Act
@@ -63,7 +63,7 @@ namespace Herald.MessageQueue.Tests.Unit
                                  .Returns(clouldQueue.Object)
                                  .Verifiable();
 
-            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions));
+            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions));
 
             //Act
             var qtd = 0;
@@ -96,7 +96,7 @@ namespace Herald.MessageQueue.Tests.Unit
                                  .Returns(clouldQueue.Object)
                                  .Verifiable();
 
-            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions));
+            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions));
 
             //Act
             Func<Task> act = async () => await queue.Receive<TestMessage>(maxNumberOfMessages)
@@ -127,7 +127,7 @@ namespace Herald.MessageQueue.Tests.Unit
                                  .Returns(clouldQueue.Object)
                                  .Verifiable();
 
-            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions));
+            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions));
 
             //Act
             var qtd = 0;
@@ -158,7 +158,7 @@ namespace Herald.MessageQueue.Tests.Unit
                                  .Returns(clouldQueue.Object)
                                  .Verifiable();
 
-            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions));
+            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions));
 
             //Act
             await queue.Received(msg);

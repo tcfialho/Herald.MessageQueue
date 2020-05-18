@@ -5,18 +5,18 @@ using System;
 
 namespace Herald.MessageQueue.Sqs
 {
-    public class MessageQueueInfo : IMessageQueueInfo
+    public class QueueInfo : IQueueInfo
     {
         private readonly MessageQueueOptions _options;
 
-        public MessageQueueInfo(MessageQueueOptions options)
+        public QueueInfo(MessageQueueOptions options)
         {
             _options = options;
         }
 
         public string GetQueueName(Type type)
         {
-            return type.GetAttribute<QueueNameAttribute>()?.QueueName ?? type.Name;
+            return type.GetAttribute<QueueNameAttribute>()?.QueueName ?? string.Concat(type.Name, _options.QueueNameSufix);
         }
     }
 }
