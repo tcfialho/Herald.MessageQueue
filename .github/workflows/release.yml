@@ -40,7 +40,7 @@ jobs:
     - name: Release
       run: |
         dotnet pack -c release /p:Version=${{ steps.get_version.outputs.VERSION }}
-    - uses: marvinpinto/action-automatic-releases@v0.2.2
+    - uses: marvinpinto/action-automatic-releases@latest
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
         prerelease: false
