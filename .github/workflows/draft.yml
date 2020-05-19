@@ -1,0 +1,40 @@
+name: Herald.MessageQueue.Draft
+
+on:
+  push:
+    branches:
+      - "master"
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check commit status
+      id: commit-status
+      run: |
+        # Check the status of the Git commit
+        CURRENT_STATUS=$(curl --url https://github.com/tcfialho/Herald.MessageQueue/workflows/Herald.MessageQueue/badge.svg | grep -o -m1 'passing\|no status\|failing');
+        echo "Current status is: $CURRENT_STATUS"
+        if [ "${CURRENT_STATUS^^}" != "PASSING" ]; 
+          then echo "Canceling execution"; 
+          exit 1; 
+        fi
+
+    - name: Checkout
+      uses: actions/checkout@v1
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.100'
+           
+    - name: Build
+      run: dotnet build -c Release
+
+    - name: Release
+      run: |
+        dotnet pack -c release /p:Version=999.0.0-alpha${{github.run_number}}
+
+    - name: Publish
+      run: |
+        for file in $(find . -type f -name '*.nupkg'); do curl -F package=@$file https://${{ secrets.GEMFURY_TOKEN }}@push.fury.io/${{ secrets.GEMFURY_REPO }}/; echo $file; done;
