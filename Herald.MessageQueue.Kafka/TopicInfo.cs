@@ -5,16 +5,16 @@ using System;
 
 namespace Herald.MessageQueue.Kafka
 {
-    public class QueueInfo : IQueueInfo
+    public class TopicInfo : ITopicInfo
     {
         private readonly MessageQueueOptions _options;
 
-        public QueueInfo(MessageQueueOptions options)
+        public TopicInfo(MessageQueueOptions options)
         {
             _options = options;
         }
 
-        public string GetQueueName(Type type)
+        public string GetTopicName(Type type)
         {
             return type.GetAttribute<TopicNameAttribute>()?.TopicName ?? string.Concat(type.Name, _options.TopicNameSufix);
         }

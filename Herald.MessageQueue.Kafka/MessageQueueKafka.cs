@@ -17,17 +17,17 @@ namespace Herald.MessageQueue.Kafka
         private readonly IConsumer<Ignore, string> _consumer;
         private readonly IProducer<Null, string> _producer;
         private readonly MessageQueueOptions _options;
-        private readonly IQueueInfo _queueInfo;
+        private readonly ITopicInfo _topicInfo;
 
         public MessageQueueKafka(IConsumer<Ignore, string> consumer,
                                  IProducer<Null, string> producer,
                                  MessageQueueOptions options,
-                                 IQueueInfo queueInfo)
+                                 ITopicInfo topicInfo)
         {
             _consumer = consumer;
             _producer = producer;
             _options = options;
-            _queueInfo = queueInfo;
+            _topicInfo = topicInfo;
         }
 
         public Task Received(MessageBase message)
@@ -39,7 +39,7 @@ namespace Herald.MessageQueue.Kafka
 
         public async Task Send(MessageBase message)
         {
-            var queueName = _queueInfo.GetQueueName(message.GetType());
+            var queueName = _topicInfo.GetTopicName(message.GetType());
 
             var messageBody = JsonConvert.SerializeObject(message);
 
@@ -53,7 +53,7 @@ namespace Herald.MessageQueue.Kafka
                 throw new ArgumentException("Max number of messages should be greater than zero.");
             }
 
-            var queueName = _queueInfo.GetQueueName(typeof(TMessage));
+            var queueName = _topicInfo.GetTopicName(typeof(TMessage));
 
             if (!_consumer.Subscription.Contains(queueName))
             {
@@ -77,7 +77,7 @@ namespace Herald.MessageQueue.Kafka
 
         public async IAsyncEnumerable<TMessage> Receive<TMessage>([EnumeratorCancellation] CancellationToken cancellationToken) where TMessage : MessageBase
         {
-            var queueName = _queueInfo.GetQueueName(typeof(TMessage));
+            var queueName = _topicInfo.GetTopicName(typeof(TMessage));
 
             if (!_consumer.Subscription.Contains(queueName))
             {

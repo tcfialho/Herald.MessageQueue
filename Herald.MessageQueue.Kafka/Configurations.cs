@@ -29,7 +29,7 @@ namespace Herald.MessageQueue.Kafka
 
             services.TryAddSingleton<IMessageQueue, MessageQueueKafka>();
 
-            services.TryAddSingleton<IQueueInfo, QueueInfo>();
+            services.TryAddSingleton<ITopicInfo, TopicInfo>();
 
             services.TryAddSingleton(serviceProvider =>
             {
