@@ -42,39 +42,18 @@ namespace Herald.MessageQueue.AzureStorageQueue
                 throw new ArgumentException("Max number of messages should be greater than zero.");
             }
 
-            _queue = GetQueueReference(typeof(TMessage));
-
-            for (var i = 0; i < maxNumberOfMessages; i++)
+            if (maxNumberOfMessages > 32)
             {
-                var result = await _queue.GetMessageAsync();
-
-                if (result != null)
-                {
-                    var obj = JsonConvert.DeserializeObject<TMessage>(result.AsString);
-
-                    obj.QueueData = result.PopReceipt;
-
-                    yield return await Task.FromResult(obj);
-                }
+                throw new ArgumentException("Highest max number of messages avaliable in azure storage queue is 32.");
             }
-        }
 
-        public async IAsyncEnumerable<TMessage> Receive<TMessage>([EnumeratorCancellation] CancellationToken cancellationToken = default) where TMessage : MessageBase
-        {
             _queue = GetQueueReference(typeof(TMessage));
 
-            while (!cancellationToken.IsCancellationRequested)
+            var messages = await _queue.GetMessagesAsync(maxNumberOfMessages);
+
+            foreach (var item in messages)
             {
-                var result = await Task.Run(() => _queue.GetMessageAsync(cancellationToken), cancellationToken).DefaultIfCanceled();
-
-                TMessage message = null;
-
-                if (result != null)
-                {
-                    message = JsonConvert.DeserializeObject<TMessage>(result.AsString);
-
-                    message.QueueData = result.PopReceipt;
-                }
+                var message = ReceiveMessage<TMessage>(item);
 
                 if (message == null)
                 {
@@ -82,6 +61,36 @@ namespace Herald.MessageQueue.AzureStorageQueue
                 }
 
                 yield return await Task.FromResult(message);
+            }
+        }
+
+        public async IAsyncEnumerable<TMessage> Receive<TMessage>([EnumeratorCancellation] CancellationToken cancellationToken = default) where TMessage : MessageBase
+        {
+            _queue = GetQueueReference(typeof(TMessage));
+
+            const int maxNumberOfMessages = 10;
+
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                var results = await Task.Run(() => _queue.GetMessagesAsync(maxNumberOfMessages, cancellationToken), cancellationToken).DefaultIfCanceled();
+
+                if (results == null)
+                {
+                    cancellationToken.WaitHandle.WaitOne(TimeSpan.FromSeconds(_options.WaitTimeSeconds));
+                    continue;
+                }
+
+                foreach (var item in results)
+                {
+                    var message = ReceiveMessage<TMessage>(item);
+
+                    if (message == null)
+                    {
+                        continue;
+                    }
+
+                    yield return await Task.FromResult(message);
+                }
             }
         }
 
@@ -112,6 +121,20 @@ namespace Herald.MessageQueue.AzureStorageQueue
             }
 
             return _queue;
+        }
+
+        private TMessage ReceiveMessage<TMessage>(CloudQueueMessage message) where TMessage : MessageBase
+        {
+            TMessage obj = null;
+
+            if (message != null)
+            {
+                var body = message.AsString;
+                obj = JsonConvert.DeserializeObject<TMessage>(body);
+                obj.QueueData = message.PopReceipt;
+            }
+
+            return obj;
         }
     }
 }

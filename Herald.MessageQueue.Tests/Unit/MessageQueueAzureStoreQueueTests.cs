@@ -55,9 +55,11 @@ namespace Herald.MessageQueue.Tests.Unit
 
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
 
-            clouldQueue.Setup(x => x.GetMessageAsync())
-                         .ReturnsAsync(new CloudQueueMessage(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(msg))))
-                         .Verifiable();
+            clouldQueue.Setup(x => x.GetMessagesAsync(It.IsAny<int>()))
+                        .ReturnsAsync(new CloudQueueMessage[1]
+                        {
+                            new CloudQueueMessage(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(msg)))
+                        }).Verifiable();
 
             clouldQueueClientMock.Setup(x => x.GetQueueReference(It.IsAny<string>()))
                                  .Returns(clouldQueue.Object)
@@ -119,9 +121,11 @@ namespace Herald.MessageQueue.Tests.Unit
 
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
 
-            clouldQueue.Setup(x => x.GetMessageAsync(cancellationToken))
-                         .ReturnsAsync(new CloudQueueMessage(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(msg))))
-                         .Verifiable();
+            clouldQueue.Setup(x => x.GetMessagesAsync(It.IsAny<int>(), cancellationToken))
+                        .ReturnsAsync(new CloudQueueMessage[1]
+                        {
+                            new CloudQueueMessage(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(msg)))
+                        }).Verifiable();
 
             clouldQueueClientMock.Setup(x => x.GetQueueReference(It.IsAny<string>()))
                                  .Returns(clouldQueue.Object)
