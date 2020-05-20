@@ -5,5 +5,7 @@
         public string ConnectionString { get; set; }
 
         public string QueueNameSufix { get; set; }
+
+        public int WaitTimeSeconds { get; set; } = 1;
     }
 }
