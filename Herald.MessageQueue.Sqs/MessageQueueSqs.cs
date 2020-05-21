@@ -62,7 +62,7 @@ namespace Herald.MessageQueue.Sqs
 
             if (maxNumberOfMessages > 10)
             {
-                throw new ArgumentException("Highest max number of messages avaliable in Sqs is 10.");
+                throw new ArgumentException("Max number of messages should not be greater than 10.");
             }
 
             var result = await _amazonSqs.ReceiveMessageAsync(new ReceiveMessageRequest

@@ -75,7 +75,7 @@ namespace Herald.MessageQueue.AzureStorageQueue
             {
                 var results = await Task.Run(() => _queue.GetMessagesAsync(maxNumberOfMessages, cancellationToken), cancellationToken).DefaultIfCanceled();
 
-                if (!results.Any())
+                if (results == null && !results.Any())
                 {
                     cancellationToken.WaitHandle.WaitOne(TimeSpan.FromSeconds(_options.WaitTimeSeconds));
                     continue;
