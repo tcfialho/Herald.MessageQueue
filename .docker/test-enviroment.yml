@@ -112,14 +112,14 @@ services:
     command: >
       "
         while ! aws --endpoint-url=http://localstack:4576 sqs list-queues > /dev/null; do echo waiting; sleep 3; done;
-        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name TestMessageA
-        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name TestMessageA.fifo --attributes FifoQueue=true
+        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name TestMessageAQueue
+        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name TestMessageAQueue.fifo --attributes FifoQueue=true
         
-        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name TestMessageB
-        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name TestMessageB.fifo --attributes FifoQueue=true
+        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name TestMessageBQueue
+        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name TestMessageBQueue.fifo --attributes FifoQueue=true
         
-        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name TestMessageC
-        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name TestMessageC.fifo --attributes FifoQueue=true
+        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name TestMessageCQueue
+        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name TestMessageCQueue.fifo --attributes FifoQueue=true
         
         aws --endpoint-url=http://localstack:4576 sqs list-queues
         echo 'SQS-DONE!' 
@@ -141,9 +141,9 @@ services:
     command: >
       "
         while ! nc -z azurite 10001; do echo waiting; sleep 3; done;
-        curl -X PUT http://azurite:10001/devstoreaccount1/testmessagea
-        curl -X PUT http://azurite:10001/devstoreaccount1/testmessageb
-        curl -X PUT http://azurite:10001/devstoreaccount1/testmessagec
+        curl -X PUT http://azurite:10001/devstoreaccount1/testmessageaqueue
+        curl -X PUT http://azurite:10001/devstoreaccount1/testmessagebqueue
+        curl -X PUT http://azurite:10001/devstoreaccount1/testmessagecqueue
         curl -X GET http://azurite:10001/devstoreaccount1?comp=list
         echo 'AZURITE-DONE!'
       "
