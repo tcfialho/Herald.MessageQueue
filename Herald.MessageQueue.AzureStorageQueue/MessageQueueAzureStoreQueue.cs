@@ -77,7 +77,7 @@ namespace Herald.MessageQueue.AzureStorageQueue
 
                 if (!results.Any())
                 {
-                    cancellationToken.WaitHandle.WaitOne(TimeSpan.FromSeconds(_options.WaitTimeSeconds));
+                    cancellationToken.WaitHandle.WaitOne(TimeSpan.FromSeconds(_options.RequestDelaySeconds));
                     continue;
                 }
 

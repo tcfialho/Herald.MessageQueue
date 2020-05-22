@@ -6,6 +6,6 @@
 
         public string QueueNameSufix { get; set; } = "Queue";
 
-        public int WaitTimeSeconds { get; set; } = 1;
+        public int RequestDelaySeconds { get; set; } = 1;
     }
 }

@@ -100,6 +100,7 @@ namespace Herald.MessageQueue.Sqs
 
                 if (result == null)
                 {
+                    cancellationToken.WaitHandle.WaitOne(TimeSpan.FromSeconds(_options.RequestDelaySeconds));
                     continue;
                 }
 

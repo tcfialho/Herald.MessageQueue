@@ -89,6 +89,7 @@ namespace Herald.MessageQueue.RabbitMq
 
                 if (message == null)
                 {
+                    cancellationToken.WaitHandle.WaitOne(TimeSpan.FromSeconds(_options.RequestDelaySeconds));
                     continue;
                 }
 

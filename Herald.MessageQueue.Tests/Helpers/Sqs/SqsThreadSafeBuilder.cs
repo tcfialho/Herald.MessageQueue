@@ -8,7 +8,7 @@ namespace Herald.MessageQueue.Tests.Helpers.Sqs
     public static class SqsThreadSafeBuilder
     {
         private static readonly object _syncRoot = new object();
-        public static IMessageQueue Build()
+        public static IMessageQueue Build(int waitTimeSeconds = 0)
         {
             IMessageQueue queue;
             lock (_syncRoot)
@@ -22,6 +22,7 @@ namespace Herald.MessageQueue.Tests.Helpers.Sqs
                     setup.Region = "us-east-1";
                     setup.VisibilityTimeout = 1;
                     setup.EnableFifo = true;
+                    setup.WaitTimeSeconds = waitTimeSeconds;
                 });
 
                 var serviceProvider = serviceCollection.BuildServiceProvider();

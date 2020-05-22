@@ -99,6 +99,7 @@ namespace Herald.MessageQueue.Kafka
 
                 if (message == null)
                 {
+                    cancellationToken.WaitHandle.WaitOne(TimeSpan.FromSeconds(_options.RequestDelaySeconds));
                     continue;
                 }
 

@@ -1,6 +1,7 @@
 ﻿using Herald.MessageQueue.Tests.Helpers.RabbitMq;
 
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -43,6 +44,26 @@ namespace Herald.MessageQueue.Tests.Integrated
 
             //Assert
             Assert.True(qtd > 0);
+        }
+
+        [Fact]
+        public async Task ShouldWaitUntilReceiveMessage()
+        {
+            //Arrange
+            var msg = new TestMessageB() { Id = Guid.NewGuid().ToString() };
+            using var queue = AzureStorageQueueThreadSafeBuilder.Build();
+            var stopWatch = new Stopwatch();
+
+            //Act
+            stopWatch.Start();
+            await foreach (var message in queue.Receive<TestMessageB>(TimeSpan.FromSeconds(3)))
+            {
+                Assert.NotNull(message);
+            }
+            stopWatch.Stop();
+
+            //Assert
+            Assert.True(stopWatch.Elapsed.TotalSeconds >= 3);
         }
 
         [Fact]

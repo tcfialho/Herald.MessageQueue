@@ -9,5 +9,6 @@
         public string VirtualHost { get; set; } = "/";
         public string QueueNameSufix { get; set; } = "Queue";
         public string ExchangeNameSufix { get; set; } = "Exchange";
+        public int RequestDelaySeconds { get; set; } = 1;
     }
 }
