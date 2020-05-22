@@ -50,20 +50,21 @@ namespace Herald.MessageQueue.Tests.Integrated
         public async Task ShouldWaitUntilReceiveMessage()
         {
             //Arrange
+            const int timeoutSeconds = 5;
             var msg = new TestMessageB() { Id = Guid.NewGuid().ToString() };
             using var queue = RabbitMqThreadSafeBuilder.Build(nameof(TestMessageB));
             var stopWatch = new Stopwatch();
 
             //Act
             stopWatch.Start();
-            await foreach (var message in queue.Receive<TestMessageB>(TimeSpan.FromSeconds(3)))
+            await foreach (var message in queue.Receive<TestMessageB>(TimeSpan.FromSeconds(timeoutSeconds)))
             {
                 Assert.NotNull(message);
             }
             stopWatch.Stop();
 
             //Assert
-            Assert.True(stopWatch.Elapsed.TotalSeconds >= 3);
+            Assert.True(stopWatch.Elapsed.TotalSeconds >= timeoutSeconds);
         }
 
         [Fact]

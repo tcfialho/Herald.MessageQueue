@@ -61,7 +61,7 @@ namespace Herald.MessageQueue.AzureStorageQueue
                     continue;
                 }
 
-                yield return await Task.FromResult(message);
+                yield return message;
             }
         }
 
@@ -75,7 +75,7 @@ namespace Herald.MessageQueue.AzureStorageQueue
             {
                 var results = await _queue.GetMessagesAsync(maxNumberOfMessages, cancellationToken).DefaultIfCanceled();
 
-                if (!results.Any())
+                if (results == null || !results.Any())
                 {
                     cancellationToken.WaitHandle.WaitOne(TimeSpan.FromSeconds(_options.RequestDelaySeconds));
                     continue;
@@ -90,7 +90,7 @@ namespace Herald.MessageQueue.AzureStorageQueue
                         continue;
                     }
 
-                    yield return await Task.FromResult(message);
+                    yield return message;
                 }
             }
         }

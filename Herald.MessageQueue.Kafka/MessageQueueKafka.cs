@@ -75,6 +75,33 @@ namespace Herald.MessageQueue.Kafka
             }
         }
 
+        public async IAsyncEnumerable<TMessage> Receive<TMessage>(TimeSpan timeout) where TMessage : MessageBase
+        {
+            var queueName = _topicInfo.GetTopicName(typeof(TMessage));
+
+            if (!_consumer.Subscription.Contains(queueName))
+            {
+                _consumer.Subscribe(queueName);
+            }
+
+            var cancellationToken = new CancellationTokenSource(timeout).Token;
+
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                var result = _consumer.Consume(timeout);
+
+                var message = ReceiveMessage<TMessage>(result);
+
+                if (message == null)
+                {
+                    cancellationToken.WaitHandle.WaitOne(TimeSpan.FromSeconds(_options.RequestDelaySeconds));
+                    continue;
+                }
+
+                yield return await Task.FromResult(message);
+            }
+        }
+
         public async IAsyncEnumerable<TMessage> Receive<TMessage>([EnumeratorCancellation] CancellationToken cancellationToken) where TMessage : MessageBase
         {
             var queueName = _topicInfo.GetTopicName(typeof(TMessage));
@@ -88,14 +115,7 @@ namespace Herald.MessageQueue.Kafka
             {
                 var result = await Task.Run(() => _consumer.Consume(cancellationToken), cancellationToken).DefaultIfCanceled();
 
-                TMessage message = null;
-
-                if (result != null)
-                {
-                    message = JsonConvert.DeserializeObject<TMessage>(result.Message.Value);
-
-                    message.QueueData = result;
-                }
+                var message = ReceiveMessage<TMessage>(result);
 
                 if (message == null)
                 {
@@ -103,8 +123,22 @@ namespace Herald.MessageQueue.Kafka
                     continue;
                 }
 
-                yield return await Task.FromResult(message);
+                yield return message;
             }
+        }
+
+        private TMessage ReceiveMessage<TMessage>(ConsumeResult<Ignore, string> result) where TMessage : MessageBase
+        {
+            TMessage message = null;
+
+            if (result != null)
+            {
+                var body = result.Message.Value;
+                message = JsonConvert.DeserializeObject<TMessage>(body);
+                message.QueueData = result;
+            }
+
+            return message;
         }
 
         public void Dispose()
