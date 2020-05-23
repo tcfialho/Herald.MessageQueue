@@ -51,20 +51,20 @@ namespace Herald.MessageQueue.Tests.Integrated
         {
             //Arrange
             const int timeoutSeconds = 5;
-            var msg = new TestMessageB() { Id = Guid.NewGuid().ToString() };
-            using var queue = RabbitMqThreadSafeBuilder.Build(nameof(TestMessageB));
+            var msg = new TestMessageD() { Id = Guid.NewGuid().ToString() };
+            using var queue = RabbitMqThreadSafeBuilder.Build(nameof(TestMessageD));
             var stopWatch = new Stopwatch();
 
             //Act
             stopWatch.Start();
-            await foreach (var message in queue.Receive<TestMessageB>(TimeSpan.FromSeconds(timeoutSeconds)))
+            await foreach (var message in queue.Receive<TestMessageD>(TimeSpan.FromSeconds(timeoutSeconds)))
             {
                 Assert.NotNull(message);
             }
             stopWatch.Stop();
 
             //Assert
-            Assert.True(stopWatch.Elapsed.TotalSeconds >= timeoutSeconds);
+            Assert.True(Math.Round(stopWatch.Elapsed.TotalSeconds) == timeoutSeconds, $"Expected = {timeoutSeconds} but elapsed : {stopWatch.Elapsed.TotalSeconds}");
         }
 
         [Fact]
