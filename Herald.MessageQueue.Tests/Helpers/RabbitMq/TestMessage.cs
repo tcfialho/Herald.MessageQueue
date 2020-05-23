@@ -37,4 +37,11 @@ namespace Herald.MessageQueue.Tests.Helpers.RabbitMq
         public string Id { get; set; }
     }
 
+    public class TestMessageD : MessageBase
+    {
+        public TestMessageD() : base()
+        {
+        }
+        public string Id { get; set; }
+    }
 }

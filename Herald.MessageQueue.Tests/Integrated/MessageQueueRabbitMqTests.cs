@@ -1,6 +1,7 @@
 ﻿using Herald.MessageQueue.Tests.Helpers.RabbitMq;
 
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -43,6 +44,27 @@ namespace Herald.MessageQueue.Tests.Integrated
 
             //Assert
             Assert.True(qtd > 0);
+        }
+
+        [Fact]
+        public async Task ShouldWaitUntilReceiveMessage()
+        {
+            //Arrange
+            const int timeoutSeconds = 5;
+            var msg = new TestMessageD() { Id = Guid.NewGuid().ToString() };
+            using var queue = RabbitMqThreadSafeBuilder.Build(nameof(TestMessageD));
+            var stopWatch = new Stopwatch();
+
+            //Act
+            stopWatch.Start();
+            await foreach (var message in queue.Receive<TestMessageD>(TimeSpan.FromSeconds(timeoutSeconds)))
+            {
+                Assert.NotNull(message);
+            }
+            stopWatch.Stop();
+
+            //Assert
+            Assert.True(Math.Round(stopWatch.Elapsed.TotalSeconds) == timeoutSeconds, $"Expected = {timeoutSeconds} but elapsed : {stopWatch.Elapsed.TotalSeconds}");
         }
 
         [Fact]

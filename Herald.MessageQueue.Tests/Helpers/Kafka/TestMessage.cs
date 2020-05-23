@@ -35,4 +35,12 @@ namespace Herald.MessageQueue.Tests.Helpers.Kafka
         public string Id { get; set; }
     }
 
+    public class TestMessageD : MessageBase
+    {
+        public TestMessageD() : base()
+        {
+        }
+        public string Id { get; set; }
+    }
+
 }

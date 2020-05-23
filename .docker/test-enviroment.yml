@@ -68,6 +68,7 @@ services:
                            kafka-topics --create --topic TestMessageATopic --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
                            kafka-topics --create --topic TestMessageBTopic --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
                            kafka-topics --create --topic TestMessageCTopic --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
+                           kafka-topics --create --topic TestMessageDTopic --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
                            kafka-topics --list --zookeeper zookeeper:2181 && \
                            echo KAFKA-DONE!'"
     environment:
@@ -97,6 +98,10 @@ services:
               rabbitmqadmin --host rabbitmq -uuser -ppassword declare queue name=TestMessageCQueue durable=false
               rabbitmqadmin --host rabbitmq -uuser -ppassword declare binding source="TestMessageCExchange" destination="TestMessageCQueue" destination_type="queue"
               
+              rabbitmqadmin --host rabbitmq -uuser -ppassword declare exchange name=TestMessageDExchange type=fanout
+              rabbitmqadmin --host rabbitmq -uuser -ppassword declare queue name=TestMessageDQueue durable=false
+              rabbitmqadmin --host rabbitmq -uuser -ppassword declare binding source="TestMessageDExchange" destination="TestMessageDQueue" destination_type="queue"
+              
               rabbitmqadmin --host rabbitmq -uuser -ppassword list queues
               echo 'RABBIT-DONE!' 
           "
@@ -121,6 +126,9 @@ services:
         aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name TestMessageCQueue
         aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name TestMessageCQueue.fifo --attributes FifoQueue=true
         
+        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name TestMessageDQueue
+        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name TestMessageDQueue.fifo --attributes FifoQueue=true
+        
         aws --endpoint-url=http://localstack:4576 sqs list-queues
         echo 'SQS-DONE!' 
       "
@@ -144,6 +152,7 @@ services:
         curl -X PUT http://azurite:10001/devstoreaccount1/testmessageaqueue
         curl -X PUT http://azurite:10001/devstoreaccount1/testmessagebqueue
         curl -X PUT http://azurite:10001/devstoreaccount1/testmessagecqueue
+        curl -X PUT http://azurite:10001/devstoreaccount1/testmessagedqueue
         curl -X GET http://azurite:10001/devstoreaccount1?comp=list
         echo 'AZURITE-DONE!'
       "

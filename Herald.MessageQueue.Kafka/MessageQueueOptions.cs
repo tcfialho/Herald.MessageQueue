@@ -19,5 +19,6 @@ namespace Herald.MessageQueue.Kafka
         public SslEndpointIdentificationAlgorithm? SslEndpointIdentificationAlgorithm { get; set; }
 
         public string TopicNameSufix { get; set; } = "Topic";
+        public int RequestDelaySeconds { get; set; } = 1;
     }
 }

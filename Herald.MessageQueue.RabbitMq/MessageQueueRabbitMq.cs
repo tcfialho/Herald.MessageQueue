@@ -66,9 +66,11 @@ namespace Herald.MessageQueue.RabbitMq
 
             var queueName = _queueInfo.GetQueueName(typeof(TMessage));
 
-            for (var i = 0; i < 5; i++)
+            for (var i = 0; i < maxNumberOfMessages; i++)
             {
-                var message = ReceiveMessage<TMessage>(queueName);
+                var result = _channel.BasicGet(queueName, false);
+
+                var message = ReceiveMessage<TMessage>(result);
 
                 if (message == null)
                 {
@@ -85,10 +87,13 @@ namespace Herald.MessageQueue.RabbitMq
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                var message = ReceiveMessage<TMessage>(queueName);
+                var result = _channel.BasicGet(queueName, false);
+
+                var message = ReceiveMessage<TMessage>(result);
 
                 if (message == null)
                 {
+                    cancellationToken.WaitHandle.WaitOne(TimeSpan.FromSeconds(_options.RequestDelaySeconds));
                     continue;
                 }
 
@@ -96,19 +101,18 @@ namespace Herald.MessageQueue.RabbitMq
             }
         }
 
-        private TMessage ReceiveMessage<TMessage>(string queueName) where TMessage : MessageBase
+        private TMessage ReceiveMessage<TMessage>(BasicGetResult result) where TMessage : MessageBase
         {
-            TMessage obj = null;
-            var message = _channel.BasicGet(queueName, false);
+            TMessage message = null;
 
-            if (message != null)
+            if (result != null)
             {
-                var body = Encoding.UTF8.GetString(message.Body.Span);
-                obj = JsonConvert.DeserializeObject<TMessage>(body);
-                obj.QueueData = message.DeliveryTag;
+                var body = Encoding.UTF8.GetString(result.Body.Span);
+                message = JsonConvert.DeserializeObject<TMessage>(body);
+                message.QueueData = result.DeliveryTag;
             }
 
-            return obj;
+            return message;
         }
 
         private string GetRoutingKeyName(Type type)

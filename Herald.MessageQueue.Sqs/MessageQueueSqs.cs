@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -75,11 +76,14 @@ namespace Herald.MessageQueue.Sqs
 
             foreach (var item in result.Messages)
             {
-                var messageBody = JsonConvert.DeserializeObject<TMessage>(item.Body);
+                var message = ReceiveMessage<TMessage>(item);
 
-                messageBody.QueueData = item.ReceiptHandle;
+                if (message == null)
+                {
+                    continue;
+                }
 
-                yield return messageBody;
+                yield return message;
             }
         }
 
@@ -98,20 +102,38 @@ namespace Herald.MessageQueue.Sqs
             {
                 var result = await _amazonSqs.ReceiveMessageAsync(config, cancellationToken).DefaultIfCanceled();
 
-                if (result == null)
+                if (result == null || !result.Messages.Any())
                 {
+                    cancellationToken.WaitHandle.WaitOne(TimeSpan.FromSeconds(_options.RequestDelaySeconds));
                     continue;
                 }
 
                 foreach (var item in result.Messages)
                 {
-                    var messageBody = JsonConvert.DeserializeObject<TMessage>(item.Body);
+                    var message = ReceiveMessage<TMessage>(item);
 
-                    messageBody.QueueData = item.ReceiptHandle;
+                    if (message == null)
+                    {
+                        continue;
+                    }
 
-                    yield return messageBody;
+                    yield return message;
                 }
             }
+        }
+
+        private TMessage ReceiveMessage<TMessage>(Message result) where TMessage : MessageBase
+        {
+            TMessage message = null;
+
+            if (result != null)
+            {
+                var body = result.Body;
+                message = JsonConvert.DeserializeObject<TMessage>(body);
+                message.QueueData = result.ReceiptHandle;
+            }
+
+            return message;
         }
 
         public void Dispose()
