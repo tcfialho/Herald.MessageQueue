@@ -2,7 +2,7 @@
 
 ![Status](https://github.com/tcfialho/Herald.MessageQueue/workflows/Herald.MessageQueue/badge.svg) ![Coverage](https://codecov.io/gh/tcfialho/Herald.MessageQueue/branch/master/graph/badge.svg) ![NuGet](https://buildstats.info/nuget/Herald.MessageQueue)
 
-Herald.MessageQueue is a set of building blocks for working with different types of message brokers using a simple queue abstraction.
+Herald.MessageQueue is a set of building blocks for working with different types of message brokers using a simple "foreach" abstraction.
 
 # Installation Guide
 - Install-Package Herald.MessageQueue.Kafka
@@ -16,6 +16,6 @@ Herald.MessageQueue is a set of building blocks for working with different types
 # HealthCheck
 - [Herald.MessageQueue.HealthCheck](https://github.com/tcfialho/Herald.MessageQueue.HealthCheck)
 
-# Integration Testing
+# Tests
 - The integration tests is designed to run with Docker. If your platform supports docker natively, you can simply install it and ensure that you have at least 4GiB of memory allocated to the docker engine.
 
