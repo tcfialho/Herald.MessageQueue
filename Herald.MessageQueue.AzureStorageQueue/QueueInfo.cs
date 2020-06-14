@@ -1,4 +1,4 @@
-﻿using Herald.MessageQueue.AzureStorageQueue.Attributes;
+﻿using Herald.MessageQueue.Attributes;
 using Herald.MessageQueue.Extensions;
 
 using System;

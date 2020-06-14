@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Herald.MessageQueue.Sqs.Attributes
+namespace Herald.MessageQueue.Attributes
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class QueueNameAttribute : Attribute

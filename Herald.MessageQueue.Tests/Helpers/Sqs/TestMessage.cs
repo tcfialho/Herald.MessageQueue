@@ -1,5 +1,4 @@
-﻿
-using Herald.MessageQueue.Sqs.Attributes;
+﻿using Herald.MessageQueue.Attributes;
 
 namespace Herald.MessageQueue.Tests.Helpers.Sqs
 {

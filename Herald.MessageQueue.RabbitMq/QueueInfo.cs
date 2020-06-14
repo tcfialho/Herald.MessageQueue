@@ -1,5 +1,5 @@
 ﻿using Herald.MessageQueue.Extensions;
-using Herald.MessageQueue.RabbitMq.Attributes;
+using Herald.MessageQueue.Attributes;
 
 using System;
 
