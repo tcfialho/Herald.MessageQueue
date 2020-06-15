@@ -1,4 +1,4 @@
-﻿using Herald.MessageQueue.RabbitMq.Attributes;
+﻿using Herald.MessageQueue.Attributes;
 
 namespace Herald.MessageQueue.Tests.Helpers.RabbitMq
 {

@@ -1,6 +1,4 @@
-﻿using Herald.MessageQueue.Extensions;
-using Herald.MessageQueue.RabbitMq.Attributes;
-
+﻿
 using Newtonsoft.Json;
 
 using RabbitMQ.Client;
@@ -21,18 +19,21 @@ namespace Herald.MessageQueue.RabbitMq
         private readonly MessageQueueOptions _options;
         private readonly IQueueInfo _queueInfo;
         private readonly IExchangeInfo _exchangeInfo;
+        private readonly IRoutingKeyInfo _routingKeyInfo;
 
         public MessageQueueRabbitMq(IModel channel,
                                     IConnection connection,
                                     MessageQueueOptions options,
                                     IQueueInfo queueInfo,
-                                    IExchangeInfo exchangeInfo)
+                                    IExchangeInfo exchangeInfo,
+                                    IRoutingKeyInfo routingKeyInfo)
         {
             _channel = channel;
             _connection = connection;
             _options = options;
             _queueInfo = queueInfo;
             _exchangeInfo = exchangeInfo;
+            _routingKeyInfo = routingKeyInfo;
         }
 
         public Task Received(MessageBase message)
@@ -50,7 +51,7 @@ namespace Herald.MessageQueue.RabbitMq
             var body = Encoding.UTF8.GetBytes(messageBody);
 
             var exchangeName = _exchangeInfo.GetExchangeName(messageType);
-            var routingKey = GetRoutingKeyName(messageType);
+            var routingKey = _routingKeyInfo.GetRoutingKey(messageType);
 
             _channel.BasicPublish(exchangeName, routingKey, null, body);
 
@@ -113,11 +114,6 @@ namespace Herald.MessageQueue.RabbitMq
             }
 
             return message;
-        }
-
-        private string GetRoutingKeyName(Type type)
-        {
-            return type.GetAttribute<RoutingKeyAttribute>()?.RoutingKey ?? string.Empty;
         }
 
         public void Dispose()

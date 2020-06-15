@@ -27,7 +27,7 @@ namespace Herald.MessageQueue.Tests.Unit
             var messageQueueOptions = new MessageQueueOptions();
             modelMock.Setup(x => x.BasicPublish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<IBasicProperties>(), It.IsAny<ReadOnlyMemory<byte>>()))
                          .Verifiable();
-            var queue = new MessageQueueRabbitMq(modelMock.Object, channelMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions), new ExchangeInfo(messageQueueOptions));
+            var queue = new MessageQueueRabbitMq(modelMock.Object, channelMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions), new ExchangeInfo(messageQueueOptions), new RoutingKeyInfo(messageQueueOptions));
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
 
             //Act
@@ -48,7 +48,7 @@ namespace Herald.MessageQueue.Tests.Unit
             modelMock.Setup(x => x.BasicGet(It.IsAny<string>(), It.IsAny<bool>()))
                          .Returns(new BasicGetResult(0, false, "", "", 1, null, Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(msg))))
                          .Verifiable();
-            var queue = new MessageQueueRabbitMq(modelMock.Object, channelMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions), new ExchangeInfo(messageQueueOptions));
+            var queue = new MessageQueueRabbitMq(modelMock.Object, channelMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions), new ExchangeInfo(messageQueueOptions), new RoutingKeyInfo(messageQueueOptions));
 
             //Act
             var qtd = 0;
@@ -73,7 +73,7 @@ namespace Herald.MessageQueue.Tests.Unit
             modelMock.Setup(x => x.BasicGet(It.IsAny<string>(), It.IsAny<bool>()))
                          .Returns(new BasicGetResult(0, false, "", "", 1, null, Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(msg))))
                          .Verifiable();
-            var queue = new MessageQueueRabbitMq(modelMock.Object, channelMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions), new ExchangeInfo(messageQueueOptions));
+            var queue = new MessageQueueRabbitMq(modelMock.Object, channelMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions), new ExchangeInfo(messageQueueOptions), new RoutingKeyInfo(messageQueueOptions));
 
             //Act
             async Task act() => await queue.Receive<TestMessage>(maxNumberOfMessages)
@@ -97,7 +97,7 @@ namespace Herald.MessageQueue.Tests.Unit
             modelMock.Setup(x => x.BasicGet(It.IsAny<string>(), It.IsAny<bool>()))
                          .Returns(new BasicGetResult(0, false, "", "", 1, null, Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(msg))))
                          .Verifiable();
-            var queue = new MessageQueueRabbitMq(modelMock.Object, channelMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions), new ExchangeInfo(messageQueueOptions));
+            var queue = new MessageQueueRabbitMq(modelMock.Object, channelMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions), new ExchangeInfo(messageQueueOptions), new RoutingKeyInfo(messageQueueOptions));
 
             //Act
             var qtd = 0;
@@ -121,7 +121,7 @@ namespace Herald.MessageQueue.Tests.Unit
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString(), QueueData = (ulong)0 };
             modelMock.Setup(x => x.BasicAck(It.IsAny<ulong>(), It.IsAny<bool>()))
                          .Verifiable();
-            var queue = new MessageQueueRabbitMq(modelMock.Object, channelMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions), new ExchangeInfo(messageQueueOptions));
+            var queue = new MessageQueueRabbitMq(modelMock.Object, channelMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions), new ExchangeInfo(messageQueueOptions), new RoutingKeyInfo(messageQueueOptions));
 
             //Act
             await queue.Received(msg);

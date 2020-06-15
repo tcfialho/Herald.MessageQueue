@@ -1,5 +1,5 @@
-﻿using Herald.MessageQueue.Extensions;
-using Herald.MessageQueue.Kafka.Attributes;
+﻿using Herald.MessageQueue.Attributes;
+using Herald.MessageQueue.Extensions;
 
 using System;
 
