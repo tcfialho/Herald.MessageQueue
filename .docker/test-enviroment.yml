@@ -1,7 +1,40 @@
 version: '2'
 services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:5.3.1
+    hostname: zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  broker:
+    image: confluentinc/cp-enterprise-kafka:5.3.1
+    hostname: broker
+    container_name: broker
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: broker:29092
+      CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: zookeeper:2181
+      CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
+      CONFLUENT_METRICS_ENABLE: 'true'
+      CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
+
   rabbitmq:
-      image: rabbitmq:management-alpine
+      image: 'rabbitmq:3-management-alpine'
       hostname: rabbitmq
       environment:
           - RABBITMQ_DEFAULT_USER=user
@@ -9,6 +42,40 @@ services:
       ports:
           - '15672:15672'
           - '5672:5672'
+
+  localstack:
+    image: localstack/localstack:latest
+    ports:
+      - '4576:4576'
+    environment:
+      - SERVICES=sqs
+
+  azurite:
+      image: 'arafato/azurite:latest'
+      hostname: azurite
+      ports:
+          - '10000:10000'
+          - '10001:10001'
+
+  kafka-create-topics:
+    image: confluentinc/cp-kafka:3.3.0
+    depends_on:
+      - zookeeper
+      - broker
+    hostname: kafka-create-topics
+    command: "bash -c 'echo Waiting && \
+                           cub kafka-ready -b broker:29092 1 30 && \
+                           kafka-topics --create --topic TestMessageATopic --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
+                           kafka-topics --create --topic TestMessageBTopic --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
+                           kafka-topics --create --topic TestMessageCTopic --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
+                           kafka-topics --create --topic TestMessageDTopic --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
+                           kafka-topics --list --zookeeper zookeeper:2181 && \
+                           echo KAFKA-DONE!'"
+    environment:
+      KAFKA_BROKER_ID: ignored
+      KAFKA_ZOOKEEPER_CONNECT: ignored
+    extra_hosts:
+      - "moby:127.0.0.1"
 
   rabbitmq-create-queues:
       image: activatedgeek/rabbitmqadmin:latest
@@ -18,8 +85,7 @@ services:
       entrypoint: /bin/sh -c
       command: >
           "
-              while ! nc -z rabbitmq 5672; do echo waiting; sleep 3; done;              
-              
+              while ! nc -z rabbitmq 5672; do echo waiting; sleep 3; done;
               rabbitmqadmin --host rabbitmq -uuser -ppassword declare exchange name=TestMessageAExchange type=fanout
               rabbitmqadmin --host rabbitmq -uuser -ppassword declare queue name=TestMessageAQueue durable=false
               rabbitmqadmin --host rabbitmq -uuser -ppassword declare binding source="TestMessageAExchange" destination="TestMessageAQueue" destination_type="queue"
@@ -27,7 +93,7 @@ services:
               rabbitmqadmin --host rabbitmq -uuser -ppassword declare exchange name=TestMessageBExchange type=fanout
               rabbitmqadmin --host rabbitmq -uuser -ppassword declare queue name=TestMessageBQueue durable=false
               rabbitmqadmin --host rabbitmq -uuser -ppassword declare binding source="TestMessageBExchange" destination="TestMessageBQueue" destination_type="queue"
-                            
+              
               rabbitmqadmin --host rabbitmq -uuser -ppassword declare exchange name=TestMessageCExchange type=fanout
               rabbitmqadmin --host rabbitmq -uuser -ppassword declare queue name=TestMessageCQueue durable=false
               rabbitmqadmin --host rabbitmq -uuser -ppassword declare binding source="TestMessageCExchange" destination="TestMessageCQueue" destination_type="queue"
@@ -36,21 +102,14 @@ services:
               rabbitmqadmin --host rabbitmq -uuser -ppassword declare queue name=TestMessageDQueue durable=false
               rabbitmqadmin --host rabbitmq -uuser -ppassword declare binding source="TestMessageDExchange" destination="TestMessageDQueue" destination_type="queue"
               
-              rabbitmqadmin --host rabbitmq -uuser -ppassword list exchanges
               rabbitmqadmin --host rabbitmq -uuser -ppassword list queues
-              
               echo 'RABBIT-DONE!' 
           "
-
-  localstack:
-    image: localstack/localstack:0.11.2
-    ports:
-      - '4576:4576'
-    environment:
-      - SERVICES=sqs
-      
+      extra_hosts:
+          - "moby:127.0.0.1"
+          
   localstack-create-queues:
-    image: mesosphere/aws-cli:1.14.5
+    image: mesosphere/aws-cli:latest
     depends_on:
       - localstack
     hostname: localstack-create-queues
@@ -78,31 +137,11 @@ services:
       - AWS_SECRET_ACCESS_KEY=guest
       - AWS_DEFAULT_REGION=us-east-1
       - AWS_ENDPOINT=http://localhost:4576
+    extra_hosts:
+      - "moby:127.0.0.1"
 
-  azurite:
-      image: arafato/azurite:2.6.5
-      hostname: azurite
-      ports:
-          - '10000:10000'
-          - '10001:10001'
-          
   azurite-create-queues:
-    image: curlimages/curl:7.70.0
-    depends_on:
-      - azurite
-    hostname: azurite-create-queues
-    entrypoint: /bin/sh -c
-    command: >
-      "
-        while ! nc -z azurite 10001; do echo waiting; sleep 3; done;
-        curl -X PUT http://azurite:10001/devstoreaccount1/testmessageaqueue
-        curl -X PUT http://azurite:10001/devstoreaccount1/testmessagebqueue
-        curl -X PUT http://azurite:10001/devstoreaccount1/testmessagecqueue
-        curl -X PUT http://azurite:10001/devstoreaccount1/testmessagedqueue
-        curl -X GET http://azurite:10001/devstoreaccount1?comp=list
-        echo 'AZURITE-DONE!'
-      "  azurite-create-queues:
-    image: curlimages/curl:7.70.0
+    image: curlimages/curl:latest
     depends_on:
       - azurite
     hostname: azurite-create-queues
@@ -117,48 +156,5 @@ services:
         curl -X GET http://azurite:10001/devstoreaccount1?comp=list
         echo 'AZURITE-DONE!'
       "
-          
-  zookeeper:
-    image: confluentinc/cp-zookeeper:5.5.0
-    hostname: zookeeper
-    container_name: zookeeper
-    ports:
-      - "2181:2181"
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-
-  broker:
-    image: confluentinc/cp-kafka:5.5.0
-    hostname: broker
-    container_name: broker
-    depends_on:
-      - zookeeper
-    ports:
-      - "9092:9092"
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'            
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT           
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-
-  kafka-create-topics:
-    image: confluentinc/cp-kafka:5.5.0
-    depends_on:
-      - zookeeper
-      - broker
-    hostname: kafka-create-topics
-    command: "bash -c 'echo Waiting && \
-                           cub kafka-ready -b broker:29092 1 30 && \
-                           kafka-topics --create --topic TestMessageATopic --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
-                           kafka-topics --create --topic TestMessageBTopic --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
-                           kafka-topics --create --topic TestMessageCTopic --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
-                           kafka-topics --create --topic TestMessageDTopic --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
-                           kafka-topics --list --zookeeper zookeeper:2181 && \
-                           echo KAFKA-DONE!'"
-    environment:
-      KAFKA_BROKER_ID: ignored
-      KAFKA_ZOOKEEPER_CONNECT: ignored
-
+    extra_hosts:
+      - "moby:127.0.0.1"
