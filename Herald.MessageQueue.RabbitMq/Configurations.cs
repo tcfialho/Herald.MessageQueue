@@ -59,6 +59,7 @@ namespace Herald.MessageQueue.RabbitMq
 
             services.TryAddSingleton<IQueueInfo, QueueInfo>();
             services.TryAddSingleton<IExchangeInfo, ExchangeInfo>();
+            services.TryAddSingleton<IRoutingKeyInfo, RoutingKeyInfo>();
 
             return new MessageQueueBuilder(services);
         }

@@ -5,18 +5,18 @@ using System;
 
 namespace Herald.MessageQueue.RabbitMq
 {
-    public class QueueInfo : IQueueInfo
+    public class RoutingKeyInfo : IRoutingKeyInfo
     {
         private readonly MessageQueueOptions _options;
 
-        public QueueInfo(MessageQueueOptions options)
+        public RoutingKeyInfo(MessageQueueOptions options)
         {
             _options = options;
         }
 
-        public string GetQueueName(Type type)
+        public string GetRoutingKey(Type type)
         {
-            return type.GetAttribute<QueueNameAttribute>()?.QueueName ?? string.Concat(type.Name, _options.QueueNameSufix);
+            return type.GetAttribute<RoutingKeyAttribute>()?.RoutingKey ?? string.Empty;
         }
     }
 }

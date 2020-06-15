@@ -1,4 +1,4 @@
-﻿using Herald.MessageQueue.Kafka.Attributes;
+﻿using Herald.MessageQueue.Attributes;
 
 namespace Herald.MessageQueue.Tests.Helpers.Kafka
 {

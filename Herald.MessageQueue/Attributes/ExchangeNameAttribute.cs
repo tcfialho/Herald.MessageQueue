@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Herald.MessageQueue.RabbitMq.Attributes
+namespace Herald.MessageQueue.Attributes
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class ExchangeNameAttribute : Attribute

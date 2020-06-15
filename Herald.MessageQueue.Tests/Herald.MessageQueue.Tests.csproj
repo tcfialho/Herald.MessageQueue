@@ -37,4 +37,10 @@
     <ProjectReference Include="..\Herald.MessageQueue\Herald.MessageQueue.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
