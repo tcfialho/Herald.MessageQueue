@@ -23,8 +23,7 @@ jobs:
         AWS_REGION: us-east-1
         AWS_ENDPOINT: http://localhost:4576
       run: | 
-          dotnet build -c Release
           docker-compose -f .docker/test-enviroment.yml up -d
           echo "sleep 30"
           sleep 30
-          dotnet test --no-build "--logger:junit;LogFilePath=./test-reports/results.xml" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput="coverage.xml" /p:Thereshold=80
+          dotnet test "--logger:junit;LogFilePath=./test-reports/results.xml" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput="coverage.xml" /p:Thereshold=80
