@@ -16,7 +16,7 @@ namespace Herald.MessageQueue.Tests.Integrated
         {
             //Arrange
             var msg = new TestMessageA() { Id = Guid.NewGuid().ToString() };
-            using var queue = RabbitMqThreadSafeBuilder.Build(nameof(TestMessageA));
+            using var queue = RabbitMqThreadSafeBuilder.Build<TestMessageA>();
             Task send() => queue.Send(msg);
 
             //Act
@@ -32,7 +32,7 @@ namespace Herald.MessageQueue.Tests.Integrated
             //Arrange
             const int maxNumberOfMessages = 5;
             var msg = new TestMessageB() { Id = Guid.NewGuid().ToString() };
-            using var queue = RabbitMqThreadSafeBuilder.Build(nameof(TestMessageB));
+            using var queue = RabbitMqThreadSafeBuilder.Build<TestMessageB>();
             await queue.Send(msg);
 
             //Act
@@ -52,7 +52,7 @@ namespace Herald.MessageQueue.Tests.Integrated
             //Arrange
             const int timeoutSeconds = 5;
             var msg = new TestMessageD() { Id = Guid.NewGuid().ToString() };
-            using var queue = RabbitMqThreadSafeBuilder.Build(nameof(TestMessageD));
+            using var queue = RabbitMqThreadSafeBuilder.Build<TestMessageD>();
             var stopWatch = new Stopwatch();
 
             //Act
@@ -74,7 +74,7 @@ namespace Herald.MessageQueue.Tests.Integrated
             const int delay = 5;
             var cancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(delay)).Token;
             var msg = new TestMessageC() { Id = Guid.NewGuid().ToString() };
-            using var queue = RabbitMqThreadSafeBuilder.Build(nameof(TestMessageC));
+            using var queue = RabbitMqThreadSafeBuilder.Build<TestMessageC>();
             await queue.Send(msg);
             var qtd = 0;
 

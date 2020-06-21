@@ -1,7 +1,10 @@
 ﻿
 using Herald.MessageQueue.Kafka;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
+using System.Collections.Generic;
 
 namespace Herald.MessageQueue.Tests.Helpers.Kafka
 {
@@ -14,6 +17,15 @@ namespace Herald.MessageQueue.Tests.Helpers.Kafka
             lock (_syncRoot)
             {
                 var serviceCollection = new ServiceCollection();
+
+                var configuration = (IConfiguration)new ConfigurationBuilder()
+                    .AddInMemoryCollection(new List<KeyValuePair<string, string>>
+                    {
+                        new KeyValuePair<string, string>("KEY", "VALUE"),
+                    })
+                    .Build();
+
+                serviceCollection.AddSingleton(configuration);
 
                 serviceCollection.AddMessageQueueKafka(setup =>
                 {

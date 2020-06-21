@@ -44,7 +44,7 @@ services:
           - '5672:5672'
 
   localstack:
-    image: localstack/localstack:latest
+    image: localstack/localstack:0.11.2
     ports:
       - '4576:4576'
     environment:
@@ -109,7 +109,7 @@ services:
           - "moby:127.0.0.1"
           
   localstack-create-queues:
-    image: mesosphere/aws-cli:latest
+    image: amazon/aws-cli:2.0.24
     depends_on:
       - localstack
     hostname: localstack-create-queues
