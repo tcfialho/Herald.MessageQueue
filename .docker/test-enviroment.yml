@@ -86,6 +86,7 @@ services:
       command: >
           "
               while ! nc -z rabbitmq 5672; do echo waiting; sleep 3; done;
+
               rabbitmqadmin --host rabbitmq -uuser -ppassword declare exchange name=TestMessageAExchange type=fanout
               rabbitmqadmin --host rabbitmq -uuser -ppassword declare queue name=TestMessageAQueue durable=false
               rabbitmqadmin --host rabbitmq -uuser -ppassword declare binding source="TestMessageAExchange" destination="TestMessageAQueue" destination_type="queue"
@@ -103,6 +104,7 @@ services:
               rabbitmqadmin --host rabbitmq -uuser -ppassword declare binding source="TestMessageDExchange" destination="TestMessageDQueue" destination_type="queue"
               
               rabbitmqadmin --host rabbitmq -uuser -ppassword list queues
+              
               echo 'RABBIT-DONE!' 
           "
       extra_hosts:
