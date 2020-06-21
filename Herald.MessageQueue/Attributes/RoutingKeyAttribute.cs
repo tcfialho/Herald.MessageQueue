@@ -7,9 +7,9 @@ namespace Herald.MessageQueue.Attributes
     {
         public string RoutingKey { get; }
 
-        public RoutingKeyAttribute(string routingKey)
+        public RoutingKeyAttribute(string routing)
         {
-            RoutingKey = routingKey;
+            RoutingKey = routing;
         }
     }
 }

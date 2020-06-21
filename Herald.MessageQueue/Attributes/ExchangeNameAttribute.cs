@@ -7,9 +7,9 @@ namespace Herald.MessageQueue.Attributes
     {
         public string ExchangeName { get; }
 
-        public ExchangeNameAttribute(string exchangeName)
+        public ExchangeNameAttribute(string exchange)
         {
-            ExchangeName = exchangeName;
+            ExchangeName = exchange;
         }
     }
 }
