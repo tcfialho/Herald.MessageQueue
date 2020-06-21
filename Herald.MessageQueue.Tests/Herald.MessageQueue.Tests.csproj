@@ -11,6 +11,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="test-reports\**" />
+    <EmbeddedResource Remove="test-reports\**" />
+    <None Remove="test-reports\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="coverage.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="coverlet.msbuild" Version="2.8.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

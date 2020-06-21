@@ -2,6 +2,7 @@
 using Herald.MessageQueue.Tests.Helpers.RabbitMq;
 
 using Microsoft.Azure.Storage.Queue;
+using Microsoft.Extensions.Configuration;
 
 using Moq;
 
@@ -23,18 +24,22 @@ namespace Herald.MessageQueue.Tests.Unit
         {
             //Arrange
             var clouldQueueClientMock = new Mock<CloudQueueClient>(MockBehavior.Loose, new Uri("http://localhost"), null, null);
-            var clouldQueue = new Mock<CloudQueue>(MockBehavior.Loose, new Uri("http://localhost"), null);
+            var clouldQueueMock = new Mock<CloudQueue>(MockBehavior.Loose, new Uri("http://localhost"), null);
+            var configurationMock = new Mock<IConfiguration>();
+
             var messageQueueOptions = new MessageQueueOptions();
 
-            clouldQueue.Setup(x => x.AddMessageAsync(It.IsAny<CloudQueueMessage>()))
+            clouldQueueMock.Setup(x => x.AddMessageAsync(It.IsAny<CloudQueueMessage>()))
                        .Returns(Task.FromResult(new CloudQueueMessage(new byte[0])))
                        .Verifiable();
 
             clouldQueueClientMock.Setup(x => x.GetQueueReference(It.IsAny<string>()))
-                                 .Returns(clouldQueue.Object)
+                                 .Returns(clouldQueueMock.Object)
                                  .Verifiable();
 
-            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions));
+            configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
+
+            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions, configurationMock.Object));
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
 
             //Act
@@ -42,7 +47,7 @@ namespace Herald.MessageQueue.Tests.Unit
 
             //Assert
             clouldQueueClientMock.VerifyAll();
-            clouldQueue.VerifyAll();
+            clouldQueueMock.VerifyAll();
         }
 
         [Fact]
@@ -50,22 +55,26 @@ namespace Herald.MessageQueue.Tests.Unit
         {
             //Arrange
             var clouldQueueClientMock = new Mock<CloudQueueClient>(MockBehavior.Loose, new Uri("http://localhost"), null, null);
-            var clouldQueue = new Mock<CloudQueue>(MockBehavior.Loose, new Uri("http://localhost"), null);
-            var messageQueueOptions = new MessageQueueOptions();
+            var clouldQueueMock = new Mock<CloudQueue>(MockBehavior.Loose, new Uri("http://localhost"), null);
+            var configurationMock = new Mock<IConfiguration>();
 
+            var messageQueueOptions = new MessageQueueOptions();
+            
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
 
-            clouldQueue.Setup(x => x.GetMessagesAsync(It.IsAny<int>()))
+            clouldQueueMock.Setup(x => x.GetMessagesAsync(It.IsAny<int>()))
                         .ReturnsAsync(new CloudQueueMessage[1]
                         {
                             new CloudQueueMessage(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(msg)))
                         }).Verifiable();
 
             clouldQueueClientMock.Setup(x => x.GetQueueReference(It.IsAny<string>()))
-                                 .Returns(clouldQueue.Object)
+                                 .Returns(clouldQueueMock.Object)
                                  .Verifiable();
 
-            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions));
+            configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
+
+            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions, configurationMock.Object));
 
             //Act
             var qtd = 0;
@@ -76,7 +85,7 @@ namespace Herald.MessageQueue.Tests.Unit
 
             //Assert
             clouldQueueClientMock.VerifyAll();
-            clouldQueue.VerifyAll();
+            clouldQueueMock.VerifyAll();
         }
 
         [Fact]
@@ -85,20 +94,24 @@ namespace Herald.MessageQueue.Tests.Unit
             //Arrange
             const int maxNumberOfMessages = 0;
             var clouldQueueClientMock = new Mock<CloudQueueClient>(MockBehavior.Loose, new Uri("http://localhost"), null, null);
-            var clouldQueue = new Mock<CloudQueue>(MockBehavior.Loose, new Uri("http://localhost"), null);
+            var clouldQueueMock = new Mock<CloudQueue>(MockBehavior.Loose, new Uri("http://localhost"), null);
+            var configurationMock = new Mock<IConfiguration>();
+
             var messageQueueOptions = new MessageQueueOptions();
 
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
 
-            clouldQueue.Setup(x => x.GetMessageAsync())
+            clouldQueueMock.Setup(x => x.GetMessageAsync())
                          .ReturnsAsync(new CloudQueueMessage(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(msg))))
                          .Verifiable();
 
             clouldQueueClientMock.Setup(x => x.GetQueueReference(It.IsAny<string>()))
-                                 .Returns(clouldQueue.Object)
+                                 .Returns(clouldQueueMock.Object)
                                  .Verifiable();
 
-            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions));
+            configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
+
+            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions, configurationMock.Object));
 
             //Act
             Func<Task> act = async () => await queue.Receive<TestMessage>(maxNumberOfMessages)
@@ -116,22 +129,26 @@ namespace Herald.MessageQueue.Tests.Unit
             const int delay = 1;
             var cancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(delay)).Token;
             var clouldQueueClientMock = new Mock<CloudQueueClient>(MockBehavior.Loose, new Uri("http://localhost"), null, null);
-            var clouldQueue = new Mock<CloudQueue>(MockBehavior.Loose, new Uri("http://localhost"), null);
+            var clouldQueueMock = new Mock<CloudQueue>(MockBehavior.Loose, new Uri("http://localhost"), null);
+            var configurationMock = new Mock<IConfiguration>();
+
             var messageQueueOptions = new MessageQueueOptions();
 
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
 
-            clouldQueue.Setup(x => x.GetMessagesAsync(It.IsAny<int>(), cancellationToken))
+            clouldQueueMock.Setup(x => x.GetMessagesAsync(It.IsAny<int>(), cancellationToken))
                         .ReturnsAsync(new CloudQueueMessage[1]
                         {
                             new CloudQueueMessage(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(msg)))
                         }).Verifiable();
 
             clouldQueueClientMock.Setup(x => x.GetQueueReference(It.IsAny<string>()))
-                                 .Returns(clouldQueue.Object)
+                                 .Returns(clouldQueueMock.Object)
                                  .Verifiable();
 
-            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions));
+            configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
+
+            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions, configurationMock.Object));
 
             //Act
             var qtd = 0;
@@ -142,7 +159,7 @@ namespace Herald.MessageQueue.Tests.Unit
 
             //Assert
             clouldQueueClientMock.VerifyAll();
-            clouldQueue.VerifyAll();
+            clouldQueueMock.VerifyAll();
             Assert.True(qtd > 0);
         }
 
@@ -151,25 +168,29 @@ namespace Herald.MessageQueue.Tests.Unit
         {
             //Arrange
             var clouldQueueClientMock = new Mock<CloudQueueClient>(MockBehavior.Loose, new Uri("http://localhost"), null, null);
-            var clouldQueue = new Mock<CloudQueue>(MockBehavior.Loose, new Uri("http://localhost"), null);
+            var clouldQueueMock = new Mock<CloudQueue>(MockBehavior.Loose, new Uri("http://localhost"), null);
+            var configurationMock = new Mock<IConfiguration>();
+
             var messageQueueOptions = new MessageQueueOptions();
 
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString(), QueueData = (ulong)0 };
 
-            clouldQueue.Setup(x => x.DeleteMessageAsync(It.IsAny<CloudQueueMessage>())).Verifiable();
+            clouldQueueMock.Setup(x => x.DeleteMessageAsync(It.IsAny<CloudQueueMessage>())).Verifiable();
 
             clouldQueueClientMock.Setup(x => x.GetQueueReference(It.IsAny<string>()))
-                                 .Returns(clouldQueue.Object)
+                                 .Returns(clouldQueueMock.Object)
                                  .Verifiable();
 
-            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions));
+            configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
+
+            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions, configurationMock.Object));
 
             //Act
             await queue.Received(msg);
 
             //Assert
             clouldQueueClientMock.VerifyAll();
-            clouldQueue.VerifyAll();
+            clouldQueueMock.VerifyAll();
         }
     }
 }

@@ -7,9 +7,9 @@ namespace Herald.MessageQueue.Attributes
     {
         public string QueueName { get; }
 
-        public QueueNameAttribute(string queueName)
+        public QueueNameAttribute(string queue)
         {
-            QueueName = queueName;
+            QueueName = queue;
         }
     }
 }

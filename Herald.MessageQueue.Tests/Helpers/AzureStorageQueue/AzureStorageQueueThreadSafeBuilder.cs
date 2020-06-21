@@ -1,6 +1,9 @@
 ﻿using Herald.MessageQueue.AzureStorageQueue;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
+using System.Collections.Generic;
 
 namespace Herald.MessageQueue.Tests.Helpers.RabbitMq
 {
@@ -13,6 +16,15 @@ namespace Herald.MessageQueue.Tests.Helpers.RabbitMq
             lock (syncRoot)
             {
                 var serviceCollection = new ServiceCollection();
+
+                var configuration = (IConfiguration)new ConfigurationBuilder()
+                    .AddInMemoryCollection(new List<KeyValuePair<string, string>>
+                    {
+                        new KeyValuePair<string, string>("KEY", "VALUE"),
+                    })
+                    .Build();
+
+                serviceCollection.AddSingleton(configuration);
 
                 serviceCollection.AddMessageQueueAzureStorageQueue(setup =>
                 {

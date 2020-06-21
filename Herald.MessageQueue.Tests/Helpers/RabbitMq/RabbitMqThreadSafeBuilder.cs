@@ -1,19 +1,31 @@
 ﻿
 using Herald.MessageQueue.RabbitMq;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
+using System.Collections.Generic;
 
 namespace Herald.MessageQueue.Tests.Helpers.RabbitMq
 {
     public static class RabbitMqThreadSafeBuilder
     {
         private static readonly object syncRoot = new object();
-        public static IMessageQueue Build(string exchangeName)
+        public static IMessageQueue Build<T>()
         {
             IMessageQueue queue;
             lock (syncRoot)
             {
                 var serviceCollection = new ServiceCollection();
+
+                var configuration = (IConfiguration)new ConfigurationBuilder()
+                    .AddInMemoryCollection(new List<KeyValuePair<string, string>>
+                    {
+                        new KeyValuePair<string, string>("KEY", "VALUE"),
+                    })
+                    .Build();
+
+                serviceCollection.AddSingleton(configuration);
 
                 serviceCollection.AddMessageQueueRabbitMq(setup =>
                 {

@@ -34,7 +34,7 @@ services:
       CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
 
   rabbitmq:
-      image: 'rabbitmq:3-management-alpine'
+      image: 'rabbitmq:3.8.5-management-alpine'
       hostname: rabbitmq
       environment:
           - RABBITMQ_DEFAULT_USER=user
@@ -44,7 +44,7 @@ services:
           - '5672:5672'
 
   localstack:
-    image: localstack/localstack:latest
+    image: localstack/localstack:0.11.2
     ports:
       - '4576:4576'
     environment:
@@ -86,6 +86,7 @@ services:
       command: >
           "
               while ! nc -z rabbitmq 5672; do echo waiting; sleep 3; done;
+
               rabbitmqadmin --host rabbitmq -uuser -ppassword declare exchange name=TestMessageAExchange type=fanout
               rabbitmqadmin --host rabbitmq -uuser -ppassword declare queue name=TestMessageAQueue durable=false
               rabbitmqadmin --host rabbitmq -uuser -ppassword declare binding source="TestMessageAExchange" destination="TestMessageAQueue" destination_type="queue"
@@ -103,13 +104,14 @@ services:
               rabbitmqadmin --host rabbitmq -uuser -ppassword declare binding source="TestMessageDExchange" destination="TestMessageDQueue" destination_type="queue"
               
               rabbitmqadmin --host rabbitmq -uuser -ppassword list queues
+              
               echo 'RABBIT-DONE!' 
           "
       extra_hosts:
           - "moby:127.0.0.1"
           
   localstack-create-queues:
-    image: mesosphere/aws-cli:latest
+    image: amazon/aws-cli:2.0.24
     depends_on:
       - localstack
     hostname: localstack-create-queues

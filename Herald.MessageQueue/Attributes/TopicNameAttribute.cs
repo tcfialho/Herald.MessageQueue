@@ -7,9 +7,9 @@ namespace Herald.MessageQueue.Attributes
     {
         public string TopicName { get; }
 
-        public TopicNameAttribute(string topicName)
+        public TopicNameAttribute(string topic)
         {
-            TopicName = topicName;
+            TopicName = topic;
         }
     }
 }
