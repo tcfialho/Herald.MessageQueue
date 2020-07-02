@@ -31,7 +31,18 @@ namespace Herald.MessageQueue.Sqs
 
         private string GetQueueUrl(Type type)
         {
-            return $"{_options.ServiceURL}/queue/{_queueInfo.GetQueueName(type)}{(_options.EnableFifo ? ".fifo" : "")}";
+            var queueUrl = string.Empty;
+
+            if (string.IsNullOrEmpty(_options.ServiceURL))
+            {
+                queueUrl = $"/{_queueInfo.GetQueueName(type)}{(_options.EnableFifo ? ".fifo" : "")}";
+            }
+            else
+            {
+                queueUrl = $"{_options.ServiceURL}/queue/{_queueInfo.GetQueueName(type)}{(_options.EnableFifo ? ".fifo" : "")}";
+            }
+
+            return queueUrl;
         }
 
         public async Task Send(MessageBase @message)
