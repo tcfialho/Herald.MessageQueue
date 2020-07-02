@@ -85,7 +85,8 @@ services:
       entrypoint: /bin/sh -c
       command: >
           "
-              while ! nc -z rabbitmq 5672; do echo waiting; sleep 3; done;
+              sleep 10
+              while ! nc -z rabbitmq 5672; do echo waiting; sleep 10; done;
 
               rabbitmqadmin --host rabbitmq -uuser -ppassword declare exchange name=TestMessageAExchange type=fanout
               rabbitmqadmin --host rabbitmq -uuser -ppassword declare queue name=TestMessageAQueue durable=false
@@ -118,7 +119,8 @@ services:
     entrypoint: /bin/sh -c
     command: >
       "
-        while ! aws --endpoint-url=http://localstack:4576 sqs list-queues > /dev/null; do echo waiting; sleep 3; done;
+        sleep 10
+        while ! aws --endpoint-url=http://localstack:4576 sqs list-queues > /dev/null; do echo waiting; sleep 10; done;
         aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name TestMessageAQueue
         aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name TestMessageAQueue.fifo --attributes FifoQueue=true
         
@@ -150,7 +152,8 @@ services:
     entrypoint: /bin/sh -c
     command: >
       "
-        while ! nc -z azurite 10001; do echo waiting; sleep 3; done;
+        sleep 10
+        while ! nc -z azurite 10001; do echo waiting; sleep 10; done;
         curl -X PUT http://azurite:10001/devstoreaccount1/testmessageaqueue
         curl -X PUT http://azurite:10001/devstoreaccount1/testmessagebqueue
         curl -X PUT http://azurite:10001/devstoreaccount1/testmessagecqueue
