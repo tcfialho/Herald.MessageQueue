@@ -17,39 +17,23 @@ namespace Herald.MessageQueue.Sqs
     public class MessageQueueSqs : IMessageQueue, IDisposable
     {
         private readonly IAmazonSQS _amazonSqs;
-        private readonly IQueueInfo _queueInfo;
+        private readonly IMessageQueueInfo _queueInfo;
         private readonly MessageQueueOptions _options;
 
         public MessageQueueSqs(IAmazonSQS amazonSQS,
                                MessageQueueOptions options,
-                               IQueueInfo queueInfo)
+                               IMessageQueueInfo queueInfo)
         {
             _amazonSqs = amazonSQS;
             _options = options;
             _queueInfo = queueInfo;
         }
 
-        private string GetQueueUrl(Type type)
-        {
-            var queueUrl = string.Empty;
-
-            if (string.IsNullOrEmpty(_options.ServiceURL))
-            {
-                queueUrl = $"/{_queueInfo.GetQueueName(type)}{(_options.EnableFifo ? ".fifo" : "")}";
-            }
-            else
-            {
-                queueUrl = $"{_options.ServiceURL}/queue/{_queueInfo.GetQueueName(type)}{(_options.EnableFifo ? ".fifo" : "")}";
-            }
-
-            return queueUrl;
-        }
-
         public async Task Send(MessageBase @message)
         {
             await _amazonSqs.SendMessageAsync(new SendMessageRequest
             {
-                QueueUrl = GetQueueUrl(@message.GetType()),
+                QueueUrl = _queueInfo.GetQueueUrl(@message.GetType()),
                 MessageDeduplicationId = _options.EnableFifo ? Guid.NewGuid().ToString() : null,
                 MessageGroupId = _options.GroupId,
                 MessageBody = JsonConvert.SerializeObject(@message),
@@ -60,7 +44,7 @@ namespace Herald.MessageQueue.Sqs
         {
             await _amazonSqs.DeleteMessageAsync(new DeleteMessageRequest
             {
-                QueueUrl = GetQueueUrl(@message.GetType()),
+                QueueUrl = _queueInfo.GetQueueUrl(@message.GetType()),
                 ReceiptHandle = (string)@message.QueueData
             });
         }
@@ -79,7 +63,7 @@ namespace Herald.MessageQueue.Sqs
 
             var result = await _amazonSqs.ReceiveMessageAsync(new ReceiveMessageRequest
             {
-                QueueUrl = GetQueueUrl(typeof(TMessage)),
+                QueueUrl = _queueInfo.GetQueueUrl(typeof(TMessage)),
                 MaxNumberOfMessages = maxNumberOfMessages,
                 WaitTimeSeconds = _options.WaitTimeSeconds,
                 VisibilityTimeout = _options.VisibilityTimeout
@@ -100,11 +84,9 @@ namespace Herald.MessageQueue.Sqs
 
         public async IAsyncEnumerable<TMessage> Receive<TMessage>([EnumeratorCancellation] CancellationToken cancellationToken) where TMessage : MessageBase
         {
-            var queueUrl = GetQueueUrl(typeof(TMessage));
-
             var config = new ReceiveMessageRequest
             {
-                QueueUrl = GetQueueUrl(typeof(TMessage)),
+                QueueUrl = _queueInfo.GetQueueUrl(typeof(TMessage)),
                 WaitTimeSeconds = _options.WaitTimeSeconds,
                 MaxNumberOfMessages = 10
             };

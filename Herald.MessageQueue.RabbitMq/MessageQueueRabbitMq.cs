@@ -17,23 +17,17 @@ namespace Herald.MessageQueue.RabbitMq
         private readonly IModel _channel;
         private readonly IConnection _connection;
         private readonly MessageQueueOptions _options;
-        private readonly IQueueInfo _queueInfo;
-        private readonly IExchangeInfo _exchangeInfo;
-        private readonly IRoutingKeyInfo _routingKeyInfo;
+        private readonly IMessageQueueInfo _info;
 
         public MessageQueueRabbitMq(IModel channel,
                                     IConnection connection,
                                     MessageQueueOptions options,
-                                    IQueueInfo queueInfo,
-                                    IExchangeInfo exchangeInfo,
-                                    IRoutingKeyInfo routingKeyInfo)
+                                    IMessageQueueInfo info)
         {
             _channel = channel;
             _connection = connection;
             _options = options;
-            _queueInfo = queueInfo;
-            _exchangeInfo = exchangeInfo;
-            _routingKeyInfo = routingKeyInfo;
+            _info = info;
         }
 
         public Task Received(MessageBase message)
@@ -50,8 +44,8 @@ namespace Herald.MessageQueue.RabbitMq
             var messageBody = JsonConvert.SerializeObject(message);
             var body = Encoding.UTF8.GetBytes(messageBody);
 
-            var exchangeName = _exchangeInfo.GetExchangeName(messageType);
-            var routingKey = _routingKeyInfo.GetRoutingKey(messageType);
+            var exchangeName = _info.GetExchangeName(messageType);
+            var routingKey = _info.GetRoutingKey(messageType);
 
             _channel.BasicPublish(exchangeName, routingKey, null, body);
 
@@ -65,7 +59,7 @@ namespace Herald.MessageQueue.RabbitMq
                 throw new ArgumentException("Max number of messages should be greater than zero.");
             }
 
-            var queueName = _queueInfo.GetQueueName(typeof(TMessage));
+            var queueName = _info.GetQueueName(typeof(TMessage));
 
             for (var i = 0; i < maxNumberOfMessages; i++)
             {
@@ -84,7 +78,7 @@ namespace Herald.MessageQueue.RabbitMq
 
         public async IAsyncEnumerable<TMessage> Receive<TMessage>([EnumeratorCancellation] CancellationToken cancellationToken) where TMessage : MessageBase
         {
-            var queueName = _queueInfo.GetQueueName(typeof(TMessage));
+            var queueName = _info.GetQueueName(typeof(TMessage));
 
             while (!cancellationToken.IsCancellationRequested)
             {

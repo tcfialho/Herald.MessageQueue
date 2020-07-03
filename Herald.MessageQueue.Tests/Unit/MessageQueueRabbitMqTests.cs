@@ -35,9 +35,7 @@ namespace Herald.MessageQueue.Tests.Unit
             configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
 
             var queue = new MessageQueueRabbitMq(modelMock.Object, channelMock.Object, messageQueueOptions, 
-                new QueueInfo(messageQueueOptions, configurationMock.Object), 
-                new ExchangeInfo(messageQueueOptions, configurationMock.Object), 
-                new RoutingKeyInfo(messageQueueOptions, configurationMock.Object));
+                            new MessageQueueInfo(messageQueueOptions, configurationMock.Object));
 
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
 
@@ -65,9 +63,7 @@ namespace Herald.MessageQueue.Tests.Unit
             configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
 
             var queue = new MessageQueueRabbitMq(modelMock.Object, channelMock.Object, messageQueueOptions, 
-                new QueueInfo(messageQueueOptions, configurationMock.Object), 
-                new ExchangeInfo(messageQueueOptions, configurationMock.Object), 
-                new RoutingKeyInfo(messageQueueOptions, configurationMock.Object));
+                new MessageQueueInfo(messageQueueOptions, configurationMock.Object));
 
             //Act
             var qtd = 0;
@@ -98,9 +94,7 @@ namespace Herald.MessageQueue.Tests.Unit
             configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
 
             var queue = new MessageQueueRabbitMq(modelMock.Object, channelMock.Object, messageQueueOptions, 
-                new QueueInfo(messageQueueOptions, configurationMock.Object), 
-                new ExchangeInfo(messageQueueOptions, configurationMock.Object), 
-                new RoutingKeyInfo(messageQueueOptions, configurationMock.Object));
+                new MessageQueueInfo(messageQueueOptions, configurationMock.Object));
 
             //Act
             async Task act() => await queue.Receive<TestMessage>(maxNumberOfMessages)
@@ -130,9 +124,7 @@ namespace Herald.MessageQueue.Tests.Unit
             configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
 
             var queue = new MessageQueueRabbitMq(modelMock.Object, channelMock.Object, messageQueueOptions, 
-                new QueueInfo(messageQueueOptions, configurationMock.Object), 
-                new ExchangeInfo(messageQueueOptions, configurationMock.Object), 
-                new RoutingKeyInfo(messageQueueOptions, configurationMock.Object));
+                new MessageQueueInfo(messageQueueOptions, configurationMock.Object));
 
             //Act
             var qtd = 0;
@@ -162,9 +154,7 @@ namespace Herald.MessageQueue.Tests.Unit
             configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
 
             var queue = new MessageQueueRabbitMq(modelMock.Object, channelMock.Object, messageQueueOptions, 
-                new QueueInfo(messageQueueOptions, configurationMock.Object), 
-                new ExchangeInfo(messageQueueOptions, configurationMock.Object), 
-                new RoutingKeyInfo(messageQueueOptions, configurationMock.Object));
+                new MessageQueueInfo(messageQueueOptions, configurationMock.Object));
 
             //Act
             await queue.Received(msg);

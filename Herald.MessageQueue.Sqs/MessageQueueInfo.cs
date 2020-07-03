@@ -7,12 +7,12 @@ using System;
 
 namespace Herald.MessageQueue.Sqs
 {
-    public class QueueInfo : IQueueInfo
+    public class MessageQueueInfo : IMessageQueueInfo
     {
         private readonly MessageQueueOptions _options;
         private readonly IConfiguration _configuration;
 
-        public QueueInfo(MessageQueueOptions options, IConfiguration configuration)
+        public MessageQueueInfo(MessageQueueOptions options, IConfiguration configuration)
         {
             _options = options;
             _configuration = configuration;
@@ -35,6 +35,22 @@ namespace Herald.MessageQueue.Sqs
             }
 
             return string.Concat(type.Name, _options.QueueNameSufix);
+        }
+
+        public string GetQueueUrl(Type type)
+        {
+            var queueUrl = string.Empty;
+
+            if (string.IsNullOrEmpty(_options.ServiceURL))
+            {
+                queueUrl = $"/{GetQueueName(type)}{(_options.EnableFifo ? ".fifo" : "")}";
+            }
+            else
+            {
+                queueUrl = $"{_options.ServiceURL}/queue/{GetQueueName(type)}{(_options.EnableFifo ? ".fifo" : "")}";
+            }
+
+            return queueUrl;
         }
     }
 }
