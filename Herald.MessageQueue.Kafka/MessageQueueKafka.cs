@@ -17,17 +17,17 @@ namespace Herald.MessageQueue.Kafka
         private readonly IConsumer<Ignore, string> _consumer;
         private readonly IProducer<Null, string> _producer;
         private readonly MessageQueueOptions _options;
-        private readonly ITopicInfo _topicInfo;
+        private readonly IMessageQueueInfo _info;
 
         public MessageQueueKafka(IConsumer<Ignore, string> consumer,
                                  IProducer<Null, string> producer,
                                  MessageQueueOptions options,
-                                 ITopicInfo topicInfo)
+                                 IMessageQueueInfo info)
         {
             _consumer = consumer;
             _producer = producer;
             _options = options;
-            _topicInfo = topicInfo;
+            _info = info;
         }
 
         public Task Received(MessageBase message)
@@ -39,7 +39,7 @@ namespace Herald.MessageQueue.Kafka
 
         public async Task Send(MessageBase message)
         {
-            var queueName = _topicInfo.GetTopicName(message.GetType());
+            var queueName = _info.GetTopicName(message.GetType());
 
             var messageBody = JsonConvert.SerializeObject(message);
 
@@ -53,7 +53,7 @@ namespace Herald.MessageQueue.Kafka
                 throw new ArgumentException("Max number of messages should be greater than zero.");
             }
 
-            var queueName = _topicInfo.GetTopicName(typeof(TMessage));
+            var queueName = _info.GetTopicName(typeof(TMessage));
 
             if (!_consumer.Subscription.Contains(queueName))
             {
@@ -77,7 +77,7 @@ namespace Herald.MessageQueue.Kafka
 
         public async IAsyncEnumerable<TMessage> Receive<TMessage>(TimeSpan timeout) where TMessage : MessageBase
         {
-            var queueName = _topicInfo.GetTopicName(typeof(TMessage));
+            var queueName = _info.GetTopicName(typeof(TMessage));
 
             if (!_consumer.Subscription.Contains(queueName))
             {
@@ -104,7 +104,7 @@ namespace Herald.MessageQueue.Kafka
 
         public async IAsyncEnumerable<TMessage> Receive<TMessage>([EnumeratorCancellation] CancellationToken cancellationToken) where TMessage : MessageBase
         {
-            var queueName = _topicInfo.GetTopicName(typeof(TMessage));
+            var queueName = _info.GetTopicName(typeof(TMessage));
 
             if (!_consumer.Subscription.Contains(queueName))
             {

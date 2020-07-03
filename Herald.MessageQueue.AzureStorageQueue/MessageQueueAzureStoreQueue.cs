@@ -18,17 +18,17 @@ namespace Herald.MessageQueue.AzureStorageQueue
     {
         private readonly CloudQueueClient _queueClient;
         private readonly MessageQueueOptions _options;
-        private readonly IQueueInfo _queueInfo;
+        private readonly IMessageQueueInfo _info;
 
         private CloudQueue _queue;
 
         public MessageQueueAzureStorageQueue(CloudQueueClient queueClient,
                                              MessageQueueOptions options,
-                                             IQueueInfo queueInfo)
+                                             IMessageQueueInfo info)
         {
             _queueClient = queueClient;
             _options = options;
-            _queueInfo = queueInfo;
+            _info = info;
         }
 
         public void Dispose()
@@ -114,7 +114,7 @@ namespace Herald.MessageQueue.AzureStorageQueue
 
         private CloudQueue GetQueueReference(Type type)
         {
-            var queueName = _queueInfo.GetQueueName(type);
+            var queueName = _info.GetQueueName(type);
 
             if (_queue == null || _queue.Name != queueName)
             {

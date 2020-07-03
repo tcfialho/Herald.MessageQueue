@@ -39,7 +39,7 @@ namespace Herald.MessageQueue.Tests.Unit
 
             configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
 
-            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions, configurationMock.Object));
+            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions, configurationMock.Object));
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
 
             //Act
@@ -74,7 +74,7 @@ namespace Herald.MessageQueue.Tests.Unit
 
             configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
 
-            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions, configurationMock.Object));
+            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions, configurationMock.Object));
 
             //Act
             var qtd = 0;
@@ -111,7 +111,7 @@ namespace Herald.MessageQueue.Tests.Unit
 
             configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
 
-            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions, configurationMock.Object));
+            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions, configurationMock.Object));
 
             //Act
             Func<Task> act = async () => await queue.Receive<TestMessage>(maxNumberOfMessages)
@@ -148,7 +148,7 @@ namespace Herald.MessageQueue.Tests.Unit
 
             configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
 
-            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions, configurationMock.Object));
+            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions, configurationMock.Object));
 
             //Act
             var qtd = 0;
@@ -183,7 +183,7 @@ namespace Herald.MessageQueue.Tests.Unit
 
             configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
 
-            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions, configurationMock.Object));
+            var queue = new MessageQueueAzureStorageQueue(clouldQueueClientMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions, configurationMock.Object));
 
             //Act
             await queue.Received(msg);

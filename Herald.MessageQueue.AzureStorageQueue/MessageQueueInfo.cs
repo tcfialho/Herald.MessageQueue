@@ -5,14 +5,14 @@ using Microsoft.Extensions.Configuration;
 
 using System;
 
-namespace Herald.MessageQueue.RabbitMq
+namespace Herald.MessageQueue.AzureStorageQueue
 {
-    public class QueueInfo : IQueueInfo
+    public class MessageQueueInfo : IMessageQueueInfo
     {
         private readonly MessageQueueOptions _options;
         private readonly IConfiguration _configuration;
 
-        public QueueInfo(MessageQueueOptions options, IConfiguration configuration)
+        public MessageQueueInfo(MessageQueueOptions options, IConfiguration configuration)
         {
             _options = options;
             _configuration = configuration;
@@ -34,7 +34,7 @@ namespace Herald.MessageQueue.RabbitMq
                 return attributeName;
             }
 
-            return string.Concat(type.Name, _options.QueueNameSufix);
+            return string.Concat(type.Name, _options.QueueNameSufix).ToLower();
         }
     }
 }

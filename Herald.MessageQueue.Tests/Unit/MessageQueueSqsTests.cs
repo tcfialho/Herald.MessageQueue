@@ -36,7 +36,7 @@ namespace Herald.MessageQueue.Tests.Unit
                          .Verifiable();
             configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
 
-            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions, configurationMock.Object));
+            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions, configurationMock.Object));
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
 
             //Act
@@ -71,7 +71,7 @@ namespace Herald.MessageQueue.Tests.Unit
                          .Verifiable();
             configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
 
-            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions, configurationMock.Object));
+            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions, configurationMock.Object));
 
 
             //Act
@@ -113,7 +113,7 @@ namespace Herald.MessageQueue.Tests.Unit
                          .Verifiable();
             configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
 
-            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions, configurationMock.Object));
+            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions, configurationMock.Object));
 
             //Act
             async Task act() => await queue.Receive<TestMessage>(maxNumberOfMessages)
@@ -151,7 +151,7 @@ namespace Herald.MessageQueue.Tests.Unit
                          .Verifiable();
             configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
 
-            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions, configurationMock.Object));
+            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions, configurationMock.Object));
 
             //Act
             var qtd = 0;
@@ -183,7 +183,7 @@ namespace Herald.MessageQueue.Tests.Unit
                          .Verifiable();
             configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
 
-            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions, new QueueInfo(messageQueueOptions, configurationMock.Object));
+            var queue = new MessageQueueSqs(amazonSqsMock.Object, messageQueueOptions, new MessageQueueInfo(messageQueueOptions, configurationMock.Object));
 
             //Act
             await queue.Received(msg);
