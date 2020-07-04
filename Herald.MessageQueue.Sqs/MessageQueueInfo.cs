@@ -34,7 +34,7 @@ namespace Herald.MessageQueue.Sqs
                 return attributeName;
             }
 
-            return string.Concat(type.Name, _options.QueueNameSufix);
+            return $"{type.Name}{_options.QueueNameSufix}{(_options.EnableFifo ? ".fifo" : "")}";
         }
 
         public string GetQueueUrl(Type type)
@@ -43,11 +43,11 @@ namespace Herald.MessageQueue.Sqs
 
             if (string.IsNullOrEmpty(_options.ServiceURL))
             {
-                queueUrl = $"/{GetQueueName(type)}{(_options.EnableFifo ? ".fifo" : "")}";
+                queueUrl = $"/{GetQueueName(type)}";
             }
             else
             {
-                queueUrl = $"{_options.ServiceURL}/queue/{GetQueueName(type)}{(_options.EnableFifo ? ".fifo" : "")}";
+                queueUrl = $"{_options.ServiceURL}/queue/{GetQueueName(type)}";
             }
 
             return queueUrl;
