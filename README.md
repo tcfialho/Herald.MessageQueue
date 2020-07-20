@@ -11,27 +11,43 @@ Herald.MessageQueue have different packages, each handle a 3rd library message q
 
 - Kafka
     - Package Manager
-        > Install-Package Herald.MessageQueue.Kafka
+        ```
+        Install-Package Herald.MessageQueue.Kafka
+        ```
     - .NET CLI
-        > dotnet add package Herald.MessageQueue.Kafka
+        ```
+        dotnet add package Herald.MessageQueue.Kafka
+        ```
 
 - RabbitMq
     - Package Manager
-        > Install-Package Herald.MessageQueue.RabbitMq
+        ```
+        Install-Package Herald.MessageQueue.RabbitMq
+        ```
     - .NET CLI
-        > dotnet add package Herald.MessageQueue.RabbitMq
+        ```
+        dotnet add package Herald.MessageQueue.RabbitMq
+        ```
 
 - Amazon Sqs
     - Package Manager
-        > Install-Package Herald.MessageQueue.Sqs
+        ```
+        Install-Package Herald.MessageQueue.Sqs
+        ```
     - .NET CLI
-        > dotnet add package Herald.MessageQueue.Sqs
+        ```
+        dotnet add package Herald.MessageQueue.Sqs
+        ```
 
 - Azure Storage Queue
     - Package Manager
-        > Install-Package Herald.MessageQueue.AzureStorageQueue
+        ```
+        Install-Package Herald.MessageQueue.AzureStorageQueue
+        ```
     - .NET CLI
-        > dotnet add package Herald.MessageQueue.AzureStorageQueue
+        ```
+        dotnet add package Herald.MessageQueue.AzureStorageQueue
+        ```
 
 ## Samples
 - [Herald.MessageQueue.Samples](https://github.com/tcfialho/Herald.MessageQueue.Samples)
