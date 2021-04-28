@@ -1,0 +1,25 @@
+version: 2
+updates:
+- package-ecosystem: nuget
+  directory: "/"
+  schedule:
+    interval: monthly
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: coverlet.msbuild
+    versions:
+    - 3.0.2
+  - dependency-name: AWSSDK.SQS
+    versions:
+    - 3.5.1.14
+    - 3.5.1.6
+  - dependency-name: Moq
+    versions:
+    - 4.15.2
+    - 4.16.0
+  - dependency-name: Microsoft.NET.Test.Sdk
+    versions:
+    - 16.8.3
+  - dependency-name: Confluent.Kafka
+    versions:
+    - 1.5.3
