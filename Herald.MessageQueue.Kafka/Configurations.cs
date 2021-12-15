@@ -36,10 +36,11 @@ namespace Herald.MessageQueue.Kafka
                 var config = serviceProvider.GetRequiredService<MessageQueueOptions>();
 
                 var consumerConfig = new ConsumerConfig
-                {
+                {                    
                     BootstrapServers = config.BootstrapServers,
                     GroupId = config.GroupId,
 
+                    SessionTimeoutMs = config.SessionTimeoutMs,
                     MaxPollIntervalMs = config.MaxPollIntervalMs,
                     AutoCommitIntervalMs = config.AutoCommitIntervalMs,
                     Acks = config.Acks,
@@ -67,7 +68,7 @@ namespace Herald.MessageQueue.Kafka
                 var producerConfig = new ProducerConfig
                 {
                     BootstrapServers = config.BootstrapServers,
-
+                    
                     SecurityProtocol = config.SecurityProtocol,
                     SslEndpointIdentificationAlgorithm = config.SslEndpointIdentificationAlgorithm,
                     SaslMechanism = config.SaslMechanism,

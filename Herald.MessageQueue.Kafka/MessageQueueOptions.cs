@@ -4,6 +4,7 @@ namespace Herald.MessageQueue.Kafka
 {
     public class MessageQueueOptions
     {
+        public int SessionTimeoutMs { get; set; } = 10 * 1000;
         public string BootstrapServers { get; set; }
         public string GroupId { get; set; }
 
