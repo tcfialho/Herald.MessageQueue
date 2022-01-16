@@ -34,6 +34,7 @@ namespace Herald.MessageQueue.Tests.Integrated
             var msg = new TestMessageB() { Id = Guid.NewGuid().ToString() };
             using var queue = AzureStorageQueueThreadSafeBuilder.Build();
             await queue.Send(msg);
+            await Task.Delay(1000);
 
             //Act
             var qtd = 0;

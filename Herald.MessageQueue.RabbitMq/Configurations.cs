@@ -9,7 +9,7 @@ namespace Herald.MessageQueue.RabbitMq
 {
     public static class Configurations
     {
-        public static IMessageQueueBuilder AddMessageQueueRabbitMq(this IServiceCollection services, Action<MessageQueueOptions> options)
+        public static IMessageQueueBuilder AddMessageQueueRabbitMq(this IServiceCollection services, Action<MessageQueueOptions> options, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         {
             if (services == null)
             {
@@ -25,24 +25,26 @@ namespace Herald.MessageQueue.RabbitMq
             var messageQueueOptions = new MessageQueueOptions();
             options?.Invoke(messageQueueOptions);
 
-            services.TryAddSingleton(messageQueueOptions);
+            services.TryAdd(new ServiceDescriptor(typeof(MessageQueueOptions), x => messageQueueOptions, serviceLifetime));
+            services.TryAdd(new ServiceDescriptor(typeof(IMessageQueue), typeof(MessageQueueRabbitMq), serviceLifetime));
+            services.TryAdd(new ServiceDescriptor(typeof(IMessageQueueInfo), typeof(MessageQueueInfo), serviceLifetime));
 
-            services.TryAddSingleton<IConnection>(serviceProvider =>
-            {
-                var config = serviceProvider.GetRequiredService<MessageQueueOptions>();
-                var factory = new ConnectionFactory()
-                {
-                    HostName = config.HostName,
-                    Port = int.Parse(config.Port),
-                    UserName = config.UserName,
-                    Password = config.Password,
-                    VirtualHost = config.VirtualHost,
-                    DispatchConsumersAsync = true
-                };
-                return factory.CreateConnection();
-            });
+            services.TryAdd(new ServiceDescriptor(typeof(IConnection), serviceProvider =>
+             {
+                 var config = serviceProvider.GetRequiredService<MessageQueueOptions>();
+                 var factory = new ConnectionFactory()
+                 {
+                     HostName = config.HostName,
+                     Port = int.Parse(config.Port),
+                     UserName = config.UserName,
+                     Password = config.Password,
+                     VirtualHost = config.VirtualHost,
+                     DispatchConsumersAsync = true
+                 };
+                 return factory.CreateConnection();
+             }, serviceLifetime));
 
-            services.TryAddSingleton<IModel>(serviceProvider =>
+            services.TryAdd(new ServiceDescriptor(typeof(IModel), serviceProvider =>
             {
                 var config = serviceProvider.GetRequiredService<MessageQueueOptions>();
                 var connection = serviceProvider.GetRequiredService<IConnection>();
@@ -53,11 +55,7 @@ namespace Herald.MessageQueue.RabbitMq
                 channel.BasicQos(0, 1, false);
 
                 return channel;
-            });
-
-            services.TryAddSingleton<IMessageQueue, MessageQueueRabbitMq>();
-
-            services.TryAddSingleton<IMessageQueueInfo, MessageQueueInfo>();
+            }, serviceLifetime));
 
             return new MessageQueueBuilder(services);
         }

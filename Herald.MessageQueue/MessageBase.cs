@@ -1,7 +1,5 @@
 ﻿using Newtonsoft.Json;
 
-using System;
-
 namespace Herald.MessageQueue
 {
     public abstract class MessageBase

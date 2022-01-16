@@ -9,7 +9,7 @@ namespace Herald.MessageQueue.Kafka
 {
     public static class Configurations
     {
-        public static IMessageQueueBuilder AddMessageQueueKafka(this IServiceCollection services, Action<MessageQueueOptions> options)
+        public static IMessageQueueBuilder AddMessageQueueKafka(this IServiceCollection services, Action<MessageQueueOptions> options, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         {
             if (services == null)
             {
@@ -25,18 +25,15 @@ namespace Herald.MessageQueue.Kafka
             var messageQueueOptions = new MessageQueueOptions();
             options?.Invoke(messageQueueOptions);
 
-            services.TryAddSingleton(messageQueueOptions);
+            services.TryAdd(new ServiceDescriptor(typeof(MessageQueueOptions), x => messageQueueOptions, serviceLifetime));
+            services.TryAdd(new ServiceDescriptor(typeof(IMessageQueue), typeof(MessageQueueKafka), serviceLifetime));
+            services.TryAdd(new ServiceDescriptor(typeof(IMessageQueueInfo), typeof(MessageQueueInfo), serviceLifetime));
 
-            services.TryAddSingleton<IMessageQueue, MessageQueueKafka>();
-
-            services.TryAddSingleton<IMessageQueueInfo, MessageQueueInfo>();
-
-            services.TryAddSingleton(serviceProvider =>
+            services.TryAdd(new ServiceDescriptor(typeof(IConsumer<Ignore, string>), serviceProvider =>
             {
                 var config = serviceProvider.GetRequiredService<MessageQueueOptions>();
-
                 var consumerConfig = new ConsumerConfig
-                {                    
+                {
                     BootstrapServers = config.BootstrapServers,
                     GroupId = config.GroupId,
 
@@ -55,20 +52,18 @@ namespace Herald.MessageQueue.Kafka
                     SaslUsername = config.SaslUsername,
                     SaslPassword = config.SaslPassword
                 };
-
                 var factory = new ConsumerBuilder<Ignore, string>(consumerConfig);
-
                 return factory.Build();
-            });
+            }, serviceLifetime));
 
-            services.TryAddSingleton(serviceProvider =>
+            services.TryAdd(new ServiceDescriptor(typeof(IProducer<Null, string>), serviceProvider =>
             {
                 var config = serviceProvider.GetRequiredService<MessageQueueOptions>();
 
                 var producerConfig = new ProducerConfig
                 {
                     BootstrapServers = config.BootstrapServers,
-                    
+
                     SecurityProtocol = config.SecurityProtocol,
                     SslEndpointIdentificationAlgorithm = config.SslEndpointIdentificationAlgorithm,
                     SaslMechanism = config.SaslMechanism,
@@ -78,7 +73,7 @@ namespace Herald.MessageQueue.Kafka
 
                 var factory = new ProducerBuilder<Null, string>(producerConfig);
                 return factory.Build();
-            });
+            }, serviceLifetime));
 
             return new MessageQueueBuilder(services);
         }

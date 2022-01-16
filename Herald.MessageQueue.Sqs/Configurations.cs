@@ -11,7 +11,7 @@ namespace Herald.MessageQueue.Sqs
 {
     public static class Configurations
     {
-        public static IMessageQueueBuilder AddMessageQueueSqs(this IServiceCollection services, Action<MessageQueueOptions> options)
+        public static IMessageQueueBuilder AddMessageQueueSqs(this IServiceCollection services, Action<MessageQueueOptions> options, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         {
             if (services == null)
             {
@@ -27,11 +27,9 @@ namespace Herald.MessageQueue.Sqs
             var messageQueueOptions = new MessageQueueOptions();
             options?.Invoke(messageQueueOptions);
 
-            services.TryAddSingleton(messageQueueOptions);
-
-            services.TryAddSingleton<IMessageQueue, MessageQueueSqs>();
-
-            services.TryAddSingleton<IMessageQueueInfo, MessageQueueInfo>();
+            services.TryAdd(new ServiceDescriptor(typeof(MessageQueueOptions), x => messageQueueOptions, serviceLifetime));
+            services.TryAdd(new ServiceDescriptor(typeof(IMessageQueue), typeof(MessageQueueSqs), serviceLifetime));
+            services.TryAdd(new ServiceDescriptor(typeof(IMessageQueueInfo), typeof(MessageQueueInfo), serviceLifetime));
 
             var awsSqsOptions = new AWSOptions();
 
@@ -52,7 +50,7 @@ namespace Herald.MessageQueue.Sqs
             awsSqsOptions.DefaultClientConfig.Validate();
 
             services.AddDefaultAWSOptions(awsSqsOptions);
-            services.AddAWSService<IAmazonSQS>(awsSqsOptions);
+            services.AddAWSService<IAmazonSQS>(awsSqsOptions, serviceLifetime);
 
             return new MessageQueueBuilder(services);
         }

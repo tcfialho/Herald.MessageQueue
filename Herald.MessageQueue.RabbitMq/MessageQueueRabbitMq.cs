@@ -32,7 +32,10 @@ namespace Herald.MessageQueue.RabbitMq
 
         public Task Received(MessageBase message)
         {
-            _channel.BasicAck((ulong)message.QueueData, false);
+            var queueData = ((ulong DeliveryTag, CancellationTokenSource CancellationTokenSource))message.QueueData;
+
+            queueData.CancellationTokenSource.Cancel();
+            _channel.BasicAck(queueData.DeliveryTag, false);
 
             return Task.CompletedTask;
         }
@@ -96,15 +99,28 @@ namespace Herald.MessageQueue.RabbitMq
             }
         }
 
+        private static (ulong DeliveryTag, CancellationTokenSource CancellationTokenSource) CreateQueueData(ulong deliveryTag, CancellationTokenSource cts)
+        {
+            (ulong DeliveryTag, CancellationTokenSource CancellationTokenSource) queueData;
+            queueData.DeliveryTag = deliveryTag;
+            queueData.CancellationTokenSource = cts;
+            return queueData;
+        }
+
         private TMessage ReceiveMessage<TMessage>(BasicGetResult result) where TMessage : MessageBase
         {
             TMessage message = null;
 
             if (result != null)
             {
+                var cts = new CancellationTokenSource();
                 var body = Encoding.UTF8.GetString(result.Body.Span);
                 message = JsonConvert.DeserializeObject<TMessage>(body);
-                message.QueueData = result.DeliveryTag;
+                message.QueueData = CreateQueueData(result.DeliveryTag, cts);
+                Task.Delay(TimeSpan.FromSeconds(_options.AutoNackTimeoutSeconds)).ContinueWith(task =>
+                {
+                    _channel.BasicNack(result.DeliveryTag, false, true);
+                }, cts.Token).ConfigureAwait(false);
             }
 
             return message;

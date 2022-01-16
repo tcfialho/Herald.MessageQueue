@@ -147,13 +147,16 @@ namespace Herald.MessageQueue.Tests.Unit
             var configurationMock = new Mock<IConfiguration>();
 
             var messageQueueOptions = new MessageQueueOptions();
-            var msg = new TestMessage() { Id = Guid.NewGuid().ToString(), QueueData = (ulong)0 };
+
+            (ulong DeliveryTag, CancellationTokenSource CancellationTokenSource) queueData = GetQueueDataStub();
+
+            var msg = new TestMessage() { Id = Guid.NewGuid().ToString(), QueueData = queueData };
 
             modelMock.Setup(x => x.BasicAck(It.IsAny<ulong>(), It.IsAny<bool>()))
                          .Verifiable();
             configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
 
-            var queue = new MessageQueueRabbitMq(modelMock.Object, channelMock.Object, messageQueueOptions, 
+            var queue = new MessageQueueRabbitMq(modelMock.Object, channelMock.Object, messageQueueOptions,
                 new MessageQueueInfo(messageQueueOptions, configurationMock.Object));
 
             //Act
@@ -161,6 +164,14 @@ namespace Herald.MessageQueue.Tests.Unit
 
             //Assert
             channelMock.VerifyAll();
+        }
+
+        private static (ulong DeliveryTag, CancellationTokenSource CancellationTokenSource) GetQueueDataStub()
+        {
+            (ulong DeliveryTag, CancellationTokenSource CancellationTokenSource) queueData;
+            queueData.DeliveryTag = 1;
+            queueData.CancellationTokenSource = new CancellationTokenSource();
+            return queueData;
         }
     }
 }
