@@ -9,7 +9,7 @@ namespace Herald.MessageQueue.AzureStorageQueue
 {
     public static class Configurations
     {
-        public static IMessageQueueBuilder AddMessageQueueAzureStorageQueue(this IServiceCollection services, Action<MessageQueueOptions> options)
+        public static IMessageQueueBuilder AddMessageQueueAzureStorageQueue(this IServiceCollection services, Action<MessageQueueOptions> options, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         {
             if (services == null)
             {
@@ -25,18 +25,16 @@ namespace Herald.MessageQueue.AzureStorageQueue
             var messageQueueOptions = new MessageQueueOptions();
             options?.Invoke(messageQueueOptions);
 
-            services.TryAddSingleton(messageQueueOptions);
+            services.TryAdd(new ServiceDescriptor(typeof(MessageQueueOptions), x => messageQueueOptions, serviceLifetime));
+            services.TryAdd(new ServiceDescriptor(typeof(IMessageQueue), typeof(MessageQueueAzureStorageQueue), serviceLifetime));
+            services.TryAdd(new ServiceDescriptor(typeof(IMessageQueueInfo), typeof(MessageQueueInfo), serviceLifetime));
 
-            services.TryAddSingleton<CloudQueueClient>(serviceProvider =>
+            services.TryAdd(new ServiceDescriptor(typeof(CloudQueueClient), serviceProvider =>
             {
                 var storageAccount = CloudStorageAccount.Parse(messageQueueOptions.ConnectionString);
                 var queueClient = storageAccount.CreateCloudQueueClient();
                 return queueClient;
-            });
-
-            services.TryAddSingleton<IMessageQueue, MessageQueueAzureStorageQueue>();
-
-            services.TryAddSingleton<IMessageQueueInfo, MessageQueueInfo>();
+            }, serviceLifetime));
 
             return new MessageQueueBuilder(services);
         }

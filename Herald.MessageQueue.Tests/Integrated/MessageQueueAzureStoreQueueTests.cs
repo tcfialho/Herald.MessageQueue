@@ -31,15 +31,19 @@ namespace Herald.MessageQueue.Tests.Integrated
         {
             //Arrange
             const int maxNumberOfMessages = 5;
-            var msg = new TestMessageB() { Id = Guid.NewGuid().ToString() };
-            using var queue = AzureStorageQueueThreadSafeBuilder.Build();
-            await queue.Send(msg);
+            using (var queue = AzureStorageQueueThreadSafeBuilder.Build())
+            {
+                await queue.Send(new TestMessageB() { Id = Guid.NewGuid().ToString() });
+            }
 
             //Act
             var qtd = 0;
-            await foreach (var message in queue.Receive<TestMessageB>(maxNumberOfMessages))
+            using (var queue = AzureStorageQueueThreadSafeBuilder.Build())
             {
-                qtd++;
+                await foreach (var message in queue.Receive<TestMessageB>(maxNumberOfMessages))
+                {
+                    qtd++;
+                }
             }
 
             //Assert
