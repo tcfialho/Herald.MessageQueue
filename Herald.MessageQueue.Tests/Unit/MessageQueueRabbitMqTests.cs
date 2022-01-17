@@ -33,6 +33,7 @@ namespace Herald.MessageQueue.Tests.Unit
             modelMock.Setup(x => x.BasicPublish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<IBasicProperties>(), It.IsAny<ReadOnlyMemory<byte>>()))
                          .Verifiable();
             configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
+            connectionMock.Setup(x => x.CreateModel()).Returns(modelMock.Object);
 
             var queue = new MessageQueueRabbitMq(connectionMock.Object, messageQueueOptions, 
                             new MessageQueueInfo(messageQueueOptions, configurationMock.Object));
@@ -61,6 +62,7 @@ namespace Herald.MessageQueue.Tests.Unit
                          .Returns(new BasicGetResult(0, false, "", "", 1, null, Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(msg))))
                          .Verifiable();
             configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
+            connectionMock.Setup(x => x.CreateModel()).Returns(modelMock.Object);
 
             var queue = new MessageQueueRabbitMq(connectionMock.Object, messageQueueOptions, 
                 new MessageQueueInfo(messageQueueOptions, configurationMock.Object));
@@ -122,6 +124,7 @@ namespace Herald.MessageQueue.Tests.Unit
                          .Returns(new BasicGetResult(0, false, "", "", 1, null, Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(msg))))
                          .Verifiable();
             configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
+            connectionMock.Setup(x => x.CreateModel()).Returns(modelMock.Object);
 
             var queue = new MessageQueueRabbitMq(connectionMock.Object, messageQueueOptions, 
                 new MessageQueueInfo(messageQueueOptions, configurationMock.Object));
@@ -155,6 +158,7 @@ namespace Herald.MessageQueue.Tests.Unit
             modelMock.Setup(x => x.BasicAck(It.IsAny<ulong>(), It.IsAny<bool>()))
                          .Verifiable();
             configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
+            connectionMock.Setup(x => x.CreateModel()).Returns(modelMock.Object);
 
             var queue = new MessageQueueRabbitMq(connectionMock.Object, messageQueueOptions,
                 new MessageQueueInfo(messageQueueOptions, configurationMock.Object));
