@@ -25,7 +25,7 @@ namespace Herald.MessageQueue.Tests.Unit
         {
             //Arrange
             var modelMock = new Mock<IModel>();
-            var channelMock = new Mock<IConnection>();
+            var connectionMock = new Mock<IConnection>();
             var configurationMock = new Mock<IConfiguration>();
 
             var messageQueueOptions = new MessageQueueOptions();
@@ -34,7 +34,7 @@ namespace Herald.MessageQueue.Tests.Unit
                          .Verifiable();
             configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
 
-            var queue = new MessageQueueRabbitMq(modelMock.Object, channelMock.Object, messageQueueOptions, 
+            var queue = new MessageQueueRabbitMq(connectionMock.Object, messageQueueOptions, 
                             new MessageQueueInfo(messageQueueOptions, configurationMock.Object));
 
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
@@ -51,7 +51,7 @@ namespace Herald.MessageQueue.Tests.Unit
         {
             //Arrange
             var modelMock = new Mock<IModel>();
-            var channelMock = new Mock<IConnection>();
+            var connectionMock = new Mock<IConnection>();
             var configurationMock = new Mock<IConfiguration>();
 
             var messageQueueOptions = new MessageQueueOptions();
@@ -62,7 +62,7 @@ namespace Herald.MessageQueue.Tests.Unit
                          .Verifiable();
             configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
 
-            var queue = new MessageQueueRabbitMq(modelMock.Object, channelMock.Object, messageQueueOptions, 
+            var queue = new MessageQueueRabbitMq(connectionMock.Object, messageQueueOptions, 
                 new MessageQueueInfo(messageQueueOptions, configurationMock.Object));
 
             //Act
@@ -82,7 +82,7 @@ namespace Herald.MessageQueue.Tests.Unit
             //Arrange
             const int maxNumberOfMessages = 0;
             var modelMock = new Mock<IModel>();
-            var channelMock = new Mock<IConnection>();
+            var connectionMock = new Mock<IConnection>();
             var configurationMock = new Mock<IConfiguration>();
 
             var messageQueueOptions = new MessageQueueOptions();
@@ -93,7 +93,7 @@ namespace Herald.MessageQueue.Tests.Unit
                          .Verifiable();
             configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
 
-            var queue = new MessageQueueRabbitMq(modelMock.Object, channelMock.Object, messageQueueOptions, 
+            var queue = new MessageQueueRabbitMq(connectionMock.Object, messageQueueOptions, 
                 new MessageQueueInfo(messageQueueOptions, configurationMock.Object));
 
             //Act
@@ -112,7 +112,7 @@ namespace Herald.MessageQueue.Tests.Unit
             const int delay = 1;
             var cancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(delay)).Token;
             var modelMock = new Mock<IModel>();
-            var channelMock = new Mock<IConnection>();
+            var connectionMock = new Mock<IConnection>();
             var configurationMock = new Mock<IConfiguration>();
 
             var messageQueueOptions = new MessageQueueOptions();
@@ -123,7 +123,7 @@ namespace Herald.MessageQueue.Tests.Unit
                          .Verifiable();
             configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
 
-            var queue = new MessageQueueRabbitMq(modelMock.Object, channelMock.Object, messageQueueOptions, 
+            var queue = new MessageQueueRabbitMq(connectionMock.Object, messageQueueOptions, 
                 new MessageQueueInfo(messageQueueOptions, configurationMock.Object));
 
             //Act
@@ -134,7 +134,7 @@ namespace Herald.MessageQueue.Tests.Unit
             }
 
             //Assert
-            channelMock.VerifyAll();
+            connectionMock.VerifyAll();
             Assert.True(qtd > 0);
         }
 
@@ -143,7 +143,7 @@ namespace Herald.MessageQueue.Tests.Unit
         {
             //Arrange
             var modelMock = new Mock<IModel>();
-            var channelMock = new Mock<IConnection>();
+            var connectionMock = new Mock<IConnection>();
             var configurationMock = new Mock<IConfiguration>();
 
             var messageQueueOptions = new MessageQueueOptions();
@@ -156,14 +156,14 @@ namespace Herald.MessageQueue.Tests.Unit
                          .Verifiable();
             configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);
 
-            var queue = new MessageQueueRabbitMq(modelMock.Object, channelMock.Object, messageQueueOptions,
+            var queue = new MessageQueueRabbitMq(connectionMock.Object, messageQueueOptions,
                 new MessageQueueInfo(messageQueueOptions, configurationMock.Object));
 
             //Act
             await queue.Received(msg);
 
             //Assert
-            channelMock.VerifyAll();
+            connectionMock.VerifyAll();
         }
 
         private static (ulong DeliveryTag, CancellationTokenSource CancellationTokenSource) GetQueueDataStub()

@@ -19,12 +19,11 @@ namespace Herald.MessageQueue.RabbitMq
         private readonly MessageQueueOptions _options;
         private readonly IMessageQueueInfo _info;
 
-        public MessageQueueRabbitMq(IModel channel,
-                                    IConnection connection,
+        public MessageQueueRabbitMq(IConnection connection,
                                     MessageQueueOptions options,
                                     IMessageQueueInfo info)
         {
-            _channel = channel;
+            _channel = connection.CreateModel();
             _connection = connection;
             _options = options;
             _info = info;
@@ -33,10 +32,8 @@ namespace Herald.MessageQueue.RabbitMq
         public Task Received(MessageBase message)
         {
             var queueData = ((ulong DeliveryTag, CancellationTokenSource CancellationTokenSource))message.QueueData;
-
             queueData.CancellationTokenSource.Cancel();
             _channel.BasicAck(queueData.DeliveryTag, false);
-
             return Task.CompletedTask;
         }
 

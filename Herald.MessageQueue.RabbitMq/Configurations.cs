@@ -30,31 +30,18 @@ namespace Herald.MessageQueue.RabbitMq
             services.TryAdd(new ServiceDescriptor(typeof(IMessageQueueInfo), typeof(MessageQueueInfo), serviceLifetime));
 
             services.TryAdd(new ServiceDescriptor(typeof(IConnection), serviceProvider =>
-             {
-                 var config = serviceProvider.GetRequiredService<MessageQueueOptions>();
-                 var factory = new ConnectionFactory()
-                 {
-                     HostName = config.HostName,
-                     Port = int.Parse(config.Port),
-                     UserName = config.UserName,
-                     Password = config.Password,
-                     VirtualHost = config.VirtualHost,
-                     DispatchConsumersAsync = true
-                 };
-                 return factory.CreateConnection();
-             }, serviceLifetime));
-
-            services.TryAdd(new ServiceDescriptor(typeof(IModel), serviceProvider =>
             {
                 var config = serviceProvider.GetRequiredService<MessageQueueOptions>();
-                var connection = serviceProvider.GetRequiredService<IConnection>();
-                var channel = connection.CreateModel();
-
-                channel.ConfirmSelect();
-                channel.WaitForConfirmsOrDie();
-                channel.BasicQos(0, 1, false);
-
-                return channel;
+                var factory = new ConnectionFactory()
+                {
+                    HostName = config.HostName,
+                    Port = int.Parse(config.Port),
+                    UserName = config.UserName,
+                    Password = config.Password,
+                    VirtualHost = config.VirtualHost,
+                    DispatchConsumersAsync = true
+                };
+                return factory.CreateConnection();
             }, serviceLifetime));
 
             return new MessageQueueBuilder(services);
