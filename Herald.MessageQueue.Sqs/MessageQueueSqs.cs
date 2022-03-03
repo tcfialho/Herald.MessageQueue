@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Herald.MessageQueue.Sqs
 {
-    public class MessageQueueSqs : IMessageQueue, IDisposable
+    public class MessageQueueSqs : IMessageQueueSqs, IDisposable
     {
         private readonly IAmazonSQS _amazonSqs;
         private readonly IMessageQueueInfo _queueInfo;
