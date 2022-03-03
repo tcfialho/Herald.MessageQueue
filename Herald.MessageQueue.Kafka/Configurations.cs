@@ -26,7 +26,8 @@ namespace Herald.MessageQueue.Kafka
             options?.Invoke(messageQueueOptions);
 
             services.TryAdd(new ServiceDescriptor(typeof(MessageQueueOptions), x => messageQueueOptions, serviceLifetime));
-            services.TryAdd(new ServiceDescriptor(typeof(IMessageQueue), typeof(MessageQueueKafka), serviceLifetime));
+            services.TryAdd(new ServiceDescriptor(typeof(IMessageQueueKafka), typeof(MessageQueueKafka), serviceLifetime));
+            services.TryAdd(new ServiceDescriptor(typeof(IMessageQueue), x => x.GetRequiredService<IMessageQueueKafka>(), serviceLifetime));
             services.TryAdd(new ServiceDescriptor(typeof(IMessageQueueInfo), typeof(MessageQueueInfo), serviceLifetime));
 
             services.TryAdd(new ServiceDescriptor(typeof(IConsumer<Ignore, string>), serviceProvider =>

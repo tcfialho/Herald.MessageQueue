@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Herald.MessageQueue.Kafka
 {
-    public class MessageQueueKafka : IMessageQueue, IDisposable
+    public class MessageQueueKafka : IMessageQueueKafka, IDisposable
     {
         private readonly IConsumer<Ignore, string> _consumer;
         private readonly IProducer<Null, string> _producer;

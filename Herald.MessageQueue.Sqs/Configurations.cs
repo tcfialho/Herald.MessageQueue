@@ -28,7 +28,8 @@ namespace Herald.MessageQueue.Sqs
             options?.Invoke(messageQueueOptions);
 
             services.TryAdd(new ServiceDescriptor(typeof(MessageQueueOptions), x => messageQueueOptions, serviceLifetime));
-            services.TryAdd(new ServiceDescriptor(typeof(IMessageQueue), typeof(MessageQueueSqs), serviceLifetime));
+            services.TryAdd(new ServiceDescriptor(typeof(IMessageQueueSqs), typeof(MessageQueueSqs), serviceLifetime));
+            services.TryAdd(new ServiceDescriptor(typeof(IMessageQueue), x => x.GetRequiredService<IMessageQueueSqs>(), serviceLifetime));
             services.TryAdd(new ServiceDescriptor(typeof(IMessageQueueInfo), typeof(MessageQueueInfo), serviceLifetime));
 
             var awsSqsOptions = new AWSOptions();
