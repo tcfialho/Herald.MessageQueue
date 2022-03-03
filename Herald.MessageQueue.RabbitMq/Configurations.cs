@@ -26,7 +26,8 @@ namespace Herald.MessageQueue.RabbitMq
             options?.Invoke(messageQueueOptions);
 
             services.TryAdd(new ServiceDescriptor(typeof(MessageQueueOptions), x => messageQueueOptions, serviceLifetime));
-            services.TryAdd(new ServiceDescriptor(typeof(IMessageQueue), typeof(MessageQueueRabbitMq), serviceLifetime));
+            services.TryAdd(new ServiceDescriptor(typeof(IMessageQueueRabbitMq), typeof(MessageQueueRabbitMq), serviceLifetime));
+            services.TryAdd(new ServiceDescriptor(typeof(IMessageQueue), x => x.GetRequiredService<IMessageQueueRabbitMq>(), serviceLifetime));
             services.TryAdd(new ServiceDescriptor(typeof(IMessageQueueInfo), typeof(MessageQueueInfo), serviceLifetime));
 
             services.TryAdd(new ServiceDescriptor(typeof(IConnection), serviceProvider =>

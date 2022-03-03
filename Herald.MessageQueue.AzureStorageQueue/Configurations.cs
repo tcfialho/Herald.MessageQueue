@@ -26,7 +26,8 @@ namespace Herald.MessageQueue.AzureStorageQueue
             options?.Invoke(messageQueueOptions);
 
             services.TryAdd(new ServiceDescriptor(typeof(MessageQueueOptions), x => messageQueueOptions, serviceLifetime));
-            services.TryAdd(new ServiceDescriptor(typeof(IMessageQueue), typeof(MessageQueueAzureStorageQueue), serviceLifetime));
+            services.TryAdd(new ServiceDescriptor(typeof(IMessageQueueAzureStorageQueue), typeof(MessageQueueAzureStorageQueue), serviceLifetime));
+            services.TryAdd(new ServiceDescriptor(typeof(IMessageQueue), x => x.GetRequiredService<IMessageQueueAzureStorageQueue>(), serviceLifetime));
             services.TryAdd(new ServiceDescriptor(typeof(IMessageQueueInfo), typeof(MessageQueueInfo), serviceLifetime));
 
             services.TryAdd(new ServiceDescriptor(typeof(CloudQueueClient), serviceProvider =>

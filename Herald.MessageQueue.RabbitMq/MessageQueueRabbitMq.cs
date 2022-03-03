@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Herald.MessageQueue.RabbitMq
 {
-    public class MessageQueueRabbitMq : IMessageQueue, IDisposable
+    public class MessageQueueRabbitMq : IMessageQueueRabbitMq, IDisposable
     {
         private readonly IModel _channel;
         private readonly IConnection _connection;

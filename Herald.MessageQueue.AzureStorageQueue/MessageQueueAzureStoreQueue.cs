@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Herald.MessageQueue.AzureStorageQueue
 {
-    public class MessageQueueAzureStorageQueue : IMessageQueue, IDisposable
+    public class MessageQueueAzureStorageQueue : IMessageQueueAzureStorageQueue, IDisposable
     {
         private readonly CloudQueueClient _queueClient;
         private readonly MessageQueueOptions _options;
