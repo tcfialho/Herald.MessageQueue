@@ -36,7 +36,7 @@ namespace Herald.MessageQueue.RabbitMq
             return Task.CompletedTask;
         }
 
-        public Task Send(MessageBase message)
+        public Task Send<TMessage>(TMessage message) where TMessage : MessageBase
         {
             var messageType = message.GetType();
 
