@@ -7,7 +7,7 @@ namespace Herald.MessageQueue
 {
     public interface IMessageQueue : IDisposable
     {
-        Task Send(MessageBase message);
+        Task Send<TMessage>(TMessage message) where TMessage : MessageBase;
 
         Task Received(MessageBase message);
 

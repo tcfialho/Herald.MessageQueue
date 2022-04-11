@@ -28,14 +28,14 @@ namespace Herald.MessageQueue.Sqs
             _queueInfo = queueInfo;
         }
 
-        public async Task Send(MessageBase @message)
+        public async Task Send<TMessage>(TMessage message) where TMessage : MessageBase
         {
             await _amazonSqs.SendMessageAsync(new SendMessageRequest
             {
                 QueueUrl = _queueInfo.GetQueueUrl(@message.GetType()),
                 MessageDeduplicationId = _options.EnableFifo ? Guid.NewGuid().ToString() : null,
                 MessageGroupId = _options.GroupId,
-                MessageBody = JsonSerializer.Serialize(@message),
+                MessageBody = JsonSerializer.Serialize(@message)
             });
         }
 

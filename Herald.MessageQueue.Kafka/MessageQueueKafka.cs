@@ -36,7 +36,7 @@ namespace Herald.MessageQueue.Kafka
             return Task.CompletedTask;
         }
 
-        public async Task Send(MessageBase message)
+        public async Task Send<TMessage>(TMessage message) where TMessage : MessageBase
         {
             var queueName = _info.GetTopicName(message.GetType());
 

@@ -102,7 +102,7 @@ namespace Herald.MessageQueue.AzureStorageQueue
             await _queue.DeleteMessageAsync(new CloudQueueMessage("", message.QueueData.ToString()));
         }
 
-        public async Task Send(MessageBase message)
+        public async Task Send<TMessage>(TMessage message) where TMessage : MessageBase
         {
             var messageBody = JsonConvert.SerializeObject(message);
             var body = Encoding.UTF8.GetBytes(messageBody);
