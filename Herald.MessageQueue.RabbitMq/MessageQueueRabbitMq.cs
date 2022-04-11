@@ -1,12 +1,11 @@
 ﻿
-using Newtonsoft.Json;
-
 using RabbitMQ.Client;
 
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -41,7 +40,7 @@ namespace Herald.MessageQueue.RabbitMq
         {
             var messageType = message.GetType();
 
-            var messageBody = JsonConvert.SerializeObject(message);
+            var messageBody = JsonSerializer.Serialize(message);
             var body = Encoding.UTF8.GetBytes(messageBody);
 
             var exchangeName = _info.GetExchangeName(messageType);
@@ -112,7 +111,7 @@ namespace Herald.MessageQueue.RabbitMq
             {
                 var cts = new CancellationTokenSource();
                 var body = Encoding.UTF8.GetString(result.Body.Span);
-                message = JsonConvert.DeserializeObject<TMessage>(body);
+                message = JsonSerializer.Deserialize<TMessage>(body);
                 message.QueueData = CreateQueueData(result.DeliveryTag, cts);
                 Task.Delay(TimeSpan.FromSeconds(_options.AutoNackTimeoutSeconds)).ContinueWith(task =>
                 {

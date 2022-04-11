@@ -3,12 +3,11 @@ using Amazon.SQS.Model;
 
 using Herald.MessageQueue.Extensions;
 
-using Newtonsoft.Json;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -36,7 +35,7 @@ namespace Herald.MessageQueue.Sqs
                 QueueUrl = _queueInfo.GetQueueUrl(@message.GetType()),
                 MessageDeduplicationId = _options.EnableFifo ? Guid.NewGuid().ToString() : null,
                 MessageGroupId = _options.GroupId,
-                MessageBody = JsonConvert.SerializeObject(@message),
+                MessageBody = JsonSerializer.Serialize(@message),
             });
         }
 
@@ -122,7 +121,7 @@ namespace Herald.MessageQueue.Sqs
             if (result != null)
             {
                 var body = result.Body;
-                message = JsonConvert.DeserializeObject<TMessage>(body);
+                message = JsonSerializer.Deserialize<TMessage>(body);
                 message.QueueData = result.ReceiptHandle;
             }
 

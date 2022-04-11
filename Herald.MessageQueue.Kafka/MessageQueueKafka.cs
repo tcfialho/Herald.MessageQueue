@@ -2,11 +2,10 @@
 
 using Herald.MessageQueue.Extensions;
 
-using Newtonsoft.Json;
-
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -41,7 +40,7 @@ namespace Herald.MessageQueue.Kafka
         {
             var queueName = _info.GetTopicName(message.GetType());
 
-            var messageBody = JsonConvert.SerializeObject(message);
+            var messageBody = JsonSerializer.Serialize(message);
 
             await _producer.ProduceAsync(queueName, new Message<Null, string> { Value = messageBody });
         }
@@ -66,7 +65,7 @@ namespace Herald.MessageQueue.Kafka
 
                 if (result != null)
                 {
-                    var obj = JsonConvert.DeserializeObject<TMessage>(result.Message.Value);
+                    var obj = JsonSerializer.Deserialize<TMessage>(result.Message.Value);
 
                     obj.QueueData = result;
 
@@ -134,7 +133,7 @@ namespace Herald.MessageQueue.Kafka
             if (result != null)
             {
                 var body = result.Message.Value;
-                message = JsonConvert.DeserializeObject<TMessage>(body);
+                message = JsonSerializer.Deserialize<TMessage>(body);
                 message.QueueData = result;
             }
 
