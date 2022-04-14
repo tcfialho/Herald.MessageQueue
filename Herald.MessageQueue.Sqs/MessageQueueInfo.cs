@@ -23,7 +23,7 @@ namespace Herald.MessageQueue.Sqs
             var configuredName = _configuration[string.Concat(type.Name, "Queue")];
 
             if (!string.IsNullOrWhiteSpace(configuredName))
-            { 
+            {
                 return configuredName;
             }
 
@@ -39,15 +39,20 @@ namespace Herald.MessageQueue.Sqs
 
         public string GetQueueUrl(Type type)
         {
+            return GetQueueUrl(GetQueueName(type));
+        }
+
+        public string GetQueueUrl(string queueName)
+        {
             var queueUrl = string.Empty;
 
             if (string.IsNullOrEmpty(_options.ServiceURL))
             {
-                queueUrl = $"/{GetQueueName(type)}";
+                queueUrl = $"/{queueName}";
             }
             else
             {
-                queueUrl = $"{_options.ServiceURL}/queue/{GetQueueName(type)}";
+                queueUrl = $"{_options.ServiceURL}/queue/{queueName}";
             }
 
             return queueUrl;

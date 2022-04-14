@@ -36,19 +36,22 @@ namespace Herald.MessageQueue.RabbitMq
             return Task.CompletedTask;
         }
 
-        public Task Send<TMessage>(TMessage message) where TMessage : MessageBase
+        public async Task Send<TMessage>(TMessage message) where TMessage : MessageBase
+        {
+            var messageType = message.GetType();
+            await Send(message, _info.GetExchangeName(messageType), _info.GetRoutingKey(messageType));
+        }
+
+        public async Task Send<TMessage>(TMessage message, string exchangeName, string routingKey) where TMessage : MessageBase
         {
             var messageType = message.GetType();
 
             var messageBody = JsonSerializer.Serialize(message);
             var body = Encoding.UTF8.GetBytes(messageBody);
 
-            var exchangeName = _info.GetExchangeName(messageType);
-            var routingKey = _info.GetRoutingKey(messageType);
-
             _channel.BasicPublish(exchangeName, routingKey, null, body);
 
-            return Task.CompletedTask;
+            await Task.CompletedTask;
         }
 
         public async IAsyncEnumerable<TMessage> Receive<TMessage>(int maxNumberOfMessages) where TMessage : MessageBase

@@ -104,18 +104,26 @@ namespace Herald.MessageQueue.AzureStorageQueue
 
         public async Task Send<TMessage>(TMessage message) where TMessage : MessageBase
         {
+            await Send<TMessage>(message, _info.GetQueueName(message.GetType()));
+        }
+
+        public async Task Send<TMessage>(TMessage message, string destination) where TMessage : MessageBase
+        {
             var messageBody = JsonConvert.SerializeObject(message);
             var body = Encoding.UTF8.GetBytes(messageBody);
 
-            _queue = GetQueueReference(message.GetType());
+            _queue = GetQueueReference(destination);
 
             await _queue.AddMessageAsync(new CloudQueueMessage(body));
         }
 
         private CloudQueue GetQueueReference(Type type)
         {
-            var queueName = _info.GetQueueName(type);
+            return GetQueueReference(_info.GetQueueName(type));
+        }
 
+        private CloudQueue GetQueueReference(string queueName)
+        {
             if (_queue == null || _queue.Name != queueName)
             {
                 _queue = _queueClient.GetQueueReference(queueName);

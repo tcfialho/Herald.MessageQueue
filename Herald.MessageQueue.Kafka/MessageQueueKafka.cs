@@ -38,11 +38,14 @@ namespace Herald.MessageQueue.Kafka
 
         public async Task Send<TMessage>(TMessage message) where TMessage : MessageBase
         {
-            var queueName = _info.GetTopicName(message.GetType());
+            await Send(message, _info.GetTopicName(message.GetType()));
+        }
 
+        public async Task Send<TMessage>(TMessage message, string topicName) where TMessage : MessageBase
+        {
             var messageBody = JsonSerializer.Serialize(message);
 
-            await _producer.ProduceAsync(queueName, new Message<Null, string> { Value = messageBody });
+            await _producer.ProduceAsync(topicName, new Message<Null, string> { Value = messageBody });
         }
 
         public async IAsyncEnumerable<TMessage> Receive<TMessage>(int maxNumberOfMessages) where TMessage : MessageBase
