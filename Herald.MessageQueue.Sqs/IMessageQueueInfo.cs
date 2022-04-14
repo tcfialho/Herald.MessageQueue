@@ -6,5 +6,6 @@ namespace Herald.MessageQueue.Sqs
     {
         string GetQueueName(Type type);
         string GetQueueUrl(Type type);
+        string GetQueueUrl(string queueName);
     }
 }
