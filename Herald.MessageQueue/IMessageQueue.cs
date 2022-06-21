@@ -9,7 +9,7 @@ namespace Herald.MessageQueue
     {
         Task Send<TMessage>(TMessage message) where TMessage : MessageBase;
 
-        Task Received(MessageBase message);
+        Task Received<TMessage>(TMessage message) where TMessage : MessageBase;
 
         IAsyncEnumerable<TMessage> Receive<TMessage>(int maxNumberOfMessages) where TMessage : MessageBase;
 

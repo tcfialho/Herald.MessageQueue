@@ -40,11 +40,11 @@ namespace Herald.MessageQueue.Sqs
                 QueueUrl = _queueInfo.GetQueueUrl(destination),
                 MessageDeduplicationId = _options.EnableFifo ? Guid.NewGuid().ToString() : null,
                 MessageGroupId = _options.GroupId,
-                MessageBody = JsonSerializer.Serialize(@message)
-            });
+                MessageBody = JsonSerializer.Serialize(message, message.GetType())
+        });
         }
 
-        public async Task Received(MessageBase @message)
+        public async Task Received<TMessage>(TMessage message) where TMessage : MessageBase
         {
             await _amazonSqs.DeleteMessageAsync(new DeleteMessageRequest
             {

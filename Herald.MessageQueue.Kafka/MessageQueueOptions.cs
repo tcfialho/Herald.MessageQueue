@@ -4,11 +4,11 @@ namespace Herald.MessageQueue.Kafka
 {
     public class MessageQueueOptions
     {
-        public int SessionTimeoutMs { get; set; } = 10 * 1000;
+        public int SessionTimeoutMs { get; set; } = 6000;
         public string BootstrapServers { get; set; }
         public string GroupId { get; set; }
 
-        public int MaxPollIntervalMs { get; set; } = 10 * 1000;
+        public int MaxPollIntervalMs { get; set; } = 300000;
         public int AutoCommitIntervalMs { get; set; } = 500;
 
         public Acks? Acks { get; set; }

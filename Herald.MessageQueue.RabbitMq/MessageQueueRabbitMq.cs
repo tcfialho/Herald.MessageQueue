@@ -28,7 +28,7 @@ namespace Herald.MessageQueue.RabbitMq
             _info = info;
         }
 
-        public Task Received(MessageBase message)
+        public Task Received<TMessage>(TMessage message) where TMessage : MessageBase
         {
             var queueData = ((ulong DeliveryTag, CancellationTokenSource CancellationTokenSource))message.QueueData;
             queueData.CancellationTokenSource.Cancel();
@@ -44,9 +44,7 @@ namespace Herald.MessageQueue.RabbitMq
 
         public async Task Send<TMessage>(TMessage message, string exchangeName, string routingKey) where TMessage : MessageBase
         {
-            var messageType = message.GetType();
-
-            var messageBody = JsonSerializer.Serialize(message);
+            var messageBody = JsonSerializer.Serialize(message, message.GetType());
             var body = Encoding.UTF8.GetBytes(messageBody);
 
             _channel.BasicPublish(exchangeName, routingKey, null, body);

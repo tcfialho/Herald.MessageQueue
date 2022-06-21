@@ -95,7 +95,7 @@ namespace Herald.MessageQueue.AzureStorageQueue
             }
         }
 
-        public async Task Received(MessageBase message)
+        public async Task Received<TMessage>(TMessage message) where TMessage : MessageBase
         {
             _queue = GetQueueReference(message.GetType());
 
