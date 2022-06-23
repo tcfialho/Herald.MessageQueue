@@ -62,7 +62,7 @@ namespace Herald.MessageQueue.Tests.Unit
             
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
 
-            clouldQueueMock.Setup(x => x.GetMessagesAsync(It.IsAny<int>()))
+            clouldQueueMock.Setup(x => x.GetMessagesAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
                         .ReturnsAsync(new CloudQueueMessage[1]
                         {
                             new CloudQueueMessage(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(msg)))

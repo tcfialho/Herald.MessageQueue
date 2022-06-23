@@ -48,19 +48,15 @@ namespace Herald.MessageQueue.AzureStorageQueue
                 throw new ArgumentException("Max number of messages should not be greater than 32.");
             }
 
-            _queue = GetQueueReference(typeof(TMessage));
+            var cancellationTokenSource = new CancellationTokenSource();
+            var cancellationToken = cancellationTokenSource.Token;
 
-            var messages = await _queue.GetMessagesAsync(maxNumberOfMessages);
-
-            foreach (var item in messages)
+            var i = 0;
+            await foreach (var message in Receive<TMessage>(cancellationToken))
             {
-                var message = ReceiveMessage<TMessage>(item);
-
-                if (message == null)
-                {
-                    continue;
-                }
-
+                if (i >= maxNumberOfMessages)
+                    break;
+                i++;
                 yield return message;
             }
         }
@@ -69,7 +65,7 @@ namespace Herald.MessageQueue.AzureStorageQueue
         {
             _queue = GetQueueReference(typeof(TMessage));
 
-            const int maxNumberOfMessages = 10;
+            const int maxNumberOfMessages = 1;
 
             while (!cancellationToken.IsCancellationRequested)
             {

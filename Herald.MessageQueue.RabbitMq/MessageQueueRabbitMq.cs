@@ -59,20 +59,16 @@ namespace Herald.MessageQueue.RabbitMq
                 throw new ArgumentException("Max number of messages should be greater than zero.");
             }
 
-            var queueName = _info.GetQueueName(typeof(TMessage));
+            var cancellationTokenSource = new CancellationTokenSource();
+            var cancellationToken = cancellationTokenSource.Token;
 
-            for (var i = 0; i < maxNumberOfMessages; i++)
+            var i = 0;
+            await foreach (var message in Receive<TMessage>(cancellationToken))
             {
-                var result = _channel.BasicGet(queueName, false);
-
-                var message = ReceiveMessage<TMessage>(result);
-
-                if (message == null)
-                {
-                    continue;
-                }
-
-                yield return await Task.FromResult(message);
+                if (i >= maxNumberOfMessages)
+                    break;
+                i++;
+                yield return message;
             }
         }
 

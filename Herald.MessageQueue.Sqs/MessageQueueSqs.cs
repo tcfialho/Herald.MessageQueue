@@ -65,34 +65,35 @@ namespace Herald.MessageQueue.Sqs
                 throw new ArgumentException("Max number of messages should not be greater than 10.");
             }
 
-            var result = await _amazonSqs.ReceiveMessageAsync(new ReceiveMessageRequest
+            var cancellationTokenSource = new CancellationTokenSource();
+            var cancellationToken = cancellationTokenSource.Token;
+
+            var i = 0;
+            await foreach (var message in Receive<TMessage>(cancellationToken, maxNumberOfMessages))
             {
-                QueueUrl = _queueInfo.GetQueueUrl(typeof(TMessage)),
-                MaxNumberOfMessages = maxNumberOfMessages,
-                WaitTimeSeconds = _options.WaitTimeSeconds,
-                VisibilityTimeout = _options.VisibilityTimeout
-            });
-
-            foreach (var item in result.Messages)
-            {
-                var message = ReceiveMessage<TMessage>(item);
-
-                if (message == null)
-                {
-                    continue;
-                }
-
+                if (i >= maxNumberOfMessages)
+                    break;
+                i++;
                 yield return message;
             }
         }
 
         public async IAsyncEnumerable<TMessage> Receive<TMessage>([EnumeratorCancellation] CancellationToken cancellationToken) where TMessage : MessageBase
         {
+            await foreach (var message in Receive<TMessage>(cancellationToken, 1))
+            {
+                yield return message;
+            }
+        }
+
+        private async IAsyncEnumerable<TMessage> Receive<TMessage>([EnumeratorCancellation] CancellationToken cancellationToken, int maxNumberOfMessages) where TMessage : MessageBase
+        {
             var config = new ReceiveMessageRequest
             {
                 QueueUrl = _queueInfo.GetQueueUrl(typeof(TMessage)),
+                MaxNumberOfMessages = maxNumberOfMessages,
                 WaitTimeSeconds = _options.WaitTimeSeconds,
-                MaxNumberOfMessages = 10
+                VisibilityTimeout = _options.VisibilityTimeout
             };
 
             while (!cancellationToken.IsCancellationRequested)
