@@ -1,6 +1,4 @@
-﻿using Microsoft.Azure.Storage;
-using Microsoft.Azure.Storage.Queue;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 using System;
@@ -29,13 +27,6 @@ namespace Herald.MessageQueue.AzureStorageQueue
             services.TryAdd(new ServiceDescriptor(typeof(IMessageQueueAzureStorageQueue), typeof(MessageQueueAzureStorageQueue), serviceLifetime));
             services.TryAdd(new ServiceDescriptor(typeof(IMessageQueue), x => x.GetRequiredService<IMessageQueueAzureStorageQueue>(), serviceLifetime));
             services.TryAdd(new ServiceDescriptor(typeof(IMessageQueueInfo), typeof(MessageQueueInfo), serviceLifetime));
-
-            services.TryAdd(new ServiceDescriptor(typeof(CloudQueueClient), serviceProvider =>
-            {
-                var storageAccount = CloudStorageAccount.Parse(messageQueueOptions.ConnectionString);
-                var queueClient = storageAccount.CreateCloudQueueClient();
-                return queueClient;
-            }, serviceLifetime));
 
             return new MessageQueueBuilder(services);
         }

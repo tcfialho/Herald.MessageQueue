@@ -1,14 +1,13 @@
-﻿using Herald.MessageQueue.Extensions;
-
-using Microsoft.Azure.Storage.Queue;
-
-using Newtonsoft.Json;
+﻿using Azure.Storage.Queues;
+using Azure.Storage.Queues.Models;
+using Herald.MessageQueue.Extensions;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,24 +15,19 @@ namespace Herald.MessageQueue.AzureStorageQueue
 {
     public class MessageQueueAzureStorageQueue : IMessageQueueAzureStorageQueue, IDisposable
     {
-        private readonly CloudQueueClient _queueClient;
         private readonly MessageQueueOptions _options;
         private readonly IMessageQueueInfo _info;
 
-        private CloudQueue _queue;
-
-        public MessageQueueAzureStorageQueue(CloudQueueClient queueClient,
-                                             MessageQueueOptions options,
+        public MessageQueueAzureStorageQueue(MessageQueueOptions options,
                                              IMessageQueueInfo info)
         {
-            _queueClient = queueClient;
             _options = options;
             _info = info;
         }
 
         public void Dispose()
         {
-            _queue = null;
+            
         }
 
         public async IAsyncEnumerable<TMessage> Receive<TMessage>(int maxNumberOfMessages) where TMessage : MessageBase
@@ -63,13 +57,14 @@ namespace Herald.MessageQueue.AzureStorageQueue
 
         public async IAsyncEnumerable<TMessage> Receive<TMessage>([EnumeratorCancellation] CancellationToken cancellationToken = default) where TMessage : MessageBase
         {
-            _queue = GetQueueReference(typeof(TMessage));
+            var queueName = _info.GetQueueName(typeof(TMessage));
+            var queueClient = new QueueClient(_options.ConnectionString, queueName);
 
             const int maxNumberOfMessages = 1;
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                var results = await _queue.GetMessagesAsync(maxNumberOfMessages, cancellationToken).DefaultIfCanceled();
+                QueueMessage[] results = await queueClient.ReceiveMessagesAsync(maxNumberOfMessages, default, cancellationToken).DefaultIfCanceled();
 
                 if (results == null || !results.Any())
                 {
@@ -93,53 +88,48 @@ namespace Herald.MessageQueue.AzureStorageQueue
 
         public async Task Received<TMessage>(TMessage message) where TMessage : MessageBase
         {
-            _queue = GetQueueReference(message.GetType());
-
-            await _queue.DeleteMessageAsync(new CloudQueueMessage("", message.QueueData.ToString()));
+            var queueName = _info.GetQueueName(message.GetType());
+            var queueClient = new QueueClient(_options.ConnectionString, queueName);
+            var queueData = ((string MessageId, string PopReceipt))message.QueueData;
+            await queueClient.DeleteMessageAsync(queueData.MessageId, queueData.PopReceipt);
         }
 
         public async Task Send<TMessage>(TMessage message) where TMessage : MessageBase
         {
-            await Send<TMessage>(message, _info.GetQueueName(message.GetType()));
+            var queueName = _info.GetQueueName(message.GetType());
+            await Send<TMessage>(message, queueName);
         }
 
         public async Task Send<TMessage>(TMessage message, string destination) where TMessage : MessageBase
         {
-            var messageBody = JsonConvert.SerializeObject(message);
+            var queueClient = new QueueClient(_options.ConnectionString, destination);
+
+            var messageBody = JsonSerializer.Serialize(message, message.GetType());
             var body = Encoding.UTF8.GetBytes(messageBody);
 
-            _queue = GetQueueReference(destination);
-
-            await _queue.AddMessageAsync(new CloudQueueMessage(body));
+            await queueClient.SendMessageAsync(messageBody);
         }
 
-        private CloudQueue GetQueueReference(Type type)
-        {
-            return GetQueueReference(_info.GetQueueName(type));
-        }
-
-        private CloudQueue GetQueueReference(string queueName)
-        {
-            if (_queue == null || _queue.Name != queueName)
-            {
-                _queue = _queueClient.GetQueueReference(queueName);
-            }
-
-            return _queue;
-        }
-
-        private TMessage ReceiveMessage<TMessage>(CloudQueueMessage message) where TMessage : MessageBase
+        private TMessage ReceiveMessage<TMessage>(QueueMessage message) where TMessage : MessageBase
         {
             TMessage obj = null;
 
             if (message != null)
             {
-                var body = message.AsString;
-                obj = JsonConvert.DeserializeObject<TMessage>(body);
-                obj.QueueData = message.PopReceipt;
+                var body = message.Body.ToString();
+                obj = JsonSerializer.Deserialize<TMessage>(body);
+                obj.QueueData = CreateQueueData(message);
             }
 
             return obj;
+        }
+
+        private static (string MessageId, string PopReceipt) CreateQueueData(QueueMessage message)
+        {
+            (string MessageId, string PopReceipt) queueData;
+            queueData.MessageId = message.MessageId;
+            queueData.PopReceipt = message.PopReceipt;            
+            return queueData;
         }
     }
 }
