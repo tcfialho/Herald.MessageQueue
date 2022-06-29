@@ -1,6 +1,7 @@
 ﻿using Confluent.Kafka;
 
 using Herald.MessageQueue.Kafka;
+using Herald.MessageQueue.Tests.Helpers;
 using Herald.MessageQueue.Tests.Helpers.Kafka;
 
 using Microsoft.Extensions.Configuration;

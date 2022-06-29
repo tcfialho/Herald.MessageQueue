@@ -1,8 +1,10 @@
 ﻿using Herald.MessageQueue.Attributes;
 
-namespace Herald.MessageQueue.Tests.Helpers.Sqs
+namespace Herald.MessageQueue.Tests.Helpers
 {
+    [ExchangeName("TestMessage_Exchange")]
     [QueueName("TestMessage_Queue")]
+    [RoutingKey("TestMessage_RoutingKey")]
     public class TestMessage : MessageBase
     {
         public TestMessage() : base()
@@ -42,5 +44,4 @@ namespace Herald.MessageQueue.Tests.Helpers.Sqs
         }
         public string Id { get; set; }
     }
-
 }

@@ -51,7 +51,7 @@ services:
       - SERVICES=sqs
 
   azurite:
-      image: 'arafato/azurite:latest'
+      image: 'arafato/azurite:2.6.5'
       hostname: azurite
       ports:
           - '10000:10000'
@@ -145,14 +145,13 @@ services:
       - "moby:127.0.0.1"
 
   azurite-create-queues:
-    image: curlimages/curl:latest
+    image: curlimages/curl:7.83.1
     depends_on:
       - azurite
     hostname: azurite-create-queues
     entrypoint: /bin/sh -c
     command: >
       "
-        sleep 10
         while ! nc -z azurite 10001; do echo waiting; sleep 10; done;
         curl -X PUT http://azurite:10001/devstoreaccount1/testmessageaqueue
         curl -X PUT http://azurite:10001/devstoreaccount1/testmessagebqueue

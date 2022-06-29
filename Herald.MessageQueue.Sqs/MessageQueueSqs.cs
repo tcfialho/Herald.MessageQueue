@@ -80,7 +80,8 @@ namespace Herald.MessageQueue.Sqs
 
         public async IAsyncEnumerable<TMessage> Receive<TMessage>([EnumeratorCancellation] CancellationToken cancellationToken) where TMessage : MessageBase
         {
-            await foreach (var message in Receive<TMessage>(cancellationToken, 1))
+            const int maxNumberOfMessages = 1;
+            await foreach (var message in Receive<TMessage>(cancellationToken, maxNumberOfMessages))
             {
                 yield return message;
             }

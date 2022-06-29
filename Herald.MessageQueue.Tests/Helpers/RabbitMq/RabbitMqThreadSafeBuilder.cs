@@ -8,10 +8,10 @@ using System.Collections.Generic;
 
 namespace Herald.MessageQueue.Tests.Helpers.RabbitMq
 {
-    public static class RabbitMqThreadSafeBuilder
+    public class RabbitMqThreadSafeBuilder : IThreadSafeBuilder
     {
         private static readonly object syncRoot = new object();
-        public static IMessageQueue Build<T>()
+        public IMessageQueue Build()
         {
             IMessageQueue queue;
             lock (syncRoot)

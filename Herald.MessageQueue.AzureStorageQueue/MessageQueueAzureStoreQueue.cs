@@ -46,7 +46,7 @@ namespace Herald.MessageQueue.AzureStorageQueue
             var cancellationToken = cancellationTokenSource.Token;
 
             var i = 0;
-            await foreach (var message in Receive<TMessage>(cancellationToken))
+            await foreach (var message in Receive<TMessage>(cancellationToken, maxNumberOfMessages))
             {
                 if (i >= maxNumberOfMessages)
                     break;
@@ -57,10 +57,18 @@ namespace Herald.MessageQueue.AzureStorageQueue
 
         public async IAsyncEnumerable<TMessage> Receive<TMessage>([EnumeratorCancellation] CancellationToken cancellationToken = default) where TMessage : MessageBase
         {
+            const int maxNumberOfMessages = 1;
+
+            await foreach (var message in Receive<TMessage>(cancellationToken, maxNumberOfMessages))
+            {
+                yield return message;
+            }
+        }
+
+        private async IAsyncEnumerable<TMessage> Receive<TMessage>([EnumeratorCancellation] CancellationToken cancellationToken, int maxNumberOfMessages) where TMessage : MessageBase
+        {
             var queueName = _info.GetQueueName(typeof(TMessage));
             var queueClient = new QueueClient(_options.ConnectionString, queueName);
-
-            const int maxNumberOfMessages = 1;
 
             while (!cancellationToken.IsCancellationRequested)
             {

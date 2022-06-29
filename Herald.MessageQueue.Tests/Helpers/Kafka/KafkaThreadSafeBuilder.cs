@@ -8,10 +8,10 @@ using System.Collections.Generic;
 
 namespace Herald.MessageQueue.Tests.Helpers.Kafka
 {
-    public static class KafkaThreadSafeBuilder
+    public class KafkaThreadSafeBuilder : IThreadSafeBuilder
     {
         private static readonly object _syncRoot = new object();
-        public static IMessageQueue Build()
+        public IMessageQueue Build()
         {
             IMessageQueue queue;
             lock (_syncRoot)

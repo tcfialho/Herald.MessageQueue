@@ -90,12 +90,12 @@ namespace Herald.MessageQueue.Kafka
         {
             var queueName = _info.GetTopicName(typeof(TMessage));
 
+            _consumer.Subscribe(queueName);
+
             while (!cancellationToken.IsCancellationRequested)
             {
-                _consumer.Subscribe(queueName);
-
                 var result = await Task.Run(() => _consumer.Consume(cancellationToken), cancellationToken).DefaultIfCanceled();
-
+                
                 var message = ReceiveMessage<TMessage>(result);
 
                 if (message == null)

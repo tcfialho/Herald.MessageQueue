@@ -5,12 +5,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 using System.Collections.Generic;
 
-namespace Herald.MessageQueue.Tests.Helpers.RabbitMq
+namespace Herald.MessageQueue.Tests.Helpers.AzureStorageQueue
 {
-    public static class AzureStorageQueueThreadSafeBuilder
+    public class AzureStorageQueueThreadSafeBuilder : IThreadSafeBuilder
     {
         private static readonly object syncRoot = new object();
-        public static IMessageQueue Build()
+        public IMessageQueue Build()
         {
             IMessageQueue queue;
             lock (syncRoot)
