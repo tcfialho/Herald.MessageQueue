@@ -13,14 +13,18 @@ using System.Threading.Tasks;
 
 namespace Herald.MessageQueue.AzureStorageQueue
 {
+
     public class MessageQueueAzureStorageQueue : IMessageQueueAzureStorageQueue, IDisposable
     {
+        private readonly IQueueClientFactory _queueClientFactory;
         private readonly MessageQueueOptions _options;
         private readonly IMessageQueueInfo _info;
 
-        public MessageQueueAzureStorageQueue(MessageQueueOptions options,
+        public MessageQueueAzureStorageQueue(IQueueClientFactory queueClientFactory,
+                                             MessageQueueOptions options,
                                              IMessageQueueInfo info)
         {
+            _queueClientFactory = queueClientFactory;
             _options = options;
             _info = info;
         }
@@ -68,11 +72,11 @@ namespace Herald.MessageQueue.AzureStorageQueue
         private async IAsyncEnumerable<TMessage> Receive<TMessage>([EnumeratorCancellation] CancellationToken cancellationToken, int maxNumberOfMessages) where TMessage : MessageBase
         {
             var queueName = _info.GetQueueName(typeof(TMessage));
-            var queueClient = new QueueClient(_options.ConnectionString, queueName);
+            var queueClient = _queueClientFactory.Create(_options.ConnectionString, queueName);
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                QueueMessage[] results = await queueClient.ReceiveMessagesAsync(maxNumberOfMessages, default, cancellationToken).DefaultIfCanceled();
+                var results = (QueueMessage[])await queueClient.ReceiveMessagesAsync(maxNumberOfMessages, default, cancellationToken).DefaultIfCanceled();
 
                 if (results == null || !results.Any())
                 {
@@ -97,7 +101,7 @@ namespace Herald.MessageQueue.AzureStorageQueue
         public async Task Received<TMessage>(TMessage message) where TMessage : MessageBase
         {
             var queueName = _info.GetQueueName(message.GetType());
-            var queueClient = new QueueClient(_options.ConnectionString, queueName);
+            var queueClient = _queueClientFactory.Create(_options.ConnectionString, queueName);
             var queueData = ((string MessageId, string PopReceipt))message.QueueData;
             await queueClient.DeleteMessageAsync(queueData.MessageId, queueData.PopReceipt);
         }
@@ -110,7 +114,7 @@ namespace Herald.MessageQueue.AzureStorageQueue
 
         public async Task Send<TMessage>(TMessage message, string destination) where TMessage : MessageBase
         {
-            var queueClient = new QueueClient(_options.ConnectionString, destination);
+            var queueClient = _queueClientFactory.Create(_options.ConnectionString, destination);
 
             var messageBody = JsonSerializer.Serialize(message, message.GetType());
             var body = Encoding.UTF8.GetBytes(messageBody);
