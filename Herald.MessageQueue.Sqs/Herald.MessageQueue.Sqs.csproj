@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.SQS" Version="3.7.2.42" />
+    <PackageReference Include="AWSSDK.SQS" Version="3.7.2.73" />
     <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.2" />
   </ItemGroup>
   <ItemGroup>

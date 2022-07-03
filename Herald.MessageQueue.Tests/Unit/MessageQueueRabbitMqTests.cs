@@ -1,5 +1,5 @@
 ﻿using Herald.MessageQueue.RabbitMq;
-using Herald.MessageQueue.Tests.Helpers.RabbitMq;
+using Herald.MessageQueue.Tests.Helpers;
 
 using Microsoft.Extensions.Configuration;
 

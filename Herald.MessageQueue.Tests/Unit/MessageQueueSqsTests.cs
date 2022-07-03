@@ -2,7 +2,7 @@
 using Amazon.SQS.Model;
 
 using Herald.MessageQueue.Sqs;
-using Herald.MessageQueue.Tests.Helpers.Sqs;
+using Herald.MessageQueue.Tests.Helpers;
 
 using Microsoft.Extensions.Configuration;
 
@@ -56,7 +56,7 @@ namespace Herald.MessageQueue.Tests.Unit
             var messageQueueOptions = new MessageQueueOptions();
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
 
-            amazonSqsMock.Setup(x => x.ReceiveMessageAsync(It.IsAny<ReceiveMessageRequest>(), CancellationToken.None))
+            amazonSqsMock.Setup(x => x.ReceiveMessageAsync(It.IsAny<ReceiveMessageRequest>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(new ReceiveMessageResponse()
                          {
                              Messages = new List<Message>()

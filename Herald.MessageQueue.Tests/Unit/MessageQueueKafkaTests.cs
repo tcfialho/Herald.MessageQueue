@@ -1,7 +1,7 @@
 ﻿using Confluent.Kafka;
 
 using Herald.MessageQueue.Kafka;
-using Herald.MessageQueue.Tests.Helpers.Kafka;
+using Herald.MessageQueue.Tests.Helpers;
 
 using Microsoft.Extensions.Configuration;
 
@@ -10,7 +10,6 @@ using Moq;
 using Newtonsoft.Json;
 
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -58,9 +57,8 @@ namespace Herald.MessageQueue.Tests.Unit
             var messageQueueOptions = new MessageQueueOptions();
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
 
-            consumerMock.SetupGet(x => x.Subscription).Returns(() => new List<string>()).Verifiable();
             consumerMock.Setup(x => x.Subscribe(It.IsAny<string>())).Verifiable();
-            consumerMock.Setup(x => x.Consume(TimeSpan.FromSeconds(5)))
+            consumerMock.Setup(x => x.Consume(It.IsAny<CancellationToken>()))
                         .Returns(new ConsumeResult<Ignore, string>()
                         {
                             Message = new Message<Ignore, string>()
@@ -97,7 +95,6 @@ namespace Herald.MessageQueue.Tests.Unit
             var messageQueueOptions = new MessageQueueOptions();
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
 
-            consumerMock.SetupGet(x => x.Subscription).Returns(() => new List<string>()).Verifiable();
             consumerMock.Setup(x => x.Subscribe(It.IsAny<string>())).Verifiable();
             consumerMock.Setup(x => x.Consume(TimeSpan.FromSeconds(5)))
                         .Returns(new ConsumeResult<Ignore, string>()
@@ -135,7 +132,6 @@ namespace Herald.MessageQueue.Tests.Unit
             var messageQueueOptions = new MessageQueueOptions();
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
 
-            consumerMock.SetupGet(x => x.Subscription).Returns(() => new List<string>()).Verifiable();
             consumerMock.Setup(x => x.Subscribe(It.IsAny<string>())).Verifiable();
             consumerMock.Setup(x => x.Consume(cancellationToken))
                         .Returns(new ConsumeResult<Ignore, string>()
@@ -173,7 +169,7 @@ namespace Herald.MessageQueue.Tests.Unit
 
             var messageQueueOptions = new MessageQueueOptions();
             var msg = new TestMessage() { Id = Guid.NewGuid().ToString() };
-            
+
             consumerMock.Setup(x => x.StoreOffset(It.IsAny<ConsumeResult<Ignore, string>>()))
                         .Verifiable();
             configurationMock.SetupGet(x => x[It.IsAny<string>()]).Returns(string.Empty);

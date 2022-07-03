@@ -28,7 +28,7 @@ namespace Herald.MessageQueue.RabbitMq
             _info = info;
         }
 
-        public Task Received(MessageBase message)
+        public Task Received<TMessage>(TMessage message) where TMessage : MessageBase
         {
             var queueData = ((ulong DeliveryTag, CancellationTokenSource CancellationTokenSource))message.QueueData;
             queueData.CancellationTokenSource.Cancel();
@@ -44,9 +44,7 @@ namespace Herald.MessageQueue.RabbitMq
 
         public async Task Send<TMessage>(TMessage message, string exchangeName, string routingKey) where TMessage : MessageBase
         {
-            var messageType = message.GetType();
-
-            var messageBody = JsonSerializer.Serialize(message);
+            var messageBody = JsonSerializer.Serialize(message, message.GetType());
             var body = Encoding.UTF8.GetBytes(messageBody);
 
             _channel.BasicPublish(exchangeName, routingKey, null, body);
@@ -61,20 +59,16 @@ namespace Herald.MessageQueue.RabbitMq
                 throw new ArgumentException("Max number of messages should be greater than zero.");
             }
 
-            var queueName = _info.GetQueueName(typeof(TMessage));
+            var cancellationTokenSource = new CancellationTokenSource();
+            var cancellationToken = cancellationTokenSource.Token;
 
-            for (var i = 0; i < maxNumberOfMessages; i++)
+            var i = 0;
+            await foreach (var message in Receive<TMessage>(cancellationToken))
             {
-                var result = _channel.BasicGet(queueName, false);
-
-                var message = ReceiveMessage<TMessage>(result);
-
-                if (message == null)
-                {
-                    continue;
-                }
-
-                yield return await Task.FromResult(message);
+                if (i >= maxNumberOfMessages)
+                    break;
+                i++;
+                yield return message;
             }
         }
 

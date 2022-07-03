@@ -9,7 +9,7 @@ namespace Herald.MessageQueue
     {
         Task Send<TMessage>(TMessage message) where TMessage : MessageBase;
 
-        Task Received(MessageBase message);
+        Task Received<TMessage>(TMessage message) where TMessage : MessageBase;
 
         IAsyncEnumerable<TMessage> Receive<TMessage>(int maxNumberOfMessages) where TMessage : MessageBase;
 
@@ -17,9 +17,17 @@ namespace Herald.MessageQueue
 
         async IAsyncEnumerable<TMessage> Receive<TMessage>(TimeSpan timeout) where TMessage : MessageBase
         {
-            await foreach (var item in Receive<TMessage>(new CancellationTokenSource(timeout).Token))
+            if (timeout == default)
             {
-                yield return await Task.FromResult(item);
+                throw new ArgumentException("Timeout of messages should be greater than zero.");
+            }
+
+            var cancellationTokenSource = new CancellationTokenSource(timeout);
+            var cancellationToken = cancellationTokenSource.Token;
+
+            await foreach (var message in Receive<TMessage>(cancellationToken))
+            {
+                yield return message;
             }
         }
     }

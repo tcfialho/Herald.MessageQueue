@@ -1,5 +1,4 @@
 ﻿using Confluent.Kafka;
-
 using Herald.MessageQueue.Extensions;
 
 using System;
@@ -29,7 +28,7 @@ namespace Herald.MessageQueue.Kafka
             _info = info;
         }
 
-        public Task Received(MessageBase message)
+        public Task Received<TMessage>(TMessage message) where TMessage : MessageBase
         {
             _consumer.StoreOffset((ConsumeResult<Ignore, string>)message.QueueData);
 
@@ -43,7 +42,7 @@ namespace Herald.MessageQueue.Kafka
 
         public async Task Send<TMessage>(TMessage message, string topicName) where TMessage : MessageBase
         {
-            var messageBody = JsonSerializer.Serialize(message);
+            var messageBody = JsonSerializer.Serialize(message, message.GetType());
 
             await _producer.ProduceAsync(topicName, new Message<Null, string> { Value = messageBody });
         }
@@ -55,68 +54,29 @@ namespace Herald.MessageQueue.Kafka
                 throw new ArgumentException("Max number of messages should be greater than zero.");
             }
 
-            var queueName = _info.GetTopicName(typeof(TMessage));
+            var cancellationTokenSource = new CancellationTokenSource();
+            var cancellationToken = cancellationTokenSource.Token;
 
-            if (!_consumer.Subscription.Contains(queueName))
+            var i = 0;
+            await foreach (var message in Receive<TMessage>(cancellationToken))
             {
-                _consumer.Subscribe(queueName);
-            }
-
-            for (var i = 0; i < maxNumberOfMessages; i++)
-            {
-                var result = _consumer.Consume(TimeSpan.FromSeconds(5));
-
-                if (result != null)
-                {
-                    var obj = JsonSerializer.Deserialize<TMessage>(result.Message.Value);
-
-                    obj.QueueData = result;
-
-                    yield return await Task.FromResult(obj);
-                }
+                if (i >= maxNumberOfMessages)
+                    break;
+                i++;
+                yield return message;                
             }
         }
 
-        public async IAsyncEnumerable<TMessage> Receive<TMessage>(TimeSpan timeout) where TMessage : MessageBase
+        public async IAsyncEnumerable<TMessage> Receive<TMessage>([EnumeratorCancellation] CancellationToken cancellationToken = default) where TMessage : MessageBase
         {
             var queueName = _info.GetTopicName(typeof(TMessage));
 
-            if (!_consumer.Subscription.Contains(queueName))
-            {
-                _consumer.Subscribe(queueName);
-            }
-
-            var cancellationToken = new CancellationTokenSource(timeout).Token;
-
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                var result = _consumer.Consume(timeout);
-
-                var message = ReceiveMessage<TMessage>(result);
-
-                if (message == null)
-                {
-                    cancellationToken.WaitHandle.WaitOne(TimeSpan.FromSeconds(_options.RequestDelaySeconds));
-                    continue;
-                }
-
-                yield return await Task.FromResult(message);
-            }
-        }
-
-        public async IAsyncEnumerable<TMessage> Receive<TMessage>([EnumeratorCancellation] CancellationToken cancellationToken) where TMessage : MessageBase
-        {
-            var queueName = _info.GetTopicName(typeof(TMessage));
-
-            if (!_consumer.Subscription.Contains(queueName))
-            {
-                _consumer.Subscribe(queueName);
-            }
+            _consumer.Subscribe(queueName);
 
             while (!cancellationToken.IsCancellationRequested)
             {
                 var result = await Task.Run(() => _consumer.Consume(cancellationToken), cancellationToken).DefaultIfCanceled();
-
+                
                 var message = ReceiveMessage<TMessage>(result);
 
                 if (message == null)

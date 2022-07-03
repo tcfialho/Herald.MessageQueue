@@ -3,15 +3,15 @@ using Herald.MessageQueue.Sqs;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
+using System;
 using System.Collections.Generic;
 
 namespace Herald.MessageQueue.Tests.Helpers.Sqs
 {
-    public static class SqsThreadSafeBuilder
+    public class SqsThreadSafeBuilder : IThreadSafeBuilder
     {
         private static readonly object _syncRoot = new object();
-        public static IMessageQueue Build<T>(int waitTimeSeconds = 0)
+        public IMessageQueue Build()
         {
             IMessageQueue queue;
             lock (_syncRoot)
@@ -30,11 +30,11 @@ namespace Herald.MessageQueue.Tests.Helpers.Sqs
                 serviceCollection.AddMessageQueueSqs(setup =>
                 {
                     setup.ServiceURL = "http://localhost:4576";
-                    setup.GroupId = typeof(T).Name;
+                    setup.GroupId = Guid.NewGuid().ToString();
                     setup.Region = "us-east-1";
                     setup.VisibilityTimeout = 1;
                     setup.EnableFifo = true;
-                    setup.WaitTimeSeconds = waitTimeSeconds;
+                    setup.WaitTimeSeconds = 0;
                 });
 
                 var serviceProvider = serviceCollection.BuildServiceProvider();
