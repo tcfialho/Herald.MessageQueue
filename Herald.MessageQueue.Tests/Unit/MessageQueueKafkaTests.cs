@@ -2,7 +2,6 @@
 
 using Herald.MessageQueue.Kafka;
 using Herald.MessageQueue.Tests.Helpers;
-using Herald.MessageQueue.Tests.Helpers.Kafka;
 
 using Microsoft.Extensions.Configuration;
 
@@ -11,7 +10,6 @@ using Moq;
 using Newtonsoft.Json;
 
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 

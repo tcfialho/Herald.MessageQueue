@@ -7,7 +7,6 @@ using Herald.MessageQueue.Tests.Helpers;
 using Moq;
 using Newtonsoft.Json;
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 

@@ -1,15 +1,12 @@
 ﻿using Confluent.Kafka;
-using Confluent.Kafka.Admin;
 using Herald.MessageQueue.Extensions;
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using static Confluent.Kafka.ConfigPropertyNames;
 
 namespace Herald.MessageQueue.Kafka
 {
@@ -67,22 +64,6 @@ namespace Herald.MessageQueue.Kafka
                     break;
                 i++;
                 yield return message;                
-            }
-        }
-
-        public async IAsyncEnumerable<TMessage> Receive<TMessage>(TimeSpan timeout) where TMessage : MessageBase
-        {
-            if (timeout == default)
-            {
-                throw new ArgumentException("Timeout of messages should be greater than zero.");
-            }
-
-            var cancellationTokenSource = new CancellationTokenSource(timeout);
-            var cancellationToken = cancellationTokenSource.Token;
-
-            await foreach (var message in Receive<TMessage>(cancellationToken))
-            {
-                yield return message;
             }
         }
 

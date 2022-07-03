@@ -1,5 +1,4 @@
-﻿using Azure.Storage.Queues;
-using Azure.Storage.Queues.Models;
+﻿using Azure.Storage.Queues.Models;
 using Herald.MessageQueue.Extensions;
 
 using System;

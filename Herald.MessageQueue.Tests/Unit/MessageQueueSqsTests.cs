@@ -3,7 +3,6 @@ using Amazon.SQS.Model;
 
 using Herald.MessageQueue.Sqs;
 using Herald.MessageQueue.Tests.Helpers;
-using Herald.MessageQueue.Tests.Helpers.Sqs;
 
 using Microsoft.Extensions.Configuration;
 

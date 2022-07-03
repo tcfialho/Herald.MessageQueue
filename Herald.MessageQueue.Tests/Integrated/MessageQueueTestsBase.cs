@@ -64,8 +64,7 @@ namespace Herald.MessageQueue.Tests.Integrated
         public async Task ShouldWaitUntilReceiveMessage()
         {
             //Arrange
-            const int timeoutSeconds = 5;
-            var msg = new TestMessageD() { Id = Guid.NewGuid().ToString() };
+            const int timeoutSeconds = 2;
             using var queue = threadSafeBuilder.Build();
             var stopWatch = new Stopwatch();
 

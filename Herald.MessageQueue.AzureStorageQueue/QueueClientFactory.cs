@@ -1,7 +1,4 @@
-﻿using Azure;
-using System.Threading.Tasks;
-using Azure.Storage.Queues;
-using Azure.Storage.Queues.Models;
+﻿using Azure.Storage.Queues;
 
 namespace Herald.MessageQueue.AzureStorageQueue
 {

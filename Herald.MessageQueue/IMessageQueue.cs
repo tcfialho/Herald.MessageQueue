@@ -17,9 +17,17 @@ namespace Herald.MessageQueue
 
         async IAsyncEnumerable<TMessage> Receive<TMessage>(TimeSpan timeout) where TMessage : MessageBase
         {
-            await foreach (var item in Receive<TMessage>(new CancellationTokenSource(timeout).Token))
+            if (timeout == default)
             {
-                yield return await Task.FromResult(item);
+                throw new ArgumentException("Timeout of messages should be greater than zero.");
+            }
+
+            var cancellationTokenSource = new CancellationTokenSource(timeout);
+            var cancellationToken = cancellationTokenSource.Token;
+
+            await foreach (var message in Receive<TMessage>(cancellationToken))
+            {
+                yield return message;
             }
         }
     }
