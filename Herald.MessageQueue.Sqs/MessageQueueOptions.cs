@@ -1,4 +1,6 @@
-﻿namespace Herald.MessageQueue.Sqs
+﻿using System.Collections.Generic;
+
+namespace Herald.MessageQueue.Sqs
 {
     public class MessageQueueOptions
     {
@@ -10,5 +12,6 @@
         public string QueueNameSufix { get; set; } = "Queue";
         public bool EnableFifo { get; set; }
         public int RequestDelaySeconds { get; set; } = 1;
+        public string ConfigSection { get; set; }
     }
 }

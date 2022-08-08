@@ -1,4 +1,6 @@
-﻿namespace Herald.MessageQueue.RabbitMq
+﻿using System.Collections.Generic;
+
+namespace Herald.MessageQueue.RabbitMq
 {
     public class MessageQueueOptions
     {
@@ -11,5 +13,6 @@
         public string ExchangeNameSufix { get; set; } = "Exchange";
         public int RequestDelaySeconds { get; set; } = 1;
         public int AutoNackTimeoutSeconds { get; set; } = 30;
+        public string ConfigSection { get; set; }
     }
 }

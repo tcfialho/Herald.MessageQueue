@@ -1,4 +1,5 @@
-﻿using Confluent.Kafka;
+﻿using System.Collections.Generic;
+using Confluent.Kafka;
 
 namespace Herald.MessageQueue.Kafka
 {
@@ -21,5 +22,6 @@ namespace Herald.MessageQueue.Kafka
 
         public string TopicNameSufix { get; set; } = "Topic";
         public int RequestDelaySeconds { get; set; } = 1;
+        public string ConfigSection { get; set; }
     }
 }

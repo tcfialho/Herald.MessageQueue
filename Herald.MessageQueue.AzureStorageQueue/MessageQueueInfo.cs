@@ -20,7 +20,7 @@ namespace Herald.MessageQueue.AzureStorageQueue
 
         public string GetQueueName(Type type)
         {
-            var configuredName = _configuration[string.Concat(type.Name, "Queue")];
+            var configuredName = _configuration[string.Concat(_options.ConfigSection, ":", type.Name, ":", "Queue")];
 
             if (!string.IsNullOrWhiteSpace(configuredName))
             {

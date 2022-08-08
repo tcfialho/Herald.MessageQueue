@@ -20,7 +20,7 @@ namespace Herald.MessageQueue.Kafka
 
         public string GetTopicName(Type type)
         {
-            var configuredName = _configuration[string.Concat(type.Name, "Topic")];
+            var configuredName = _configuration[string.Concat(_options.ConfigSection, ":", type.Name, ":", "Topic")];
 
             if (!string.IsNullOrWhiteSpace(configuredName))
             {

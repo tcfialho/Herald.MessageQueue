@@ -19,8 +19,8 @@ namespace Herald.MessageQueue.RabbitMq
         }
 
         public string GetExchangeName(Type type)
-        {
-            var configuredName = _configuration[string.Concat(type.Name, "Exchange")];
+        {            
+            var configuredName = _configuration[string.Concat(_options.ConfigSection, ":", type.Name, ":", "Exchange")];
 
             if (!string.IsNullOrWhiteSpace(configuredName))
             {
@@ -39,7 +39,7 @@ namespace Herald.MessageQueue.RabbitMq
 
         public string GetQueueName(Type type)
         {
-            var configuredName = _configuration[string.Concat(type.Name, "Queue")];
+            var configuredName = _configuration[string.Concat(_options.ConfigSection, ":", type.Name, ":", "Queue")];
 
             if (!string.IsNullOrWhiteSpace(configuredName))
             {
@@ -58,7 +58,7 @@ namespace Herald.MessageQueue.RabbitMq
 
         public string GetRoutingKey(Type type)
         {
-            var configuredName = _configuration[string.Concat(type.Name, "RoutingKey")];
+            var configuredName = _configuration[string.Concat(_options.ConfigSection, ":", type.Name, ":", "RoutingKey")];
 
             if (!string.IsNullOrWhiteSpace(configuredName))
             {

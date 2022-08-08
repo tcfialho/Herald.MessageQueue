@@ -7,5 +7,6 @@
         public string QueueNameSufix { get; set; } = "Queue";
 
         public int RequestDelaySeconds { get; set; } = 1;
+        public string ConfigSection { get; set; }
     }
 }
