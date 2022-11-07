@@ -52,7 +52,7 @@ namespace Herald.MessageQueue.Sqs
             }
             else
             {
-                queueUrl = $"{_options.ServiceURL}/queue/{queueName}";
+                queueUrl = $"{_options.ServiceURL}/{queueName}";
             }
 
             return queueUrl;
