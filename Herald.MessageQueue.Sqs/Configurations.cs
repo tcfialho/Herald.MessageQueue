@@ -40,12 +40,15 @@ namespace Herald.MessageQueue.Sqs
             }
             else
             {
+                var uriService = new Uri(messageQueueOptions.ServiceURL);
+                var serviceUrl = uriService.Scheme + "://" + uriService.Host;
+                
                 awsSqsOptions.Region = null;
                 awsSqsOptions.DefaultClientConfig.AllowAutoRedirect = false;
                 awsSqsOptions.DefaultClientConfig.EndpointDiscoveryEnabled = false;
                 awsSqsOptions.DefaultClientConfig.UseHttp = true;
                 awsSqsOptions.DefaultClientConfig.DisableHostPrefixInjection = true;
-                awsSqsOptions.DefaultClientConfig.ServiceURL = messageQueueOptions.ServiceURL;
+                awsSqsOptions.DefaultClientConfig.ServiceURL = serviceUrl;
             }
 
             awsSqsOptions.DefaultClientConfig.Validate();
