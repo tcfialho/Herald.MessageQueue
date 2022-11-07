@@ -29,7 +29,7 @@ namespace Herald.MessageQueue.Tests.Helpers.Sqs
 
                 serviceCollection.AddMessageQueueSqs(setup =>
                 {
-                    setup.ServiceURL = "http://localhost:4576";
+                    setup.ServiceURL = "http://localhost:4576/queue";
                     setup.GroupId = Guid.NewGuid().ToString();
                     setup.Region = "us-east-1";
                     setup.VisibilityTimeout = 1;

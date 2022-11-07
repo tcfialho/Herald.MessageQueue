@@ -41,7 +41,7 @@ namespace Herald.MessageQueue.Sqs
             else
             {
                 var uriService = new Uri(messageQueueOptions.ServiceURL);
-                var serviceUrl = uriService.Scheme + "://" + uriService.Host;
+                var serviceUrl = uriService.Scheme + "://" + uriService.Host + ":" + uriService.Port;
                 
                 awsSqsOptions.Region = null;
                 awsSqsOptions.DefaultClientConfig.AllowAutoRedirect = false;
